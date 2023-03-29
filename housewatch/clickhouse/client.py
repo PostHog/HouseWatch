@@ -3,7 +3,7 @@ import os
     
 client = Client(
     host=os.getenv("CLICKHOUSE_HOST", "localhost"),
-    database=os.getenv("CLICKHOUSE_DATABASE", ""),
+    database=os.getenv("CLICKHOUSE_DATABASE", "default"),
     secure=os.getenv("CLICKHOUSE_SECURE", ""),
     user=os.getenv("CLICKHOUSE_USER", "default"),
     password=os.getenv("CLICKHOUSE_PASSWORD", ""),

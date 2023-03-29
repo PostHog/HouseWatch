@@ -2,5 +2,4 @@
 
 set -e
 
-
-./bin/celery & ./bin/serve
+./bin/serve
