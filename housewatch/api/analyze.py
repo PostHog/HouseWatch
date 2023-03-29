@@ -2,7 +2,6 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from housewatch.clickhouse.client import run_query
 from housewatch.clickhouse.client import run_query, base_params
 from housewatch.clickhouse.queries.sql import SLOW_QUERIES_SQL
 
@@ -18,7 +17,7 @@ class AnalyzeViewset(GenericViewSet):
 
     @action(detail=False, methods=["GET"])
     def page_cache(self, request: Request):
-        ddd = client.execute("""
+        ddd = run_query("""
 with 
     toDateTime( now() ) as target_time, 
     toIntervalDay( 14 ) as interval
