@@ -7,8 +7,8 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import { Button, LinearProgress, Tab, Tabs } from '@mui/material'
-
+import { Button, Input, LinearProgress, Tab, Tabs } from '@mui/material'
+import { TextareaAutosize } from '@mui/base'
 
 
 const ASYNC_MIGRATION_STATUS_TO_HUMAN = {
@@ -98,12 +98,46 @@ export function AsyncMigrationsList(): JSX.Element {
     )
 }
 
+export function CreateNewAsyncMigration(): JSX.Element {
+
+
+    // const fetchAndUpdateAsyncMigrationsIfNeeded = async () => {
+    //     const response = await fetch('http://localhost:8000/api/async_migrations')
+    //     const responseJson = await response.json()
+    //     const results = responseJson.results
+    //     if (JSON.stringify(results) !== JSON.stringify(asyncMigrations)) {
+    //         setAsyncMigrations(results)
+    //     }
+    // }
+
+
+    // useEffect(() => {
+    //     fetchAndUpdateAsyncMigrationsIfNeeded()
+    // }, [])
+
+    // setInterval(fetchAndUpdateAsyncMigrationsIfNeeded, 5000)
+
+    return (
+        <div>
+            <form style={{ textAlign: 'left', marginLeft: 20 }}>
+                <Input placeholder='Name'/><br/>
+                <Input style={{width: 200}} placeholder='Description'/><br/>
+
+                <label for="lname">Last name:</label><br/>
+                <input type="text" id="lname" name="lname" value="Doe"/><br/><br/>
+                <input type="submit" value="Submit" />
+                
+            </form>
+
+        </div>
+
+    )
+}
 
 export function AsyncMigrations(): JSX.Element {
 
     const [tab, setTab] = useState("list")
 
-    console.log(tab)
 
     return (
         <div style={{ display: 'block', margin: 'auto', width: '90%' }}>
@@ -118,7 +152,7 @@ export function AsyncMigrations(): JSX.Element {
                 <Tab value="create" label="Create migration" />
             </Tabs>
             <br />
-            {tab === "list" ? <AsyncMigrationsList /> : tab === "create" ? <h1>create</h1> : null}
+            {tab === "list" ? <AsyncMigrationsList /> : tab === "create" ? <CreateNewAsyncMigration /> : null}
 
         </div>
     )

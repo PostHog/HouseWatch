@@ -1,12 +1,15 @@
 import React from 'react';
 import './App.css';
 import Sidebar from './Sidebar';
+import ThemeCustomization from './themes'
 
 function App() {
   return (
-    <div className="App">
-      <Sidebar />
-    </div>
+    <ThemeCustomization>
+      <div className="App">
+        <Sidebar />
+      </div>
+    </ThemeCustomization>
   );
 }
 

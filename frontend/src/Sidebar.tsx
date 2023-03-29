@@ -81,7 +81,6 @@ export default function PermanentDrawerLeft(): JSX.Element {
         <List>
           {[
             {'path': '/', 'text': 'Home'},
-            {'path': '/', 'text': 'Async migrations'},
             {'path': '/slow_queries', 'text': 'Slow queries'},
             {'path': '/schema', 'text': 'Schema'},
             {'path': '/', 'text': 'Errors'},
