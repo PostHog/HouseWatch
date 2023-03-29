@@ -22,3 +22,7 @@ def run_query(query: str):
         
         response.append(item)
     return response
+
+base_params = {
+    "cluster": os.getenv("CLICKHOUSE_CLUSTER", "posthog")
+}
