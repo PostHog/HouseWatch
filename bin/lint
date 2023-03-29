@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+python -m isort housewatch
+python -m black .
+python -m flake8 housewatch
+python -m mypy .

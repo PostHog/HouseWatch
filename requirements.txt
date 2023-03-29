@@ -1,0 +1,10 @@
+Django==4.1.1
+djangorestframework==3.14.0
+sentry_sdk==1.9.8
+dj_database_url==1.0.0
+celery==5.2.7
+drf-exceptions-hog==0.2.0
+drf-spectacular==0.24.2
+gunicorn==20.1.0
+whitenoise==5.2.0
+django-cors-headers==3.13.0

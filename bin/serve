@@ -1,0 +1,3 @@
+#!/bin/bash
+exec gunicorn billing.wsgi -c billing/gunicorn.conf.py \
+    --worker-tmp-dir /dev/shm
