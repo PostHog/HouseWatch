@@ -12,4 +12,8 @@ django-cors-headers==3.13.0
 psycopg2-binary==2.9.3
 drf-extensions==0.7.1
 celery==5.2.7
-django-redis==5.2.0
+django-redis==5.2.0clickhouse-driver==0.2.5
+pytz==2023.2
+pytz-deprecation-shim==0.1.0.post0
+tzdata==2023.3
+tzlocal==4.3
