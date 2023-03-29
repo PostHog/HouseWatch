@@ -41,6 +41,13 @@ services:
         ports:
             - '8100:8100'
 
+    redis:
+        image: redis:6.2.7-alpine
+        restart: on-failure
+        ports:
+            - '6380:6379'
+        command: redis-server --maxmemory-policy allkeys-lru --maxmemory 200mb
+
     worker:
         build: .
         environment:
