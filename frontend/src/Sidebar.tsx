@@ -35,9 +35,9 @@ export default function PermanentDrawerLeft(): JSX.Element {
           </Typography>
         </Toolbar>
         <div>
-        {page === 'Page cache hits' && <PageCacheHits />}
-        {page === 'Slow queries' && <SlowQueries />}
-        {page === 'Async migrations' && <AsyncMigrations />}
+          {page === 'Page cache hits' && <PageCacheHits />}
+          {page === 'Slow queries' && <SlowQueries />}
+          {page === 'Async migrations' && <AsyncMigrations />}
         </div>
       </AppBar>
       <Drawer
