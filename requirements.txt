@@ -1,5 +1,6 @@
 Django==4.1.1
 djangorestframework==3.14.0
+django-structlog==3.0.1
 sentry_sdk==1.9.8
 dj_database_url==1.0.0
 celery==5.2.7
