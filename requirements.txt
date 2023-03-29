@@ -8,3 +8,7 @@ drf-spectacular==0.24.2
 gunicorn==20.1.0
 whitenoise==5.2.0
 django-cors-headers==3.13.0
+psycopg2-binary==2.9.3
+drf-extensions==0.7.1
+celery==5.2.7
+django-redis==5.2.0

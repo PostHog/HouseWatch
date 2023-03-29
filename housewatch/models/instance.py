@@ -8,4 +8,4 @@ class Instance(models.Model):
     username: models.CharField = models.CharField(max_length=200)
     password: models.CharField = models.CharField(max_length=200)
     host: models.CharField = models.CharField(max_length=200)
-    port: models.IntegerField = models.IntegerField(max_length=200)
+    port: models.IntegerField = models.IntegerField()
