@@ -8,19 +8,15 @@ LIMIT %(limit)s
 """
 
 PAGE_CACHE_HIT_PERCENTAGE_SQL = """
-WITH 
-    toDateTime(%(date_to)s) AS date_to, 
-    toDateTime(%(date_from)s) AS date_from, 
 SELECT
     getMacro('replica') replica,
     (sum(ProfileEvents['OSReadChars']) - sum(ProfileEvents['OSReadBytes'])) / sum(ProfileEvents['OSReadChars']) AS page_cache_read_ratio
 FROM clusterAllReplicas(%(cluster)s, system.query_log)
 WHERE 
-    event_time >= date_from
-    AND event_time <= date_to 
-    AND type > 1 
+    event_time >= toDateTime(%(date_from)s)
+    AND event_time <= toDateTime(%(date_to)s) 
+    AND type > 1
     AND is_initial_query 
-    AND JSONExtractString(log_comment, 'kind') = 'request'
 GROUP BY replica
 ORDER BY replica
 """
