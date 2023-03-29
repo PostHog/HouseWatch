@@ -2,9 +2,10 @@ import structlog
 from rest_framework import serializers, viewsets
 from rest_framework.decorators import action
 from housewatch.models.async_migration import AsyncMigration
+from housewatch.celery import simple
+from rest_framework.response import Response
 
 logger = structlog.get_logger(__name__)
-
 
 
 class AsyncMigrationSerializer(serializers.ModelSerializer):
@@ -41,9 +42,6 @@ class AsyncMigrationSerializer(serializers.ModelSerializer):
 class AsyncMigrationsViewset(viewsets.ModelViewSet):
     queryset = AsyncMigration.objects.all().order_by("name")
     serializer_class = AsyncMigrationSerializer
-
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
     
     # @action(methods=["POST"], detail=True)
     # def trigger(self, request, **kwargs):
@@ -76,20 +74,10 @@ class AsyncMigrationsViewset(viewsets.ModelViewSet):
     #     trigger_migration(migration_instance)
     #     return response.Response({"success": True}, status=200)
 
-    # @action(methods=["POST"], detail=True)
-    # def resume(self, request, **kwargs):
-    #     migration_instance = self.get_object()
-    #     if migration_instance.status != MigrationStatus.Errored:
-    #         return response.Response(
-    #             {"success": False, "error": "Can't resume a migration that isn't in errored state"}, status=400
-    #         )
-
-    #     migration_instance.status = MigrationStatus.Running
-    #     migration_instance.parameters = request.data.get("parameters", {})
-    #     migration_instance.save()
-
-    #     trigger_migration(migration_instance, fresh_start=False)
-    #     return response.Response({"success": True}, status=200)
+    # @action(methods=["GET"], detail=False)
+    # def test(self, request, **kwargs):
+    #     simple.delay()
+    #     return Response()
 
     # def _force_stop(self, rollback: bool):
     #     migration_instance = self.get_object()

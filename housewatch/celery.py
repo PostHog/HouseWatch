@@ -36,3 +36,10 @@ def setup_periodic_tasks(sender: Celery, **kwargs):
 @app.task(ignore_result=True)
 def simple():
     print("ok")
+    print("ok")
+    print("ok")
+    print("ok")
+    print("ok")
+    print("ok")
+    print("ok")
+    print("ok")
