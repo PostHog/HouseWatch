@@ -41,16 +41,15 @@ def execute_op(
 def mark_async_migration_as_running(migration: AsyncMigration) -> bool:
     # update to running iff the state was Starting (ui triggered) or NotStarted (api triggered)
     with transaction.atomic():
-        instance = AsyncMigration.objects.select_for_update().get(pk=migration.pk)
-        if instance.status not in [MigrationStatus.Starting, MigrationStatus.NotStarted]:
+        if migration.status not in [MigrationStatus.Starting, MigrationStatus.NotStarted]:
             return False
-        instance.status = MigrationStatus.Running
-        instance.current_query_id = ""
-        instance.progress = 0
-        instance.current_operation_index = 0
-        instance.started_at = now()
-        instance.finished_at = None
-        instance.save()
+        migration.status = MigrationStatus.Running
+        migration.current_query_id = ""
+        migration.progress = 0
+        migration.current_operation_index = 0
+        migration.started_at = now()
+        migration.finished_at = None
+        migration.save()
     return True
 
 
@@ -110,16 +109,16 @@ def update_async_migration(
 
 
 def process_error(
-    migration_instance: AsyncMigration,
+    migration: AsyncMigration,
     error: str,
     rollback: bool = True,
     status: int = MigrationStatus.Errored,
     current_operation_index: Optional[int] = None,
 ):
-    logger.error(f"Async migration {migration_instance.name} error: {error}")
+    logger.error(f"Async migration {migration.name} error: {error}")
 
     update_async_migration(
-        migration_instance=migration_instance,
+        migration=migration,
         current_operation_index=current_operation_index,
         status=status,
         error=error,
@@ -134,19 +133,19 @@ def process_error(
 
     # from posthog.async_migrations.runner import attempt_migration_rollback
 
-    # attempt_migration_rollback(migration_instance)
+    # attempt_migration_rollback(migration)
 
 
-# def trigger_migration(migration_instance: AsyncMigration, fresh_start: bool = True):
-#     from posthog.tasks.async_migrations import run_async_migration
+def trigger_migration(migration: AsyncMigration, fresh_start: bool = True):
+    from housewatch.tasks import run_async_migration
 
-#     task = run_async_migration.delay(migration_instance.name, fresh_start)
+    task = run_async_migration.delay(migration.name, fresh_start)
 
-#     update_async_migration(migration_instance=migration_instance, celery_task_id=str(task.id))
+    update_async_migration(migration=migration, task_id=str(task.id))
 
 
 # def force_stop_migration(
-#     migration_instance: AsyncMigration, error: str = "Force stopped by user", rollback: bool = True
+#     migration: AsyncMigration, error: str = "Force stopped by user", rollback: bool = True
 # ):
 #     """
 #     In theory this is dangerous, as it can cause another task to be lost
@@ -159,30 +158,30 @@ def process_error(
 #     2. Our Celery tasks are not essential for the functioning of PostHog, meaning losing a task is not the end of the world
 #     """
 #     # Shortcut if we are still in starting state
-#     if migration_instance.status == MigrationStatus.Starting:
-#         if halt_starting_migration(migration_instance):
+#     if migration.status == MigrationStatus.Starting:
+#         if halt_starting_migration(migration):
 #             return
 
-#     app.control.revoke(migration_instance.celery_task_id, terminate=True)
-#     process_error(migration_instance, error, rollback=rollback)
+#     app.control.revoke(migration.celery_task_id, terminate=True)
+#     process_error(migration, error, rollback=rollback)
 
 
-# def rollback_migration(migration_instance: AsyncMigration):
+# def rollback_migration(migration: AsyncMigration):
 #     from posthog.async_migrations.runner import attempt_migration_rollback
 
-#     attempt_migration_rollback(migration_instance)
+#     attempt_migration_rollback(migration)
 
 
-def complete_migration(migration_instance: AsyncMigration, email: bool = True):
+def complete_migration(migration: AsyncMigration, email: bool = True):
     finished_at = now()
 
-    migration_instance.refresh_from_db()
+    migration.refresh_from_db()
 
-    needs_update = migration_instance.status != MigrationStatus.CompletedSuccessfully
+    needs_update = migration.status != MigrationStatus.CompletedSuccessfully
 
     if needs_update:
         update_async_migration(
-            migration_instance=migration_instance,
+            migration=migration,
             status=MigrationStatus.CompletedSuccessfully,
             finished_at=finished_at,
             progress=100,

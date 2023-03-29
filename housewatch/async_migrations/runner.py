@@ -57,7 +57,7 @@ def start_async_migration(
         logger.error(f"Migration state has unexpectedly changed for async migration {migration.name}")
         return False
 
-    return run_async_migration_operations(migration, migration)
+    return run_async_migration_operations(migration)
 
 
 def run_async_migration_operations(migration: AsyncMigration) -> bool:
@@ -74,7 +74,7 @@ def run_async_migration_next_op(migration: AsyncMigration):
 
     Returns (run_next, success)
     Terminology:
-    - migration_instance: The migration object as stored in the DB
+    - migration: The migration object as stored in the DB
     - migration_definition: The actual migration class outlining the operations (e.g. async_migrations/examples/example.py)
     """
     
@@ -101,9 +101,9 @@ def run_async_migration_next_op(migration: AsyncMigration):
         )
         op = migration.operations[migration.current_operation_index]
 
-        execute_op(op, current_query_id)
+        execute_op(op, query_id=current_query_id)
         update_async_migration(
-            migration_instance=migration,
+            migration=migration,
             current_query_id=current_query_id,
             current_operation_index=migration.current_operation_index + 1,
         )
@@ -117,7 +117,7 @@ def run_async_migration_next_op(migration: AsyncMigration):
             error=e,
         )
         capture_exception(e)
-        process_error(migration, error, alert=True)
+        process_error(migration, error)
 
     if error:
         return (False, False)
@@ -126,12 +126,12 @@ def run_async_migration_next_op(migration: AsyncMigration):
     return (True, False)
 
 
-# def run_migration_healthcheck(migration_instance: AsyncMigration):
-#     return get_async_migration_definition(migration_instance.name).healthcheck()
+# def run_migration_healthcheck(migration: AsyncMigration):
+#     return get_async_migration_definition(migration.name).healthcheck()
 
 
-# def run_migration_precheck(migration_instance: AsyncMigration):
-#     return get_async_migration_definition(migration_instance.name).precheck()
+# def run_migration_precheck(migration: AsyncMigration):
+#     return get_async_migration_definition(migration.name).precheck()
 
 
 def update_migration_progress(migration: AsyncMigration):
@@ -159,14 +159,13 @@ def attempt_migration_rollback(migration: AsyncMigration):
     for op_index in range(current_index, -1, -1):
         try:
             op = ops[op_index]
-            execute_op(op, str(uuid4))
+            execute_op(op, query_id=str(uuid4))
         except Exception as e:
             error = f"At operation {op_index} rollback failed with error:{str(e)}"
             process_error(
                 migration=migration,
                 error=error,
                 rollback=False,
-                alert=True,
                 current_operation_index=op_index,
             )
 

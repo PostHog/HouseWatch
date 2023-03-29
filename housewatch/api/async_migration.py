@@ -1,9 +1,11 @@
 import structlog
 from rest_framework import serializers, viewsets
 from rest_framework.decorators import action
-from housewatch.models.async_migration import AsyncMigration
-from housewatch.celery import simple
+from housewatch.models.async_migration import AsyncMigration, MigrationStatus
+from housewatch.celery import run_async_migration
 from rest_framework.response import Response
+from housewatch.async_migrations.runner import trigger_migration
+
 
 logger = structlog.get_logger(__name__)
 
@@ -23,11 +25,12 @@ class AsyncMigrationSerializer(serializers.ModelSerializer):
             "task_id",
             "started_at",
             "finished_at",
+            "operations",
+            "rollback_operations",
+            "last_error"
         ]
         read_only_fields = [
             "id",
-            "name",
-            "description",
             "progress",
             "status",
             "current_operation_index",
@@ -35,7 +38,14 @@ class AsyncMigrationSerializer(serializers.ModelSerializer):
             "task_id",
             "started_at",
             "finished_at",
+            "last_error"
         ]
+        
+    def create(self, validated_data):
+        validated_data['progress'] = 0
+        validated_data['current_operation_index'] = 0
+        validated_data['status'] = MigrationStatus.NotStarted
+        return super().create(validated_data)
 
 
 
@@ -43,36 +53,17 @@ class AsyncMigrationsViewset(viewsets.ModelViewSet):
     queryset = AsyncMigration.objects.all().order_by("name")
     serializer_class = AsyncMigrationSerializer
     
-    # @action(methods=["POST"], detail=True)
-    # def trigger(self, request, **kwargs):
-    #     if get_all_running_async_migrations().count() >= MAX_CONCURRENT_ASYNC_MIGRATIONS:
-    #         return response.Response(
-    #             {
-    #                 "success": False,
-    #                 "error": f"No more than {MAX_CONCURRENT_ASYNC_MIGRATIONS} async migration can run at once.",
-    #             },
-    #             status=400,
-    #         )
+    @action(methods=["POST"], detail=True)
+    def trigger(self, request, **kwargs):
 
-    #     migration_instance = self.get_object()
+        migration = self.get_object()
 
-    #     if not is_posthog_version_compatible(
-    #         migration_instance.posthog_min_version, migration_instance.posthog_max_version
-    #     ):
-    #         return response.Response(
-    #             {
-    #                 "success": False,
-    #                 "error": f"Can't run migration. Minimum PostHog version: {migration_instance.posthog_min_version}. Maximum PostHog version: {migration_instance.posthog_max_version}",
-    #             },
-    #             status=400,
-    #         )
 
-    #     migration_instance.status = MigrationStatus.Starting
-    #     migration_instance.parameters = request.data.get("parameters", {})
-    #     migration_instance.save()
+        migration.status = MigrationStatus.Starting
+        migration.save()
 
-    #     trigger_migration(migration_instance)
-    #     return response.Response({"success": True}, status=200)
+        run_async_migration.delay(migration.name)
+        return Response({"success": True}, status=200)
 
     # @action(methods=["GET"], detail=False)
     # def test(self, request, **kwargs):
@@ -80,12 +71,12 @@ class AsyncMigrationsViewset(viewsets.ModelViewSet):
     #     return Response()
 
     # def _force_stop(self, rollback: bool):
-    #     migration_instance = self.get_object()
-    #     if migration_instance.status not in [MigrationStatus.Running, MigrationStatus.Starting]:
+    #     migration = self.get_object()
+    #     if migration.status not in [MigrationStatus.Running, MigrationStatus.Starting]:
     #         return response.Response(
     #             {"success": False, "error": "Can't stop a migration that isn't running."}, status=400
     #         )
-    #     force_stop_migration(migration_instance, rollback=rollback)
+    #     force_stop_migration(migration, rollback=rollback)
     #     return response.Response({"success": True}, status=200)
 
     # # DANGEROUS! Can cause another task to be lost
@@ -100,33 +91,33 @@ class AsyncMigrationsViewset(viewsets.ModelViewSet):
 
     # @action(methods=["POST"], detail=True)
     # def rollback(self, request, **kwargs):
-    #     migration_instance = self.get_object()
-    #     if migration_instance.status != MigrationStatus.Errored:
+    #     migration = self.get_object()
+    #     if migration.status != MigrationStatus.Errored:
     #         return response.Response(
     #             {"success": False, "error": "Can't rollback a migration that isn't in errored state."}, status=400
     #         )
 
-    #     rollback_migration(migration_instance)
+    #     rollback_migration(migration)
     #     return response.Response({"success": True}, status=200)
 
     # @action(methods=["POST"], detail=True)
     # def force_rollback(self, request, **kwargs):
-    #     migration_instance = self.get_object()
-    #     if migration_instance.status != MigrationStatus.CompletedSuccessfully:
+    #     migration = self.get_object()
+    #     if migration.status != MigrationStatus.CompletedSuccessfully:
     #         return response.Response(
     #             {"success": False, "error": "Can't force rollback a migration that did not complete successfully."},
     #             status=400,
     #         )
 
-    #     rollback_migration(migration_instance)
+    #     rollback_migration(migration)
     #     return response.Response({"success": True}, status=200)
 
     # @action(methods=["GET"], detail=True)
     # def errors(self, request, **kwargs):
-    #     migration_instance = self.get_object()
+    #     migration = self.get_object()
     #     return response.Response(
     #         [
     #             AsyncMigrationErrorsSerializer(e).data
-    #             for e in AsyncMigrationError.objects.filter(async_migration=migration_instance).order_by("-created_at")
+    #             for e in AsyncMigrationError.objects.filter(async_migration=migration).order_by("-created_at")
     #         ]
     #     )

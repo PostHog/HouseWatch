@@ -28,8 +28,9 @@ class AsyncMigration(models.Model):
     
     current_query_id: models.CharField = models.CharField(max_length=100, null=False, blank=False, default="")
     task_id: models.CharField = models.CharField(max_length=100, null=True, blank=True, default="")
-
+    
     started_at: models.DateTimeField = models.DateTimeField(null=True, blank=True)
+    finished_at: models.DateTimeField = models.DateTimeField(null=True, blank=True)
     
     last_error: models.CharField = models.CharField(max_length=800, null=True, blank=True, default="")
     

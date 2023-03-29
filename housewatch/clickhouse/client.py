@@ -14,7 +14,7 @@ client = Client(
 )
 
 def run_query(query: str, params: Dict[str, str | int] = {}, settings: Dict[str, str | int] = {}):
-    result = client.execute(query % params, settings=settings, with_column_types=True)
+    result = client.execute(query % (params or {}), settings=settings, with_column_types=True)
     response = []
     for res in result[0]:
         item = {}

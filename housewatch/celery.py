@@ -27,19 +27,18 @@ app.steps["worker"].add(DjangoStructLogInitStep)
 
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender: Celery, **kwargs):
+    pass
     # Send all customer usage report to PostHog
-    sender.add_periodic_task(
-        crontab(hour=4, minute=0), simple.s(), name="send customer usage report"
-    )
+    # sender.add_periodic_task(
+    #     crontab(hour=4, minute=0), simple.s(), name="send customer usage report"
+    # )
 
 
-@app.task(ignore_result=True)
-def simple():
-    print("ok")
-    print("ok")
-    print("ok")
-    print("ok")
-    print("ok")
-    print("ok")
-    print("ok")
-    print("ok")
+@app.task(track_started=True, ignore_result=False, max_retries=0)
+def run_async_migration(migration_name: str):
+    from housewatch.async_migrations.runner import start_async_migration
+    from housewatch.models.async_migration import AsyncMigration
+    migration = AsyncMigration.objects.get(name=migration_name)
+    start_async_migration(migration)
+    
+    
