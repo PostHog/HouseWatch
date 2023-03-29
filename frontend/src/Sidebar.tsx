@@ -14,6 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { PageCacheHits } from './PageCacheHits';
 import SlowQueries from './SlowQueries';
 import Schema from './Schema';
+import SchemaTable from './SchemaTable';
 import {
     BrowserRouter as Router,
     Switch,
@@ -24,8 +25,7 @@ import {
 import { createBrowserHistory } from "history";
 let history = createBrowserHistory();
 
-// import InboxIcon from '@mui/icons-material/MoveToInbox';
-// import MailIcon from '@mui/icons-material/Mail';
+import { AsyncMigrations } from './AsyncMigrations';
 
 const drawerWidth = 240;
 
@@ -50,12 +50,16 @@ export default function PermanentDrawerLeft(): JSX.Element {
           <Route exact path="/">
             Welcome to HouseWatch
           </Route>
-          <Route path="/page_cache">
+          <Route exact path="/page_cache">
             <PageCacheHits />
           </Route>
-          <Route path="/slow_queries" component={Schema}>
+          <Route exact path="/slow_queries" component={SlowQueries}>
           </Route>
-          <Route path="/schema" component={Schema}>
+          <Route exact path="/schema" component={Schema}>
+          </Route>
+          <Route exact path="/schema/:table" component={SchemaTable}>
+          </Route>
+            <Route exact path="/async_migrations" component={AsyncMigrations}>
           </Route>
         </Switch>
         </div>
@@ -81,7 +85,9 @@ export default function PermanentDrawerLeft(): JSX.Element {
             {'path': '/slow_queries', 'text': 'Slow queries'},
             {'path': '/schema', 'text': 'Schema'},
             {'path': '/', 'text': 'Errors'},
-            {'path': '/page_cache', 'text': 'Page cache hits'}].map((item, index) => (
+            {'path': '/page_cache', 'text': 'Page cache hits'},
+            {'path': '/async_migrations', 'text': 'Async Migrations'},
+        ].map((item, index) => (
             <ListItem key={item.text} disablePadding>
               <ListItemButton onClick={() => history.push({pathname: item.path})} selected={false}>
                 <ListItemIcon>

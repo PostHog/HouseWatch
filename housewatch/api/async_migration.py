@@ -4,7 +4,6 @@ from rest_framework.decorators import action
 from housewatch.models.async_migration import AsyncMigration, MigrationStatus
 from housewatch.celery import run_async_migration
 from rest_framework.response import Response
-from housewatch.async_migrations.runner import trigger_migration
 
 
 logger = structlog.get_logger(__name__)

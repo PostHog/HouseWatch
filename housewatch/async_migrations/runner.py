@@ -9,7 +9,6 @@ from housewatch.async_migrations.async_migration_utils import (
     execute_op,
     mark_async_migration_as_running,
     process_error,
-    trigger_migration,
     update_async_migration,
 )
 from housewatch.models.async_migration import AsyncMigration, MigrationStatus
@@ -161,10 +160,10 @@ def attempt_migration_rollback(migration: AsyncMigration):
             op = ops[op_index]
             execute_op(op, query_id=str(uuid4))
         except Exception as e:
-            error = f"At operation {op_index} rollback failed with error:{str(e)}"
+            last_error = f"At operation {op_index} rollback failed with error:{str(e)}"
             process_error(
                 migration=migration,
-                error=error,
+                last_error=last_error,
                 rollback=False,
                 current_operation_index=op_index,
             )
