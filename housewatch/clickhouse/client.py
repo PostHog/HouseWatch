@@ -1,3 +1,4 @@
+from typing import Dict
 from clickhouse_driver import Client
 import os
     
@@ -12,8 +13,8 @@ client = Client(
     settings={"max_result_rows": "10000"},
 )
 
-def run_query(query: str):
-    result = client.execute(query,  with_column_types=True)
+def run_query(query: str, params: Dict[str, str | int] = {}):
+    result = client.execute(query % params, with_column_types=True)
     response = []
     for res in result[0]:
         item = {}

@@ -7,6 +7,7 @@ ORDER BY query_duration_ms DESC
 LIMIT %(limit)s
 """
 
+# TODO: Consider ThreadPoolReaderPageCacheHit and ThreadPoolReaderPageCacheMiss
 PAGE_CACHE_HIT_PERCENTAGE_SQL = """
 SELECT
     getMacro('replica') replica,
@@ -19,4 +20,14 @@ WHERE
     AND is_initial_query 
 GROUP BY replica
 ORDER BY replica
+"""
+
+QUERY_LOAD_SQL = """
+SELECT toStartOfDay(event_time) as day, %(math_func)s(%(load_metric)s) AS %(column_alias)s
+FROM clusterAllReplicas(%(cluster)s, system.query_log)
+WHERE
+    event_time >= toDateTime(%(date_from)s)
+    AND event_time <= toDateTime(%(date_to)s) 
+GROUP BY day
+ORDER BY day
 """
