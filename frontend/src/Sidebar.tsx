@@ -13,6 +13,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { PageCacheHits } from './PageCacheHits';
 import SlowQueries from './SlowQueries';
+import { AsyncMigrations } from './AsyncMigrations';
 // import InboxIcon from '@mui/icons-material/MoveToInbox';
 // import MailIcon from '@mui/icons-material/Mail';
 
@@ -36,6 +37,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
         <div>
         {page === 'Page cache hits' && <PageCacheHits />}
         {page === 'Slow queries' && <SlowQueries />}
+        {page === 'Async migrations' && <AsyncMigrations />}
         </div>
       </AppBar>
       <Drawer

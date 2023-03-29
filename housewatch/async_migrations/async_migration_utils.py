@@ -110,7 +110,7 @@ def update_async_migration(
 
 def process_error(
     migration: AsyncMigration,
-    error: str,
+    last_error: str,
     rollback: bool = True,
     status: int = MigrationStatus.Errored,
     current_operation_index: Optional[int] = None,
@@ -121,7 +121,7 @@ def process_error(
         migration=migration,
         current_operation_index=current_operation_index,
         status=status,
-        error=error,
+        last_error=last_error,
         finished_at=now(),
     )
 
@@ -131,9 +131,9 @@ def process_error(
     ):
         return
 
-    # from posthog.async_migrations.runner import attempt_migration_rollback
+    from housewatch.async_migrations.runner import attempt_migration_rollback
 
-    # attempt_migration_rollback(migration)
+    attempt_migration_rollback(migration)
 
 
 def trigger_migration(migration: AsyncMigration, fresh_start: bool = True):
