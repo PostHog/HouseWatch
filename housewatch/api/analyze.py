@@ -3,7 +3,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from housewatch.clickhouse.client import run_query, base_params
-from housewatch.clickhouse.queries.sql import SLOW_QUERIES_SQL, SCHEMA_SQL, SLOW_QUERIES_BY_HASH_SQL, COLUMN_SIZE_SQL, QUERY_EXECUTION_COUNT_SQL, PAGE_CACHE_HIT_PERCENTAGE_SQL, QUERY_LOAD_SQL, ERRORS_SQL
+from housewatch.clickhouse.queries.sql import SLOW_QUERIES_SQL, SCHEMA_SQL, SLOW_QUERIES_BY_HASH_SQL, COLUMN_SIZE_SQL, QUERY_EXECUTION_COUNT_SQL, PAGE_CACHE_HIT_PERCENTAGE_SQL, QUERY_LOAD_SQL, ERRORS_SQL, QUERY_MEMORY_USAGE_SQL, QUERY_READ_BYTES_SQL
 
 DEFAULT_TIME = 24 * 7 * 2
 
@@ -23,10 +23,26 @@ class AnalyzeViewset(GenericViewSet):
     @action(detail=True, methods=["GET"])
     def query_detail(self, request: Request, pk: str):
         hours = request.GET.get('hours', DEFAULT_TIME)
-        execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(query_hash=pk, hours=hours))
+        conditions = "and toString(normalized_query_hash) = '{}'".format(pk)
+        execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(hours=hours, conditions=conditions))
+        memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(hours=hours, conditions=conditions))
+        read_bytes = run_query(QUERY_READ_BYTES_SQL.format(hours=hours, conditions=conditions))
         return Response({
             'execution_count': execution_count,
+            'memory_usage': memory_usage,
+            'read_bytes': read_bytes
+        })
 
+    @action(detail=False, methods=["GET"])
+    def query_graphs(self, request: Request):
+        hours = request.GET.get('hours', DEFAULT_TIME)
+        execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(hours=hours, conditions=''))
+        memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(hours=hours, conditions=''))
+        read_bytes = run_query(QUERY_READ_BYTES_SQL.format(hours=hours, conditions=''))
+        return Response({
+            'execution_count': execution_count,
+            'memory_usage': memory_usage,
+            'read_bytes': read_bytes
         })
 
     @action(detail=False, methods=["GET"])

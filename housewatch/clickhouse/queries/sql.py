@@ -91,8 +91,47 @@ SELECT
 FROM
     clusterAllReplicas('posthog', system.query_log) 
 WHERE
-    toString(normalized_query_hash) = '{query_hash}' and
-    query_start_time > now() - interval {hours} hour
+    query_start_time > now() - interval {hours} hour and type = 2 and is_initial_query {conditions}
+GROUP BY toStartOfHour(query_start_time)
+ORDER BY toStartOfHour(query_start_time) DESC
+"""
+
+QUERY_MEMORY_USAGE_SQL = """
+SELECT
+    toUInt16(0) AS total,
+    '' AS total_readable,
+    toStartOfHour(now() - toIntervalHour(number)) AS day_start
+FROM numbers(dateDiff('hour', toStartOfHour(now()  - interval {hours} hour), now()))
+UNION ALL
+
+SELECT
+    sum(memory_usage) as total,
+    formatReadableSize(sum(memory_usage)) as total_readable,
+    toStartOfHour(query_start_time) as day_start
+FROM
+    clusterAllReplicas('posthog', system.query_log) 
+WHERE
+    event_time > now() - interval 12 hour and type = 2 and is_initial_query {conditions}
+GROUP BY toStartOfHour(query_start_time)
+ORDER BY toStartOfHour(query_start_time) DESC
+"""
+
+QUERY_READ_BYTES_SQL = """
+SELECT
+    toUInt16(0) AS total,
+    '' AS total_readable,
+    toStartOfHour(now() - toIntervalHour(number)) AS day_start
+FROM numbers(dateDiff('hour', toStartOfHour(now()  - interval {hours} hour), now()))
+UNION ALL
+
+SELECT
+    sum(read_bytes) as total,
+    formatReadableSize(sum(read_bytes)) as total_readable,
+    toStartOfHour(query_start_time) as day_start
+FROM
+    clusterAllReplicas('posthog', system.query_log) 
+WHERE
+    event_time > now() - interval 12 hour and type = 2 and is_initial_query {conditions}
 GROUP BY toStartOfHour(query_start_time)
 ORDER BY toStartOfHour(query_start_time) DESC
 """
