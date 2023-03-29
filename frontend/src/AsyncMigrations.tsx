@@ -7,7 +7,7 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import { Button, Input, LinearProgress, Tab, Tabs } from '@mui/material'
+import { Button, Input, LinearProgress, Tab, Tabs, TextField } from '@mui/material'
 import { TextareaAutosize } from '@mui/base'
 
 
@@ -101,31 +101,34 @@ export function AsyncMigrationsList(): JSX.Element {
 export function CreateNewAsyncMigration(): JSX.Element {
 
 
-    // const fetchAndUpdateAsyncMigrationsIfNeeded = async () => {
-    //     const response = await fetch('http://localhost:8000/api/async_migrations')
-    //     const responseJson = await response.json()
-    //     const results = responseJson.results
-    //     if (JSON.stringify(results) !== JSON.stringify(asyncMigrations)) {
-    //         setAsyncMigrations(results)
-    //     }
-    // }
+    const [asyncMigrationOperationsCount, setAsyncMigrationOperationsCount] = useState(1)
 
 
-    // useEffect(() => {
-    //     fetchAndUpdateAsyncMigrationsIfNeeded()
-    // }, [])
-
-    // setInterval(fetchAndUpdateAsyncMigrationsIfNeeded, 5000)
 
     return (
         <div>
-            <form style={{ textAlign: 'left', marginLeft: 20 }}>
-                <Input placeholder='Name'/><br/>
-                <Input style={{width: 200}} placeholder='Description'/><br/>
+            <form style={{ textAlign: 'left', marginLeft: 20, overflowY: 'auto' }}>
+                <h3>Details</h3>
 
-                <label for="lname">Last name:</label><br/>
-                <input type="text" id="lname" name="lname" value="Doe"/><br/><br/>
-                <input type="submit" value="Submit" />
+                <TextField placeholder='Name' style={{ width: 400 }}/><br/><br/>
+                <TextField placeholder='Description' multiline style={{ width: 800 }} rows={3} /><br/><br/>
+
+                <h3>Operations</h3>
+
+                {[...Array(asyncMigrationOperationsCount)].map((_, i) => (
+                    <span key={i}>
+                        <h4>#{i+1}</h4>
+                        <TextField placeholder='Operation SQL' multiline style={{ width: 800 }} rows={5}  /><br/><br/>
+                        <TextField placeholder='Rollback SQL' multiline style={{ width: 800 }} rows={5}  /><br/><br/>
+                    </span>
+                ))}
+                {asyncMigrationOperationsCount > 1 ? (
+                    <>
+                <Button variant='outlined' color='error' onClick={() => setAsyncMigrationOperationsCount(asyncMigrationOperationsCount - 1)}>-</Button>{' '}
+                </>
+                ): null}
+                <Button variant='outlined'  onClick={() => setAsyncMigrationOperationsCount(asyncMigrationOperationsCount + 1)}>+</Button>
+
                 
             </form>
 
@@ -153,7 +156,8 @@ export function AsyncMigrations(): JSX.Element {
             </Tabs>
             <br />
             {tab === "list" ? <AsyncMigrationsList /> : tab === "create" ? <CreateNewAsyncMigration /> : null}
-
+            <br />
+            <br />
         </div>
     )
 }
