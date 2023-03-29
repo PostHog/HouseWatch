@@ -30,3 +30,11 @@ class AsyncMigration(models.Model):
     task_id: models.CharField = models.CharField(max_length=100, null=True, blank=True, default="")
 
     started_at: models.DateTimeField = models.DateTimeField(null=True, blank=True)
+    
+    last_error: models.CharField = models.CharField(max_length=800, null=True, blank=True, default="")
+    
+    # list of SQL operations
+    operations: models.JSONField = models.JSONField(null=False, blank=False)
+    rollback_operations: models.JSONField = models.JSONField(null=True, blank=True)
+    
+    # TODO: Add precheck, healthcheck, postcheck
