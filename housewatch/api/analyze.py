@@ -3,7 +3,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from housewatch.clickhouse.client import run_query, base_params
-from housewatch.clickhouse.queries.sql import SLOW_QUERIES_SQL, SCHEMA_SQL, PAGE_CACHE_SQL, SLOW_QUERIES_BY_HASH_SQL, COLUMN_SIZE_SQL, QUERY_EXECUTION_COUNT_SQL
+from housewatch.clickhouse.queries.sql import SLOW_QUERIES_SQL, SCHEMA_SQL, SLOW_QUERIES_BY_HASH_SQL, COLUMN_SIZE_SQL, QUERY_EXECUTION_COUNT_SQL, PAGE_CACHE_HIT_PERCENTAGE_SQL, QUERY_LOAD_SQL, ERRORS_SQL
 
 DEFAULT_TIME = 24 * 7 * 2
 
@@ -15,9 +15,9 @@ class AnalyzeViewset(GenericViewSet):
     def slow_queries(self, request: Request):
         params = { **base_params, "limit": 100, "date_from": "now() - INTERVAL 2 WEEK"}
         if request.GET.get('by_hash'):
-            query_result = run_query(SLOW_QUERIES_BY_HASH_SQL % params)
+            query_result = run_query(SLOW_QUERIES_BY_HASH_SQL, params)
         else:
-            query_result = run_query(SLOW_QUERIES_SQL % params)
+            query_result = run_query(SLOW_QUERIES_SQL, params)
         return Response(query_result)
 
     @action(detail=True, methods=["GET"])
@@ -31,8 +31,10 @@ class AnalyzeViewset(GenericViewSet):
 
     @action(detail=False, methods=["GET"])
     def page_cache(self, request: Request):
-        ddd = run_query(PAGE_CACHE_SQL)
-        return Response(ddd)
+        params = { **base_params, "limit": 100, "date_to": "now()", "date_from": "now() - INTERVAL 2 WEEK"}
+        query_result = run_query(PAGE_CACHE_HIT_PERCENTAGE_SQL, params)
+    
+        return Response(query_result)
 
     @action(detail=False, methods=["GET"])
     def schema(self, request: Request):
@@ -43,3 +45,31 @@ class AnalyzeViewset(GenericViewSet):
     def column_size(self, request: Request, pk: str):
         query_result = run_query(COLUMN_SIZE_SQL)
         return Response(query_result)
+
+    @action(detail=False, methods=["GET"])
+    def query_load(self, request: Request):
+        params = { 
+            **base_params, 
+            "column_alias": "average_query_duration",
+            "math_func": "avg",
+            "load_metric": "query_duration_ms",
+            "date_to": "now()",
+            "date_from": "now() - INTERVAL 2 WEEK"
+        }
+        
+        query_result = run_query(QUERY_LOAD_SQL, params)
+    
+        return Response(query_result)
+
+    @action(detail=False, methods=["GET"])
+    def errors(self, request: Request):
+        params = { 
+            **base_params,
+            "date_from": "now() - INTERVAL 2 WEEK"
+        }
+        
+        query_result = run_query(ERRORS_SQL, params)
+    
+        return Response(query_result)
+
+    

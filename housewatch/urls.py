@@ -4,6 +4,7 @@ from django.urls import include, path
 from rest_framework_extensions.routers import ExtendedDefaultRouter
 from housewatch.api.instance import InstanceViewset
 from housewatch.api.analyze import AnalyzeViewset
+from housewatch.api.async_migration import AsyncMigrationsViewset
 from housewatch.views import healthz
 
 class DefaultRouterPlusPlus(ExtendedDefaultRouter):
@@ -16,7 +17,8 @@ class DefaultRouterPlusPlus(ExtendedDefaultRouter):
 
 router = DefaultRouterPlusPlus()
 router.register(r"api/instance", InstanceViewset, basename="instance")
-router.register(r"api/analyze", AnalyzeViewset, basename="instance")
+router.register(r"api/analyze", AnalyzeViewset, basename="analyze")
+router.register(r"api/async_migrations", AsyncMigrationsViewset, basename="async_migrations")
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("healthz", healthz, name="healthz"),

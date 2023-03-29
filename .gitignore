@@ -1,4 +1,5 @@
 env/
 charts
 __pycache__/
+node_modules
 housewatch.sqlite3

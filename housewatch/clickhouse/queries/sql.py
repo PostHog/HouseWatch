@@ -7,6 +7,39 @@ SLOW_QUERIES_SQL = """
     LIMIT %(limit)s
 """
 
+# TODO: Consider ThreadPoolReaderPageCacheHit and ThreadPoolReaderPageCacheMiss
+PAGE_CACHE_HIT_PERCENTAGE_SQL = """
+SELECT
+    getMacro('replica') replica,
+    (sum(ProfileEvents['OSReadChars']) - sum(ProfileEvents['OSReadBytes'])) / sum(ProfileEvents['OSReadChars']) AS page_cache_read_ratio
+FROM clusterAllReplicas(%(cluster)s, system.query_log)
+WHERE 
+    event_time >= toDateTime(%(date_from)s)
+    AND event_time <= toDateTime(%(date_to)s) 
+    AND type > 1
+    AND is_initial_query 
+GROUP BY replica
+ORDER BY replica
+"""
+
+QUERY_LOAD_SQL = """
+SELECT toStartOfDay(event_time) as day, %(math_func)s(%(load_metric)s) AS %(column_alias)s
+FROM clusterAllReplicas(%(cluster)s, system.query_log)
+WHERE
+    event_time >= toDateTime(%(date_from)s)
+    AND event_time <= toDateTime(%(date_to)s) 
+GROUP BY day
+ORDER BY day
+"""
+
+ERRORS_SQL = """
+SELECT name, count() count, max(last_error_time) max_last_error_time
+FROM clusterAllReplicas(%(cluster)s, system.errors)
+WHERE last_error_time > %(date_from)s
+GROUP BY name
+ORDER BY count DESC
+"""
+
 SLOW_QUERIES_BY_HASH_SQL = """
     SELECT any(query), avg(query_duration_ms) avg_query_duration, avg(result_rows) avg_result_rows, formatReadableSize(avg(result_bytes)) as avg_readable_bytes, toString(normalized_query_hash)
     FROM clusterAllReplicas(%(cluster)s, system.query_log) 

@@ -2,4 +2,6 @@
 
 set -e
 
-DEBUG=1 python manage.py runserver
+export DEBUG=1
+
+./bin/celery & python manage.py runserver
