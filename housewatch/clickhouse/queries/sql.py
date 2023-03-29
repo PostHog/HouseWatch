@@ -49,13 +49,13 @@ SLOW_QUERIES_BY_HASH_SQL = """
     LIMIT %(limit)s
 """
 
-SCHEMA_SQL = """
+TABLES_SQL = """
 SELECT name, formatReadableSize(total_bytes) as readable_bytes, total_bytes, total_rows FROM system.tables ORDER BY total_bytes DESC
 """
 
-COLUMN_SIZE_SQL = """
-SELECT table, name as column, formatReadableSize(data_compressed_bytes), formatReadableSize(data_uncompressed_bytes) FROM system.columns
-WHERE table = 'sharded_events'
+SCHEMA_SQL = """
+SELECT table, name as column, formatReadableSize(data_compressed_bytes) as compressed, formatReadableSize(data_uncompressed_bytes) as uncompressed FROM system.columns
+WHERE table = '%(table)s'
 GROUP BY table, column, data_compressed_bytes, data_uncompressed_bytes
 ORDER BY data_compressed_bytes DESC LIMIT 100
 """

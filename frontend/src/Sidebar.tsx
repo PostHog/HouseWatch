@@ -13,6 +13,17 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { PageCacheHits } from './PageCacheHits';
 import SlowQueries from './SlowQueries';
+import Schema from './Schema';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+
+  } from "react-router-dom";
+import { createBrowserHistory } from "history";
+let history = createBrowserHistory();
+
 // import InboxIcon from '@mui/icons-material/MoveToInbox';
 // import MailIcon from '@mui/icons-material/Mail';
 
@@ -23,6 +34,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
 
   return (
     <Box sx={{ display: 'flex' }}>
+    <Router>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -34,8 +46,18 @@ export default function PermanentDrawerLeft(): JSX.Element {
           </Typography>
         </Toolbar>
         <div>
-        {page === 'Page cache hits' && <PageCacheHits />}
-        {page === 'Slow queries' && <SlowQueries />}
+        <Switch>
+          <Route exact path="/">
+            Welcome to HouseWatch
+          </Route>
+          <Route path="/page_cache">
+            <PageCacheHits />
+          </Route>
+          <Route path="/slow_queries" component={Schema}>
+          </Route>
+          <Route path="/schema" component={Schema}>
+          </Route>
+        </Switch>
         </div>
       </AppBar>
       <Drawer
@@ -53,13 +75,19 @@ export default function PermanentDrawerLeft(): JSX.Element {
         <Toolbar />
         <Divider />
         <List>
-          {['Home', 'Async migrations', 'Slow queries', 'Schema', 'Errors', 'Page cache hits'].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => setPage(text)} selected={page === text}>
+          {[
+            {'path': '/', 'text': 'Home'},
+            {'path': '/', 'text': 'Async migrations'},
+            {'path': '/slow_queries', 'text': 'Slow queries'},
+            {'path': '/schema', 'text': 'Schema'},
+            {'path': '/', 'text': 'Errors'},
+            {'path': '/page_cache', 'text': 'Page cache hits'}].map((item, index) => (
+            <ListItem key={item.text} disablePadding>
+              <ListItemButton onClick={() => history.push({pathname: item.path})} selected={false}>
                 <ListItemIcon>
                   {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                 </ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemText primary={item.text} />
               </ListItemButton>
             </ListItem>
           ))}
@@ -71,6 +99,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
       >
         <Toolbar />
       </Box>
+    </Router> 
     </Box>
   );
 }
