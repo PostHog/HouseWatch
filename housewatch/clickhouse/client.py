@@ -11,3 +11,7 @@ client = Client(
     verify=os.getenv("CLICKHOUSE_VERIFY", True),
     settings={"max_result_rows": "10000"},
 )
+
+base_params = {
+    "cluster": os.getenv("CLICKHOUSE_CLUSTER", "posthog")
+}
