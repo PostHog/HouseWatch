@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
-import logging
 import os
 import sys
 from datetime import timedelta
@@ -18,12 +17,8 @@ from pathlib import Path
 from typing import Any, Callable, Optional
 
 import dj_database_url
-import sentry_sdk
 from django.core.exceptions import ImproperlyConfigured
 from kombu import Exchange, Queue
-from sentry_sdk.integrations.celery import CeleryIntegration
-from sentry_sdk.integrations.django import DjangoIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
 
 # TODO: Figure out why things dont work on cloud without debug
 DEBUG = os.getenv("DEBUG", "false").lower() in ["true", "1"]
@@ -245,7 +240,7 @@ EVENT_USAGE_CACHING_TTL = get_from_env("EVENT_USAGE_CACHING_TTL", 12 * 60 * 60, 
 
 
 if TEST or DEBUG:
-    REDIS_URL = get_from_env("REDIS_URL", "redis://localhost:6380")
+    REDIS_URL = get_from_env("REDIS_URL", "redis://localhost:6379")
 else:
     REDIS_URL = get_from_env("REDIS_URL")
 
@@ -283,40 +278,8 @@ if TEST:
     celery.current_app.conf.task_always_eager = True
     celery.current_app.conf.task_eager_propagates = True
 
-if TEST or DEBUG:
-    STRIPE_API_KEY = get_from_env("STRIPE_API_KEY", "stripe_12345678")
-    STRIPE_ACTIVATION_PRICE_ID = get_from_env("STRIPE_ACTIVATION_PRICE_ID", "price_1234567")
-    STRIPE_WEBHOOK_SECRET = get_from_env("STRIPE_WEBHOOK_SECRET", "wh_1234567")
-    MAILGUN_API_KEY = get_from_env("MAILGUN_API_KEY", "mg_1234567")
-    REVENUE_API_KEY = get_from_env("REVENUE_API_KEY", "api-key")
-else:
-    STRIPE_API_KEY = get_from_env("STRIPE_API_KEY")
-    STRIPE_ACTIVATION_PRICE_ID = get_from_env("STRIPE_ACTIVATION_PRICE_ID")
-    STRIPE_WEBHOOK_SECRET = get_from_env("STRIPE_WEBHOOK_SECRET")
 
-    MAILGUN_API_KEY = get_from_env("MAILGUN_API_KEY")
-    REVENUE_API_KEY = get_from_env("REVENUE_API_KEY", optional=True)
-
-
-STRIPE_API_VERSION = get_from_env("STRIPE_API_VERSION", "2022-08-01")
 
 POSTHOG_PROJECT_API_KEY = get_from_env("POSTHOG_PROJECT_API_KEY", "123456789")
 
 
-def sentry_init() -> None:
-    if not TEST and os.getenv("SENTRY_DSN"):
-        sentry_sdk.utils.MAX_STRING_LENGTH = 10_000_000
-        # https://docs.sentry.io/platforms/python/
-        sentry_logging = LoggingIntegration(level=logging.INFO, event_level=None)
-        sentry_sdk.init(
-            dsn=os.environ["SENTRY_DSN"],
-            environment=os.getenv("SENTRY_ENVIRONMENT", "production"),
-            integrations=[DjangoIntegration(), CeleryIntegration(), sentry_logging],
-            request_bodies="always",
-            sample_rate=1.0,
-            # Configures the sample rate for error events, in the range of 0.0 to 1.0. The default is 1.0 which means that 100% of error events are sent. If set to 0.1 only 10% of error events will be sent. Events are picked randomly.
-            send_default_pii=True,
-        )
-
-
-sentry_init()
