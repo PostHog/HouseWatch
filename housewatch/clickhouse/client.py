@@ -12,6 +12,17 @@ client = Client(
     settings={"max_result_rows": "10000"},
 )
 
+def run_query(query: str):
+    result = client.execute(query,  with_column_types=True)
+    response = []
+    for res in result[0]:
+        item = {}
+        for index, key in enumerate(result[1]):
+            item[key[0]] = res[index]
+        
+        response.append(item)
+    return response
+
 base_params = {
     "cluster": os.getenv("CLICKHOUSE_CLUSTER", "posthog")
 }
