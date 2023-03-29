@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -e
+
+DEBUG=1 python manage.py runserver

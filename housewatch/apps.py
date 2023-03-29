@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class HouseWatchConfig(AppConfig):
-    name = "HouseWatch"
+    name = "housewatch"
     verbose_name = "HouseWatch"
