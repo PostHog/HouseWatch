@@ -3,7 +3,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from housewatch.clickhouse.client import run_query, base_params
-from housewatch.clickhouse.queries.sql import SLOW_QUERIES_SQL, PAGE_CACHE_HIT_PERCENTAGE_SQL, QUERY_LOAD_SQL
+from housewatch.clickhouse.queries.sql import SLOW_QUERIES_SQL, PAGE_CACHE_HIT_PERCENTAGE_SQL, QUERY_LOAD_SQL, ERRORS_SQL
 
 class AnalyzeViewset(GenericViewSet):
     def list(self, request: Request) -> Response:
@@ -36,3 +36,16 @@ class AnalyzeViewset(GenericViewSet):
         query_result = run_query(QUERY_LOAD_SQL, params)
     
         return Response(query_result)
+
+    @action(detail=False, methods=["GET"])
+    def errors(self, request: Request):
+        params = { 
+            **base_params,
+            "date_from": "now() - INTERVAL 2 WEEK"
+        }
+        
+        query_result = run_query(ERRORS_SQL, params)
+    
+        return Response(query_result)
+
+    

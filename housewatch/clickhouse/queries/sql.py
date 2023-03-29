@@ -31,3 +31,11 @@ WHERE
 GROUP BY day
 ORDER BY day
 """
+
+ERRORS_SQL = """
+SELECT name, count() count, max(last_error_time) max_last_error_time
+FROM clusterAllReplicas(%(cluster)s, system.errors)
+WHERE last_error_time > %(date_from)s
+GROUP BY name
+ORDER BY count DESC
+"""
