@@ -52,13 +52,27 @@ ORDER BY count DESC
 """
 
 TABLES_SQL = """
-SELECT name, formatReadableSize(total_bytes) as readable_bytes, total_bytes, total_rows FROM system.tables ORDER BY total_bytes DESC
+SELECT
+    name,
+    formatReadableSize(total_bytes) as readable_bytes,
+    total_bytes,
+    total_rows,
+    engine,
+    partition_key
+FROM system.tables ORDER BY total_bytes DESC
 """
 
+
 SCHEMA_SQL = """
-SELECT table, name as column, data_compressed_bytes as compressed, formatReadableSize(data_compressed_bytes) as compressed_readable, formatReadableSize(data_uncompressed_bytes) as uncompressed FROM system.columns
+SELECT
+    table,
+    name as column,
+    type,
+    data_compressed_bytes as compressed,
+    formatReadableSize(data_compressed_bytes) as compressed_readable,
+    formatReadableSize(data_uncompressed_bytes) as uncompressed
+FROM system.columns
 WHERE table = '%(table)s'
-GROUP BY table, column, data_compressed_bytes, data_uncompressed_bytes
 ORDER BY data_compressed_bytes DESC
 LIMIT 100
 """

@@ -29,6 +29,7 @@ export default function CollapsibleTable({match}) {
     [],
     { interval: 3000 } // optional
     )
+    if(!queryDetail) return null
   return (
     <div style={{ height: 300, width: '100%', paddingTop: '5rem', marginBottom: '10rem', textAlign: 'left' }}>
         <code style={{textAlign: 'left'}}>{queryDetail.query.replace(/(\?)/g, ()=>{
