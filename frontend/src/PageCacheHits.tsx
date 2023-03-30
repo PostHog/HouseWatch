@@ -4,22 +4,29 @@ import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
-import { Gauge } from '@ant-design/plots';
+import { Gauge, Pie } from '@ant-design/plots';
+import { RingProgress } from '@ant-design/plots'
+import { Statistic, Card as AntdCard } from 'antd';
+
+interface NodeData {
+  node: string
+  page_cache_read_ratio: number
+  total_bytes_transferred: number
+  readable_bytes_transferred: number
+  space_used: number
+  free_space: number
+  total_space_available: number
+  readable_total_space_available: number
+  readable_space_used: number
+  readable_free_space: number
+}
 
 
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
-  >
-    •
-  </Box>
-);
 
-function BasicCard({ replica, percent }: { replica: string, percent: string }): JSX.Element {
+function BasicCard({ nodeData }: { nodeData: NodeData }): JSX.Element {
 
   const gaugeConfig = {
-    percent: percent,
+    percent: nodeData.page_cache_read_ratio,
     type: 'meter',
     innerRadius: 0.75,
     range: {
@@ -41,22 +48,84 @@ function BasicCard({ replica, percent }: { replica: string, percent: string }): 
     statistic: {
       content: {
         style: {
-          fontSize: '36px',
-          lineHeight: '36px',
+          fontSize: '24px',
+          lineHeight: '24px',
         },
       },
     },
     style: {
-      width: 400
+      height: 200,
+      float: 'left'
+    }
+  }
+
+  const ringConfig = {
+    height: 100,
+    width: 100,
+    autoFit: false,
+    percent: nodeData.space_used / nodeData.total_space_available,
+    color: ['#5B8FF9', '#E8EDF3'],
+  }
+
+  const data = [
+    {
+      type: 'Used disk space',
+      value: nodeData.space_used
+    },
+    {
+      type: 'Free disk space',
+      value: nodeData.free_space,
+      // alias: nodeData.readable_free_space
+    },
+  ];
+  const pieConfig = {
+    appendPadding: 10,
+    data,
+    angleField: 'value',
+    colorField: 'type',
+    radius: 0.9,
+    label: {
+      type: 'inner',
+      offset: '-30%',
+      content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
+      style: {
+        fontSize: 14,
+        textAlign: 'center',
+      },
+    },
+    interactions: [
+      {
+        type: 'element-active',
+      },
+    ],
+    style: {
+      height: 225,
+      float: 'left'
     }
   };
+
   return (
-    <Card sx={{ minWidth: 275 }}>
+    <Card sx={{ width: '95%', height: 350 }}>
       <CardContent>
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
-          {replica}
+          {nodeData.node}
         </Typography>
-        <Gauge {...gaugeConfig} />
+        <div style={{ display: 'flex' }}>
+
+          <Gauge {...gaugeConfig} />
+          <AntdCard bordered={true} style={{ marginTop: 'auto', marginBottom: 'auto', marginLeft: 20 }}>
+            <Statistic title="Data transferred to other shards" value={nodeData.readable_bytes_transferred}
+
+              precision={2}
+              valueStyle={{ color: '#3f8600' }}
+            />
+          </AntdCard>
+          <Pie {...pieConfig} />
+
+
+        </div>
+
+        {/* <RingProgress {...ringConfig} /> */}
       </CardContent>
     </Card>
   );
@@ -96,12 +165,12 @@ export function usePollingEffect(
 
 export function PageCacheHits(): JSX.Element {
 
-  const [pageCacheHitsPerReplica, setPageCacheHitsPerReplica] = useState([]);
+  const [clusterOverviewData, setClusterOverviewData] = useState([]);
 
-  const url = 'http://localhost:8000/api/analyze/page_cache'
+  const url = 'http://localhost:8000/api/analyze/cluster_overview'
 
   usePollingEffect(
-    async () => setPageCacheHitsPerReplica(await fetch(url)
+    async () => setClusterOverviewData(await fetch(url)
       .then(response => response.json())),
     [],
     { interval: 5000 } // optional
@@ -110,11 +179,11 @@ export function PageCacheHits(): JSX.Element {
 
   return (
     <div style={{ textAlign: 'left' }}>
-      <h2>Page cache hit rate percentage per node</h2>
+      <h2>Cluster overview</h2>
       <br />
       <div style={{ display: 'flex' }}>
-        {pageCacheHitsPerReplica.map(perReplica => (
-          <BasicCard replica={perReplica.replica} percent={perReplica.page_cache_read_ratio} />
+        {clusterOverviewData.map(nodeData => (
+          <BasicCard nodeData={nodeData} />
         ))}
       </div>
     </div>

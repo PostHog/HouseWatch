@@ -51,7 +51,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
           <Route exact path="/">
             Welcome to HouseWatch
           </Route>
-          <Route exact path="/page_cache">
+          <Route exact path="/cluster_overview">
             <PageCacheHits />
           </Route>
           <Route exact path="/slow_queries" component={SlowQueries}>
@@ -91,7 +91,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
             {'path': '/slow_queries', 'text': 'Slow queries'},
             {'path': '/running_queries', 'text': 'Running queries'},
             {'path': '/schema', 'text': 'Table sizes'},
-            {'path': '/page_cache', 'text': 'Page cache usage'},
+            {'path': '/cluster_overview', 'text': 'Cluster overview'},
             {'path': '/async_migrations', 'text': 'Async migrations'},
         ].map((item, index) => (
             <ListItem key={item.text} disablePadding>
