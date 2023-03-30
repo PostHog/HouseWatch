@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { usePollingEffect } from './PageCacheHits';
 import { Treemap } from '@ant-design/charts';
+import { Table } from 'antd'
 
 import {useHistory
   } from "react-router-dom";
@@ -79,6 +80,14 @@ export default function Schema() {
             history.push(`/schema/${event.data.data.name}`)
         }
       }} />
+    <Table
+        dataSource={schema.map(d => ({id: d.column, ...d}))}
+        columns={[
+            { dataIndex: 'name', title: 'Name' ,},
+            { dataIndex: 'readable_bytes', title: 'Size' },
+            { dataIndex: 'total_rows', title: 'Rows' }
+        ]}
+      />
     </div>
   );
 }

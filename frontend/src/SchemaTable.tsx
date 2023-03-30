@@ -4,6 +4,7 @@ import * as React from 'react';
 import { usePollingEffect } from './PageCacheHits';
 import { DataGrid } from '@mui/x-data-grid';
 import { Treemap } from '@ant-design/charts';
+import { Table } from 'antd'
 
 import {useHistory
   } from "react-router-dom";
@@ -85,11 +86,9 @@ export default function CollapsibleTable({match}) {
     <div style={{ height: 800, width: '100%' }}>
         <h2>Table: {match.params.table}</h2>
         {schema && <TableTreeMap schema={schema} />}
-      <DataGrid
-        rows={schema.map(d => ({id: d.column, ...d}))}
+      <Table
+        dataSource={schema.map(d => ({id: d.column, ...d}))}
         columns={schemaCols}
-        pageSize={100}
-        rowsPerPageOptions={[5]}
       />
     </div>
   );
