@@ -54,7 +54,7 @@ SELECT name, formatReadableSize(total_bytes) as readable_bytes, total_bytes, tot
 """
 
 SCHEMA_SQL = """
-SELECT table, name as column, formatReadableSize(data_compressed_bytes) as compressed, formatReadableSize(data_uncompressed_bytes) as uncompressed FROM system.columns
+SELECT table, name as column, data_compressed_bytes, formatReadableSize(data_compressed_bytes) as compressed, formatReadableSize(data_uncompressed_bytes) as uncompressed FROM system.columns
 WHERE table = '%(table)s'
 GROUP BY table, column, data_compressed_bytes, data_uncompressed_bytes
 ORDER BY data_compressed_bytes DESC LIMIT 100

@@ -92,9 +92,26 @@ export default function Schema() {
         .then(response => {
           return response.json()
         }
-        ).then(data => {
-          const configDataChildren = data.map(table => ({ name: table.name, value: table.total_bytes, ...table }))
-          const newConfigData = { ...config.data, children: configDataChildren }
+        )
+        .then(async (res) => {
+          const filteredRes = res.filter(r => r.total_bytes > 0)
+          const filteredResUrls = filteredRes.map(fr => `http://localhost:8000/api/analyze/${fr.name}/schema`).slice(0, 1)
+
+            const nestedRes = await Promise.all(filteredResUrls.map(e => fetch(e).then(res2 => res2.json())))
+            return [filteredRes, nestedRes]
+        })
+        .then(data => {
+          const res = data[0]
+          const nestedRes = data[1]
+          const configDataChildren = res.map(table => ({ name: table.name, value: table.total_bytes, ...table }))
+          const configDataChildrenWithDrilldown = configDataChildren.map(child => {
+            if (nestedRes[0][0].table == child.name) {
+              const nestedChildren = nestedRes[0].map(nR => ({name: nR.column, category: nR.table, value: nR.data_compressed_bytes}))
+              return {...child, children: nestedChildren}
+            }
+            return child
+          })
+          const newConfigData = { ...config.data, children: configDataChildrenWithDrilldown }
           setConfig({ ...config, data: newConfigData })
           return data
         })
