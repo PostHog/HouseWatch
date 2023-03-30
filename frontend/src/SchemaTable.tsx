@@ -87,10 +87,12 @@ export function ColumnsData({ table }: { table: string }): JSX.Element {
   return (
     <>
       {schema && <TableTreeMap schema={schema} dataIndex='column' />}
+      <div style={{marginTop: 50}}>
       <Table
         dataSource={schema.map(d => ({ id: d.column, ...d }))}
         columns={schemaCols}
       />
+      </div>
     </>
   )
 
@@ -126,10 +128,13 @@ export function PartsData({ table }: { table: string }): JSX.Element {
   return (
     <>
       {partData && <TableTreeMap schema={partData} dataIndex='part' />}
+      <div style={{marginTop: 50}}>
       <Table
         dataSource={partData.map(d => ({ id: d.part, ...d }))}
         columns={schemaCols}
+        size="middle"
       />
+      </div>
     </>
   )
 
