@@ -173,7 +173,7 @@ export function PageCacheHits(): JSX.Element {
     async () => setClusterOverviewData(await fetch(url)
       .then(response => response.json())),
     [],
-    { interval: 5000 } // optional
+    { interval: 60000 } // optional
   )
 
 
