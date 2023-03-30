@@ -16,7 +16,9 @@ from housewatch.clickhouse.queries.sql import (
     TABLES_SQL, 
     RUNNING_QUERIES_SQL, 
     KILL_QUERY_SQL,
-    PARTS_SQL
+    PARTS_SQL,
+    NODE_STORAGE_SQL,
+    NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL
 )
 DEFAULT_TIME = 24 * 7 * 2
 
@@ -57,13 +59,6 @@ class AnalyzeViewset(GenericViewSet):
             'memory_usage': memory_usage,
             'read_bytes': read_bytes
         })
-
-    @action(detail=False, methods=["GET"])
-    def page_cache(self, request: Request):
-        params = { **base_params, "limit": 100, "date_to": "now()", "date_from": "now() - INTERVAL 2 WEEK"}
-        query_result = run_query(PAGE_CACHE_HIT_PERCENTAGE_SQL, params)
-    
-        return Response(query_result)
 
     @action(detail=False, methods=["GET"])
     def tables(self, request: Request):
@@ -117,3 +112,35 @@ class AnalyzeViewset(GenericViewSet):
     def kill_query(self, request: Request, pk: str):
         query_result = run_query(KILL_QUERY_SQL, {'query_id': request.data['query_id']})
         return Response(query_result)
+    
+
+    @action(detail=False, methods=["GET"])
+    def page_cache(self, request: Request):
+        params = { **base_params, "limit": 100, "date_to": "now()", "date_from": "now() - INTERVAL 2 WEEK"}
+        query_result = run_query(PAGE_CACHE_HIT_PERCENTAGE_SQL, params)
+    
+        return Response(query_result)
+    
+    # @action(detail=False, methods=["GET"])
+    # def node_storage(self, request: Request):
+    #     query_result = run_query(NODE_STORAGE_SQL, {})
+    #     return Response(query_result)
+    
+        
+    # @action(detail=False, methods=["GET"])
+    # def node_data_transfer(self, request: Request):
+    #     return Response(query_result)
+    
+    @action(detail=False, methods=["GET"])
+    def cluster_overview(self, request: Request):
+        params = { **base_params, "limit": 100, "date_to": "now()", "date_from": "now() - INTERVAL 2 WEEK"}
+        page_cache_query_result = run_query(PAGE_CACHE_HIT_PERCENTAGE_SQL, params)
+        data_transfer_query_result = run_query(NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL, {})
+        storage_query_result = run_query(NODE_STORAGE_SQL, {})
+        
+        full_result = []
+        for i in range(len(storage_query_result)):
+            node_result = { **page_cache_query_result[i], **data_transfer_query_result[i], **storage_query_result[i] }
+            full_result.append(node_result)
+
+        return Response(full_result)

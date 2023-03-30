@@ -10,7 +10,7 @@ SLOW_QUERIES_SQL = """
 # TODO: Consider ThreadPoolReaderPageCacheHit and ThreadPoolReaderPageCacheMiss
 PAGE_CACHE_HIT_PERCENTAGE_SQL = """
 SELECT
-    getMacro('replica') replica,
+    getMacro('replica') node,
     (sum(ProfileEvents['OSReadChars']) - sum(ProfileEvents['OSReadBytes'])) / sum(ProfileEvents['OSReadChars']) AS page_cache_read_ratio
 FROM clusterAllReplicas(%(cluster)s, system.query_log)
 WHERE 
@@ -18,8 +18,8 @@ WHERE
     AND event_time <= toDateTime(%(date_to)s) 
     AND type > 1
     AND is_initial_query 
-GROUP BY replica
-ORDER BY replica
+GROUP BY node
+ORDER BY node
 """
 
 QUERY_LOAD_SQL = """
@@ -151,4 +151,27 @@ SELECT query, elapsed, read_rows, total_rows_approx, formatReadableSize(memory_u
 
 KILL_QUERY_SQL = """
     KILL QUERY where query_id = '%(query_id)s'
+"""
+
+NODE_STORAGE_SQL = """
+select 
+    getMacro('replica') node, 
+    sum(total_space) space_used, 
+    sum(free_space) free_space, 
+    (space_used + free_space) total_space_available,
+    formatReadableSize(total_space_available) readable_total_space_available,
+    formatReadableSize(space_used) readable_space_used,
+    formatReadableSize(free_space) readable_free_space
+from clusterAllReplicas('posthog', system.disks)
+where type = 'local'
+group by node
+order by node
+"""
+
+NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL = """
+select getMacro('replica') node, sum(read_bytes) total_bytes_transferred, formatReadableSize(total_bytes_transferred) as readable_bytes_transferred
+from clusterAllReplicas('posthog', system.query_log)
+where is_initial_query != 0 and type = 2 
+group by node
+order by node
 """
