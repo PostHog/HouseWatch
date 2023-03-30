@@ -14,6 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { PageCacheHits } from './PageCacheHits';
 import SlowQueries from './SlowQueries';
 import Schema from './Schema';
+import QueryDetail from './QueryDetail';
 import SchemaTable from './SchemaTable';
 import {
     BrowserRouter as Router,
@@ -25,6 +26,7 @@ import {
   } from "react-router-dom";
 
 import { AsyncMigrations } from './AsyncMigrations';
+import RunningQueries from './RunningQueries';
 
 const drawerWidth = 240;
 
@@ -37,30 +39,35 @@ export default function PermanentDrawerLeft(): JSX.Element {
       <CssBaseline />
       <AppBar
         position='absolute'
-        sx={{ width: `calc(100% - ${drawerWidth}px)`, height: '100%', backgroundColor: '#eeefe8', color: 'black' }}
+        sx={{ width: `calc(100% - ${drawerWidth}px)`, height: '100%', backgroundColor: '#f4f5ed', color: 'black' }}
       >
-        <Toolbar sx={{ backgroundColor: '#151515', color: '#eeefe8', position: 'fixed', width: '100%', zIndex: 10 }}>
+        <Toolbar sx={{ backgroundColor: '#151515', color: '#f4f5ed', position: 'fixed', width: '100%', zIndex: 10 }}>
           <Typography variant="h5" noWrap component="div" sx={{ fontWeight: 700 }}>
             HouseWatch
           </Typography>
         </Toolbar>
-        <div style={{padding: 12, backgroundColor: '#eeefe8', marginTop: 75 }}>
-          <Switch>
-            <Route exact path="/">
-              {/* Welcome to HouseWatch */}
-            </Route>
-            <Route exact path="/page_cache">
-              <PageCacheHits />
-            </Route>
-            <Route exact path="/slow_queries" component={SlowQueries}>
-            </Route>
-            <Route exact path="/schema" component={Schema}>
-            </Route>
-            <Route exact path="/schema/:table" component={SchemaTable}>
-            </Route>
-            <Route exact path="/async_migrations" component={AsyncMigrations}>
-            </Route>
-          </Switch>
+        <div style={{padding: 12, backgroundColor: '#f4f5ed', marginTop: 75 }}>
+        <Switch>
+          <Route exact path="/">
+            Welcome to HouseWatch
+          </Route>
+          <Route exact path="/page_cache">
+            <PageCacheHits />
+          </Route>
+          <Route exact path="/slow_queries" component={SlowQueries}>
+          </Route>
+          <Route exact path="/schema" component={Schema}>
+          </Route>
+          <Route exact path="/schema/:table" component={SchemaTable}>
+          </Route>
+
+          <Route exact path="/query/:query_hash" component={QueryDetail}>
+          </Route>
+          <Route exact path="/async_migrations" component={AsyncMigrations}>
+          </Route>
+          <Route exact path="/running_queries" component={RunningQueries}>
+          </Route>
+        </Switch>
         </div>
       </AppBar>
       <Drawer
@@ -70,7 +77,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
-            backgroundColor: "#eeefe8"
+            backgroundColor: "#f4f5ed"
           },
         }}
         variant="permanent"
@@ -80,15 +87,15 @@ export default function PermanentDrawerLeft(): JSX.Element {
         {/* <Divider /> */}
         <List sx={{ color: "black" }}>
           {[
-            { 'path': '/', 'text': 'Home' },
-            { 'path': '/slow_queries', 'text': 'Slow queries' },
-            { 'path': '/schema', 'text': 'Schema' },
-            { 'path': '/errors', 'text': 'Errors' },
-            { 'path': '/page_cache', 'text': 'Page cache hits' },
-            { 'path': '/async_migrations', 'text': 'Async Migrations' },
-          ].map((item, index) => (
-            <ListItem key={item.text} disablePadding sx={{ fontWeight: 700, fontSize: 16 }}>
-              <ListItemButton onClick={() => history.push({ pathname: item.path })}>
+            {'path': '/', 'text': 'Home'},
+            {'path': '/slow_queries', 'text': 'Slow queries'},
+            {'path': '/running_queries', 'text': 'Running queries'},
+            {'path': '/schema', 'text': 'Table sizes'},
+            {'path': '/page_cache', 'text': 'Page cache usage'},
+            {'path': '/async_migrations', 'text': 'Async migrations'},
+        ].map((item, index) => (
+            <ListItem key={item.text} disablePadding>
+              <ListItemButton onClick={() => history.push({pathname: item.path})} selected={false}>
                 <ListItemIcon>
                   {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                 </ListItemIcon>

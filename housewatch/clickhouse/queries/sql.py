@@ -1,6 +1,6 @@
 # TODO: Add enum mapping dict for query `type`
 SLOW_QUERIES_SQL = """
-    SELECT toUInt8(type) as query_type, query, query_duration_ms, result_rows, formatReadableSize(result_bytes) as readable_bytes, toString(normalized_query_hash)
+    SELECT toUInt8(type) as query_type, query, query_duration_ms, result_rows, formatReadableSize(result_bytes) as readable_bytes, toString(normalized_query_hash) as normalized_query_hash
     FROM clusterAllReplicas(%(cluster)s, system.query_log) 
     WHERE is_initial_query AND event_time > %(date_from)s
     ORDER BY query_duration_ms DESC
@@ -54,10 +54,19 @@ SELECT name, formatReadableSize(total_bytes) as readable_bytes, total_bytes, tot
 """
 
 SCHEMA_SQL = """
-SELECT table, name as column, data_compressed_bytes, formatReadableSize(data_compressed_bytes) as compressed, formatReadableSize(data_uncompressed_bytes) as uncompressed FROM system.columns
+SELECT table, name as column, data_compressed_bytes as compressed, formatReadableSize(data_compressed_bytes) as compressed_readable, formatReadableSize(data_uncompressed_bytes) as uncompressed FROM system.columns
 WHERE table = '%(table)s'
 GROUP BY table, column, data_compressed_bytes, data_uncompressed_bytes
-ORDER BY data_compressed_bytes DESC LIMIT 100
+ORDER BY data_compressed_bytes DESC
+LIMIT 100
+"""
+
+PARTS_SQL = """
+SELECT name as part, data_compressed_bytes as compressed, formatReadableSize(data_compressed_bytes) AS compressed_readable, formatReadableSize(data_uncompressed_bytes) as uncompressed
+FROM system.parts
+WHERE table = '%(table)s'
+ORDER BY data_compressed_bytes DESC 
+LIMIT 100
 """
 
 PAGE_CACHE_SQL = """
@@ -93,7 +102,7 @@ FROM
 WHERE
     query_start_time > now() - interval {hours} hour and type = 2 and is_initial_query {conditions}
 GROUP BY toStartOfHour(query_start_time)
-ORDER BY toStartOfHour(query_start_time) DESC
+ORDER BY toStartOfHour(query_start_time) ASC
 """
 
 QUERY_MEMORY_USAGE_SQL = """
@@ -113,7 +122,7 @@ FROM
 WHERE
     event_time > now() - interval 12 hour and type = 2 and is_initial_query {conditions}
 GROUP BY toStartOfHour(query_start_time)
-ORDER BY toStartOfHour(query_start_time) DESC
+ORDER BY toStartOfHour(query_start_time) ASC
 """
 
 QUERY_READ_BYTES_SQL = """
@@ -133,5 +142,13 @@ FROM
 WHERE
     event_time > now() - interval 12 hour and type = 2 and is_initial_query {conditions}
 GROUP BY toStartOfHour(query_start_time)
-ORDER BY toStartOfHour(query_start_time) DESC
+ORDER BY toStartOfHour(query_start_time) ASC
+"""
+
+RUNNING_QUERIES_SQL = """
+SELECT query, elapsed, read_rows, total_rows_approx, formatReadableSize(memory_usage) as memory_usage, query_id FROM system.processes ORDER BY elapsed DESC
+"""
+
+KILL_QUERY_SQL = """
+    KILL QUERY where query_id = '%(query_id)s'
 """

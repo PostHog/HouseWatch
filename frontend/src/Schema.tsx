@@ -3,61 +3,24 @@
 import React, { useState } from 'react';
 import { usePollingEffect } from './PageCacheHits';
 import { Treemap } from '@ant-design/charts';
+import { Table } from 'antd'
 
+import {useHistory
+  } from "react-router-dom";
 
 export default function Schema() {
+
+  const history = useHistory()
   const testSchemaData = {
     name: "root",
     children: []
-    // children: [
-    //   {
-    //     "name": "办公用品",
-    //     "children": [
-    //       {
-    //         "name": "容器，箱子",
-    //         "value": 1111987,
-    //         "children": [
-    //           {
-    //             "date": "2010/10/13",
-    //             "value": 261,
-    //             "category": "办公用品",
-    //             "subcategory": "容器，箱子",
-    //             "name": "Eldon Base for stackable storage shelf, platinum"
-    //           },
-    //           {
-    //             "date": "2012/5/7",
-    //             "value": 236,
-    //             "category": "办公用品",
-    //             "subcategory": "容器，箱子",
-    //             "name": "Filing/Storage Totes and Swivel Casters"
-    //           },
-    //         ]
-    //       },
-    //       {
-    //         "name": "家具产品",
-    //         "children": [
-    //           {
-    //             "name": "办公装饰品",
-    //             "value": 708875,
-    //             "children": [
-    //               {
-    //                 "date": "2011/7/15",
-    //                 "value": 2808,
-    //                 "category": "家具产品",
-    //                 "subcategory": "办公装饰品",
-    //                 "name": "\"Tenex Contemporary Contur Chairmats for Low and Medium Pile Carpet, Computer, 39\"\" x 49\"\"\""
-    //               },
-    //             ]
-    //           }
-    //         ]}
-    //       ]
-    //     }]
   }
 
   const [schema, setSchema] = useState([]);
   const defaultConfig = {
     data: testSchemaData,
     colorField: 'name',
+    style: {cursor: 'pointer'},
     label: {
       style: {
         fill: 'black',
@@ -70,6 +33,10 @@ export default function Schema() {
       breadCrumb: {
         rootText: 'Start over',
       },
+    },
+    onNodeClick: (event, node) => {
+        console.log(event, node)
+
     },
     tooltip: {
       formatter: (v) => {
@@ -106,7 +73,7 @@ export default function Schema() {
           const configDataChildren = res.map(table => ({ name: table.name, value: table.total_bytes, ...table }))
           const configDataChildrenWithDrilldown = configDataChildren.map(child => {
             if (nestedRes[0][0].table == child.name) {
-              const nestedChildren = nestedRes[0].map(nR => ({name: nR.column, category: nR.table, value: nR.data_compressed_bytes}))
+              const nestedChildren = nestedRes[0].map(nR => ({name: nR.column, category: nR.table, value: nR.compressed}))
               return {...child, children: nestedChildren}
             }
             return child
@@ -125,7 +92,28 @@ export default function Schema() {
 
   return (
     <div>
-      <Treemap {...config} />
+      <h2 style={{ textAlign: 'left' }}>Table sizes</h2>
+      <Treemap {...config}   onEvent={(node, event) => {
+        if(event.type === 'element:click') {
+            history.push(`/schema/${event.data.data.name}`)
+        }
+      }} />
+    <Table
+        dataSource={schema.map(d => ({id: d.column, ...d}))}
+        onRow={(table, rowIndex) => {
+            return {
+              onClick: (event) => {
+                history.push(`/schema/${table.name}`)
+              }
+            }
+        }}
+        rowClassName={() => 'cursor-pointer'}
+        columns={[
+            { dataIndex: 'name', title: 'Name' ,},
+            { dataIndex: 'readable_bytes', title: 'Size' },
+            { dataIndex: 'total_rows', title: 'Rows' }
+        ]}
+      />
     </div>
   );
 }
