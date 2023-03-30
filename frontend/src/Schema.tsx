@@ -73,14 +73,14 @@ export default function Schema() {
           const configDataChildren = res.map(table => ({ name: table.name, value: table.total_bytes, ...table }))
           const configDataChildrenWithDrilldown = configDataChildren.map(child => {
             if (nestedRes[0][0].table == child.name) {
-              const nestedChildren = nestedRes[0].map(nR => ({name: nR.column, category: nR.table, value: nR.compressed}))
-              return {...child, children: nestedChildren}
+              const nestedChildren = nestedRes[0].map(nR => ({ name: nR.column, category: nR.table, value: nR.compressed }))
+              return { ...child, children: nestedChildren }
             }
             return child
           })
           const newConfigData = { ...config.data, children: configDataChildrenWithDrilldown }
           setConfig({ ...config, data: newConfigData })
-          return data
+          return res
         })
         .catch(err => {
           return []
@@ -92,28 +92,33 @@ export default function Schema() {
 
   return (
     <div>
-      <h2 style={{ textAlign: 'left' }}>Table sizes</h2>
-      <Treemap {...config}   onEvent={(node, event) => {
-        if(event.type === 'element:click') {
+      <h2 style={{ textAlign: 'left', fontWeight: 500 }}>Largest tables by data size</h2>
+      <div style={{ marginBottom: 50}}>
+        <Treemap {...config} onEvent={(node, event) => {
+          if (event.type === 'element:click') {
             history.push(`/schema/${event.data.data.name}`)
-        }
-      }} />
-    <Table
-        dataSource={schema.map(d => ({id: d.column, ...d}))}
-        onRow={(table, rowIndex) => {
+          }
+        }} />
+      </div>
+      <div>
+        <h2 style={{textAlign: 'left', fontWeight: 500}}>All tables</h2>
+        <Table
+          dataSource={schema}
+          onRow={(table, rowIndex) => {
             return {
               onClick: (event) => {
                 history.push(`/schema/${table.name}`)
               }
             }
-        }}
-        rowClassName={() => 'cursor-pointer'}
-        columns={[
-            { dataIndex: 'name', title: 'Name' ,},
+          }}
+          rowClassName={() => 'cursor-pointer'}
+          columns={[
+            { dataIndex: 'name', title: 'Name', },
             { dataIndex: 'readable_bytes', title: 'Size' },
             { dataIndex: 'total_rows', title: 'Rows' }
-        ]}
-      />
+          ]}
+        />
+      </div>
     </div>
   );
 }
