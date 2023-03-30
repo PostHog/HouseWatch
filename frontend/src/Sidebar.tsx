@@ -39,14 +39,14 @@ export default function PermanentDrawerLeft(): JSX.Element {
       <CssBaseline />
       <AppBar
         position='absolute'
-        sx={{ width: `calc(100% - ${drawerWidth}px)`, height: '100%', backgroundColor: '#eeefe8', color: 'black' }}
+        sx={{ width: `calc(100% - ${drawerWidth}px)`, height: '100%', backgroundColor: '#f4f5ed', color: 'black' }}
       >
-        <Toolbar sx={{ backgroundColor: '#151515', color: '#eeefe8', position: 'fixed', width: '100%', zIndex: 10 }}>
+        <Toolbar sx={{ backgroundColor: '#151515', color: '#f4f5ed', position: 'fixed', width: '100%', zIndex: 10 }}>
           <Typography variant="h5" noWrap component="div" sx={{ fontWeight: 700 }}>
             HouseWatch
           </Typography>
         </Toolbar>
-        <div style={{padding: 12, backgroundColor: '#eeefe8', marginTop: 75 }}>
+        <div style={{padding: 12, backgroundColor: '#f4f5ed', marginTop: 75 }}>
         <Switch>
           <Route exact path="/">
             Welcome to HouseWatch
@@ -77,7 +77,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
-            backgroundColor: "#eeefe8"
+            backgroundColor: "#f4f5ed"
           },
         }}
         variant="permanent"
