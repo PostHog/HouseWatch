@@ -135,3 +135,11 @@ WHERE
 GROUP BY toStartOfHour(query_start_time)
 ORDER BY toStartOfHour(query_start_time) DESC
 """
+
+RUNNING_QUERIES_SQL = """
+SELECT query, elapsed, read_rows, total_rows_approx, formatReadableSize(memory_usage) as memory_usage FROM system.processes ORDER BY elapsed DESC
+"""
+
+KILL_QUERY = """
+    KILL QUERY where 
+"""

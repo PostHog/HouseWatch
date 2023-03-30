@@ -3,7 +3,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from housewatch.clickhouse.client import run_query, base_params
-from housewatch.clickhouse.queries.sql import SLOW_QUERIES_SQL, SCHEMA_SQL, SLOW_QUERIES_BY_HASH_SQL, QUERY_EXECUTION_COUNT_SQL, PAGE_CACHE_HIT_PERCENTAGE_SQL, QUERY_LOAD_SQL, ERRORS_SQL, QUERY_MEMORY_USAGE_SQL, QUERY_READ_BYTES_SQL, TABLES_SQL
+from housewatch.clickhouse.queries.sql import SLOW_QUERIES_SQL, SCHEMA_SQL, SLOW_QUERIES_BY_HASH_SQL, QUERY_EXECUTION_COUNT_SQL, PAGE_CACHE_HIT_PERCENTAGE_SQL, QUERY_LOAD_SQL, ERRORS_SQL, QUERY_MEMORY_USAGE_SQL, QUERY_READ_BYTES_SQL, TABLES_SQL, RUNNING_QUERIES_SQL
 
 DEFAULT_TIME = 24 * 7 * 2
 
@@ -89,3 +89,8 @@ class AnalyzeViewset(GenericViewSet):
         return Response(query_result)
 
     
+    @action(detail=False, methods=["GET"])
+    def running_queries(self, request: Request):
+        query_result = run_query(RUNNING_QUERIES_SQL)
+
+        return Response(query_result)

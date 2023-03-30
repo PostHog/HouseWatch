@@ -25,6 +25,7 @@ import {
   } from "react-router-dom";
 
 import { AsyncMigrations } from './AsyncMigrations';
+import RunningQueries from './RunningQueries';
 
 const drawerWidth = 240;
 
@@ -58,7 +59,9 @@ export default function PermanentDrawerLeft(): JSX.Element {
           </Route>
           <Route exact path="/schema/:table" component={SchemaTable}>
           </Route>
-            <Route exact path="/async_migrations" component={AsyncMigrations}>
+          <Route exact path="/async_migrations" component={AsyncMigrations}>
+          </Route>
+          <Route exact path="/running_queries" component={RunningQueries}>
           </Route>
         </Switch>
         </div>
@@ -81,6 +84,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
           {[
             {'path': '/', 'text': 'Home'},
             {'path': '/slow_queries', 'text': 'Slow queries'},
+            {'path': '/running_queries', 'text': 'Running Queries'},
             {'path': '/schema', 'text': 'Schema'},
             {'path': '/', 'text': 'Errors'},
             {'path': '/page_cache', 'text': 'Page cache hits'},
