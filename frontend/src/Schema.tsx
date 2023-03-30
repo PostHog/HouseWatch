@@ -82,6 +82,14 @@ export default function Schema() {
       }} />
     <Table
         dataSource={schema.map(d => ({id: d.column, ...d}))}
+        onRow={(table, rowIndex) => {
+            return {
+              onClick: (event) => {
+                history.push(`/schema/${table.name}`)
+              }
+            }
+        }}
+        rowClassName={() => 'cursor-pointer'}
         columns={[
             { dataIndex: 'name', title: 'Name' ,},
             { dataIndex: 'readable_bytes', title: 'Size' },

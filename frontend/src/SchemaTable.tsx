@@ -6,8 +6,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { Treemap } from '@ant-design/charts';
 import { Table } from 'antd'
 
-import {useHistory
-  } from "react-router-dom";
+import {useHistory} from "react-router-dom";
 
 
 

@@ -3,10 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { usePollingEffect } from './PageCacheHits';
 // import { DataGrid } from '@mui/x-data-grid';
 import { Table } from 'antd';
+import {useHistory} from "react-router-dom";
 
 
 
 export default function CollapsibleTable() {
+    const history = useHistory()
     const rows = [
         { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
         { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
@@ -61,6 +63,14 @@ export default function CollapsibleTable() {
   return (
       <Table
         columns={slowQueriesColumns}
+        onRow={(query, rowIndex) => {
+            return {
+              onClick: (event) => {
+                history.push(`/query/${query.normalized_query_hash}`)
+              }
+            }
+        }}
+        rowClassName={() => 'cursor-pointer'}
         // expandable={{
         // expandedRowRender: (record) => <p style={{ margin: 0 }}>{record.description}</p>,
         // rowExpandable: (record) => record.name !== 'Not Expandable',

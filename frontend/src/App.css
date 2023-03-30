@@ -36,3 +36,5 @@
     transform: rotate(360deg);
   }
 }
+
+.cursor-pointer { cursor: pointer }
