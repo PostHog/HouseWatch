@@ -16,6 +16,7 @@ import SlowQueries from './SlowQueries';
 import Schema from './Schema';
 import QueryDetail from './QueryDetail';
 import SchemaTable from './SchemaTable';
+import AllQueryGraphs from './AllQueryGraphs';
 import Errors from './Errors';
 import {
     BrowserRouter as Router,
@@ -49,8 +50,8 @@ export default function PermanentDrawerLeft(): JSX.Element {
         </Toolbar>
         <div style={{padding: 12, backgroundColor: '#f4f5ed', marginTop: 75 }}>
         <Switch>
-          <Route exact path="/">
-            Welcome to HouseWatch
+          <Route exact path="/" component={AllQueryGraphs}>
+            {/* Welcome to HouseWatch */}
           </Route>
           <Route exact path="/cluster_overview">
             <PageCacheHits />
