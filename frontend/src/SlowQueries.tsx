@@ -31,7 +31,7 @@ export default function CollapsibleTable() {
         { title: 'Total iops', dataIndex: 'total_read_bytes', sorter: (a, b) => a.total_read_bytes - b.total_read_bytes},
       ]
 
-    const [slowQueries, setSlowQueries] = useState([]);
+    const [slowQueries, setSlowQueries] = useState(false);
 
     const url = 'http://localhost:8000/api/analyze/slow_queries'
 
@@ -60,6 +60,7 @@ export default function CollapsibleTable() {
         }}
         rowClassName={() => 'cursor-pointer'}
         dataSource={slowQueries}
+        loading={!slowQueries}
         size="small"
       />
       </div>
