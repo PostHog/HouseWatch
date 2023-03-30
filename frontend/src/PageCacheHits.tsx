@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { Gauge, Pie } from '@ant-design/plots';
 import { RingProgress } from '@ant-design/plots'
-import { Statistic, Card as AntdCard } from 'antd';
+import { Statistic, Card as AntdCard, Spin } from 'antd';
 
 interface NodeData {
   node: string
@@ -105,7 +105,7 @@ function BasicCard({ nodeData }: { nodeData: NodeData }): JSX.Element {
   };
 
   return (
-    <Card sx={{ width: '95%', height: 350 }}>
+    <Card sx={{ width: '95%', height: 350, display: 'block' }}>
       <CardContent>
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
           {nodeData.node}
@@ -173,7 +173,7 @@ export function PageCacheHits(): JSX.Element {
     async () => setClusterOverviewData(await fetch(url)
       .then(response => response.json())),
     [],
-    { interval: 5000 } // optional
+    { interval: 60000 } // optional
   )
 
 
@@ -181,10 +181,18 @@ export function PageCacheHits(): JSX.Element {
     <div style={{ textAlign: 'left' }}>
       <h2>Cluster overview</h2>
       <br />
-      <div style={{ display: 'flex' }}>
-        {clusterOverviewData.map(nodeData => (
-          <BasicCard nodeData={nodeData} />
-        ))}
+      <div style={{ display: 'block' }}>
+        {clusterOverviewData.length === 0 ? <Spin /> : (
+          <>
+            {clusterOverviewData.map(nodeData => (
+              <>
+                <BasicCard nodeData={nodeData} />
+                <br />
+              </>
+            ))}
+          </>
+        )}
+
       </div>
     </div>
 
