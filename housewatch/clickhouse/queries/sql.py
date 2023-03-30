@@ -57,7 +57,16 @@ SCHEMA_SQL = """
 SELECT table, name as column, formatReadableSize(data_compressed_bytes) as compressed, formatReadableSize(data_uncompressed_bytes) as uncompressed FROM system.columns
 WHERE table = '%(table)s'
 GROUP BY table, column, data_compressed_bytes, data_uncompressed_bytes
-ORDER BY data_compressed_bytes DESC LIMIT 100
+ORDER BY data_compressed_bytes DESC
+LIMIT 100
+"""
+
+PARTS_SQL = """
+select name, data_compressed_bytes, formatReadableSize(data_compressed_bytes) AS readable_bytes
+FROM system.parts
+WHERE table = '%(table)s'
+ORDER BY data_compressed_bytes DESC 
+LIMIT 100
 """
 
 PAGE_CACHE_SQL = """

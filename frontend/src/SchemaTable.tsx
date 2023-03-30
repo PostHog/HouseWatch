@@ -29,7 +29,6 @@ export default function CollapsibleTable({match}) {
         { field: 'compressed', headerName: 'Compressed', width: 200},
         { field: 'uncompressed', headerName: 'Uncompressed', width: 200}
     ]
-    console.log('slow queries123', slowQueries)
   return (
     <div style={{ height: 800, width: '100%' }}>
         <h2>Table: {match.params.table}</h2>
