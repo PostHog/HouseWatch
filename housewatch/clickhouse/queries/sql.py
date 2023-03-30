@@ -137,9 +137,9 @@ ORDER BY toStartOfHour(query_start_time) DESC
 """
 
 RUNNING_QUERIES_SQL = """
-SELECT query, elapsed, read_rows, total_rows_approx, formatReadableSize(memory_usage) as memory_usage FROM system.processes ORDER BY elapsed DESC
+SELECT query, elapsed, read_rows, total_rows_approx, formatReadableSize(memory_usage) as memory_usage, query_id FROM system.processes ORDER BY elapsed DESC
 """
 
-KILL_QUERY = """
-    KILL QUERY where 
+KILL_QUERY_SQL = """
+    KILL QUERY where query_id = '%(query_id)s'
 """
