@@ -18,3 +18,4 @@ pytz==2023.2
 pytz-deprecation-shim==0.1.0.post0
 tzdata==2023.3
 tzlocal==4.3
+clickhouse-pool==0.5.3
