@@ -87,8 +87,7 @@ export default function Schema() {
           return []
         }))
     },
-    [],
-    { interval: 10000 } // optional
+    []
   )
 
   return (

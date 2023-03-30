@@ -84,7 +84,7 @@ export default function RunningQueries() {
         }))
     },
     [],
-    { interval: 10000 } // optional
+    { interval: 100000 } // optional
   )
 
   return (

@@ -40,7 +40,7 @@ export default function CollapsibleTable() {
     .then(response => response.json())
     .then(data => data.map((d, idx) => ({key: idx, ...d})))),
     [],
-    { interval: 5000 } // optional
+    { interval: 600000 } // optional
   )
 
 

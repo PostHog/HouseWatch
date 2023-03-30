@@ -20,7 +20,7 @@ from housewatch.clickhouse.queries.sql import (
     NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL,
     GET_QUERY_BY_NORMALIZED_HASH_SQL
 )
-DEFAULT_TIME = 24 * 7 * 2
+DEFAULT_TIME = 24
 
 class AnalyzeViewset(GenericViewSet):
     def list(self, request: Request) -> Response:
