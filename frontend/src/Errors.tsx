@@ -31,7 +31,7 @@ export default function CollapsibleTable() {
 
   return (
     <div >
-      <h2 style={{ textAlign: 'left' }}>Slow queries</h2>
+      <h2 style={{ textAlign: 'left' }}>Errors</h2>
       <br />
       <div>
       <Table

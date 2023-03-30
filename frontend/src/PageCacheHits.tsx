@@ -105,7 +105,7 @@ function BasicCard({ nodeData }: { nodeData: NodeData }): JSX.Element {
   };
 
   return (
-    <Card sx={{ width: '95%', height: 350 }}>
+    <Card sx={{ width: '95%', height: 350, display: 'block' }}>
       <CardContent>
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
           {nodeData.node}
@@ -181,9 +181,12 @@ export function PageCacheHits(): JSX.Element {
     <div style={{ textAlign: 'left' }}>
       <h2>Cluster overview</h2>
       <br />
-      <div style={{ display: 'flex' }}>
+      <div style={{ display: 'block' }}>
         {clusterOverviewData.map(nodeData => (
+          <>
           <BasicCard nodeData={nodeData} />
+          <br />
+          </>
         ))}
       </div>
     </div>
