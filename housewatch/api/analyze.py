@@ -6,7 +6,6 @@ from housewatch.clickhouse.client import run_query, base_params
 from housewatch.clickhouse.queries.sql import (
     SLOW_QUERIES_SQL, 
     SCHEMA_SQL, 
-    SLOW_QUERIES_BY_HASH_SQL, 
     QUERY_EXECUTION_COUNT_SQL, 
     PAGE_CACHE_HIT_PERCENTAGE_SQL, 
     QUERY_LOAD_SQL, 
@@ -18,7 +17,8 @@ from housewatch.clickhouse.queries.sql import (
     KILL_QUERY_SQL,
     PARTS_SQL,
     NODE_STORAGE_SQL,
-    NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL
+    NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL,
+    GET_QUERY_BY_NORMALIZED_HASH_SQL
 )
 DEFAULT_TIME = 24 * 7 * 2
 
@@ -29,10 +29,7 @@ class AnalyzeViewset(GenericViewSet):
     @action(detail=False, methods=["GET"])
     def slow_queries(self, request: Request):
         params = { **base_params, "limit": 100, "date_from": "now() - INTERVAL 2 WEEK"}
-        if request.GET.get('by_hash'):
-            query_result = run_query(SLOW_QUERIES_BY_HASH_SQL, params)
-        else:
-            query_result = run_query(SLOW_QUERIES_SQL, params)
+        query_result = run_query(SLOW_QUERIES_SQL, params)
         return Response(query_result)
 
     @action(detail=True, methods=["GET"])
@@ -42,7 +39,9 @@ class AnalyzeViewset(GenericViewSet):
         execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(hours=hours, conditions=conditions))
         memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(hours=hours, conditions=conditions))
         read_bytes = run_query(QUERY_READ_BYTES_SQL.format(hours=hours, conditions=conditions))
+        query = run_query(GET_QUERY_BY_NORMALIZED_HASH_SQL, {'normalized_query_hash': pk})[0]['normalized_query']
         return Response({
+            'query': query,
             'execution_count': execution_count,
             'memory_usage': memory_usage,
             'read_bytes': read_bytes
@@ -121,15 +120,6 @@ class AnalyzeViewset(GenericViewSet):
     
         return Response(query_result)
     
-    # @action(detail=False, methods=["GET"])
-    # def node_storage(self, request: Request):
-    #     query_result = run_query(NODE_STORAGE_SQL, {})
-    #     return Response(query_result)
-    
-        
-    # @action(detail=False, methods=["GET"])
-    # def node_data_transfer(self, request: Request):
-    #     return Response(query_result)
     
     @action(detail=False, methods=["GET"])
     def cluster_overview(self, request: Request):

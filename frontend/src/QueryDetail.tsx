@@ -4,6 +4,9 @@ import * as React from 'react';
 import { usePollingEffect } from './PageCacheHits';
 import { DataGrid } from '@mui/x-data-grid';
 import { Line } from '@ant-design/plots';
+import { Typography } from 'antd'
+import { Code } from '@mui/icons-material';
+const { Text, Paragraph } = Typography
 
 
 
@@ -28,6 +31,7 @@ export default function CollapsibleTable({match}) {
     )
   return (
     <div style={{ height: 300, width: '100%', paddingTop: '5rem', marginBottom: '10rem' }}>
+        <code style={{textAlign: 'left'}}>{queryDetail.query}</code>
         {queryDetail.execution_count && <Line data={queryDetail.execution_count}
             padding='auto'
         xField='day_start'
@@ -35,11 +39,6 @@ export default function CollapsibleTable({match}) {
         xAxis={{tickCount: 10}}
         
         />}
-
-
-
-        {/* {JSON.stringify(slowQueries)} */}
-      
     </div>
   );
 }

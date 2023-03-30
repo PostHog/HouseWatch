@@ -1,10 +1,21 @@
 # TODO: Add enum mapping dict for query `type`
 SLOW_QUERIES_SQL = """
-    SELECT toUInt8(type) as query_type, query, query_duration_ms, result_rows, formatReadableSize(result_bytes) as readable_bytes, toString(normalized_query_hash) as normalized_query_hash
-    FROM clusterAllReplicas(%(cluster)s, system.query_log) 
-    WHERE is_initial_query AND event_time > %(date_from)s
-    ORDER BY query_duration_ms DESC
-    LIMIT %(limit)s
+
+SELECT
+    normalizeQuery(query) as normalized_query,
+    avg(query_duration_ms) as avg_duration,
+    avg(result_rows),
+    count(1)/date_diff('minute', %(date_from)s, now()) as calls_per_minute,
+    count(1),
+    formatReadableSize(sum(read_bytes)) as total_read_bytes,
+    (sum(read_bytes)/(sum(sum(read_bytes)) over ()))*100 as percentage_iops,
+    (sum(query_duration_ms)/(sum(sum(query_duration_ms)) over ()))*100 as percentage_runtime,
+    toString(normalized_query_hash) as normalized_query_hash
+FROM clusterAllReplicas(%(cluster)s, system.query_log) 
+WHERE is_initial_query AND event_time > %(date_from)s and type = 2
+group by normalized_query_hash, normalizeQuery(query)
+ORDER BY sum(read_bytes) DESC
+LIMIT %(limit)s
 """
 
 # TODO: Consider ThreadPoolReaderPageCacheHit and ThreadPoolReaderPageCacheMiss
@@ -38,15 +49,6 @@ FROM clusterAllReplicas(%(cluster)s, system.errors)
 WHERE last_error_time > %(date_from)s
 GROUP BY name
 ORDER BY count DESC
-"""
-
-SLOW_QUERIES_BY_HASH_SQL = """
-    SELECT any(query), avg(query_duration_ms) avg_query_duration, avg(result_rows) avg_result_rows, formatReadableSize(avg(result_bytes)) as avg_readable_bytes, toString(normalized_query_hash)
-    FROM clusterAllReplicas(%(cluster)s, system.query_log) 
-    WHERE is_initial_query AND event_time > %(date_from)s
-    GROUP BY normalized_query_hash
-    ORDER BY avg_query_duration DESC
-    LIMIT %(limit)s
 """
 
 TABLES_SQL = """
@@ -85,6 +87,13 @@ where
     and JSONExtractString(log_comment, 'kind') = 'request'
 group by replica
 order by replica
+"""
+
+GET_QUERY_BY_NORMALIZED_HASH_SQL = """
+SELECT normalizeQuery(query) as normalized_query FROM
+clusterAllReplicas('posthog', system,query_log)
+where normalized_query_hash = %(normalized_query_hash)s
+limit 1
 """
 
 QUERY_EXECUTION_COUNT_SQL = """
