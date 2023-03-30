@@ -77,7 +77,7 @@ export default function RunningQueries() {
     <>
       <h2 style={{ textAlign: 'left' }}>Running queries</h2>
       <br />
-      <Table columns={columns} dataSource={runningQueries} />;
+      <Table columns={columns} dataSource={runningQueries}  loading={!runningQueries} />
     </>
   )
 }
