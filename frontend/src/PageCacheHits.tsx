@@ -56,15 +56,8 @@ function BasicCard({ replica, percent }: { replica: string, percent: string }): 
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
           {replica}
         </Typography>
-
         <Gauge {...gaugeConfig} />
-        {/* <Typography variant="h2" sx={{fontWeight: 700}}>
-                    {(percent * 100).toFixed(2)}%
-                </Typography> */}
       </CardContent>
-      {/* <CardActions>
-        <Button size="small">Learn More</Button>
-      </CardActions> */}
     </Card>
   );
 }
