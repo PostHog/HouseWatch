@@ -158,6 +158,8 @@ def attempt_migration_rollback(migration: AsyncMigration):
     for op_index in range(current_index, -1, -1):
         try:
             op = ops[op_index]
+            if not op:
+                continue
             execute_op(op, query_id=str(uuid4))
         except Exception as e:
             last_error = f"At operation {op_index} rollback failed with error:{str(e)}"
