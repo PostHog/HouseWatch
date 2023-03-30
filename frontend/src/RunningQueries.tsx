@@ -1,6 +1,8 @@
-import { Table, Button, notification } from 'antd';
+import { Table, Button, notification, Typography } from 'antd';
 import { usePollingEffect } from './PageCacheHits';
 import React, { useState } from 'react';
+
+const { Paragraph } = Typography
 
 function KillQueryButton({ queryId }: any) {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +44,19 @@ export default function RunningQueries() {
   const [runningQueries, setRunningQueries] = useState([]);
 
   const columns = [
-    { title: 'query', dataIndex: 'query' },
+    { title: 'Query', dataIndex: 'normalized_query', key: 'query', render: (_, item ) =>  {
+            let index = 0
+        return <Paragraph
+        style={{ maxWidth: '100%'}} 
+        ellipsis={{
+            rows: 2, 
+          expandable: true, title: item.query}}
+          >{item.query.replace(/(\?)/g, ()=>{
+            index = index + 1
+            return '$'+index
+        })}</Paragraph>
+        }
+    },
     { title: 'Elapsed time', dataIndex: 'elapsed' },
     { title: 'Rows read', dataIndex: 'read_rows', render: (_: any, item: any) => `~${item.read_rows}/${item.total_rows_approx}` },
     { title: 'Memory Usage', dataIndex: 'memory_usage' },
