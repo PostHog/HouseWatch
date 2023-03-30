@@ -4,54 +4,15 @@ import React, { useState } from 'react';
 import { usePollingEffect } from './PageCacheHits';
 import { Treemap } from '@ant-design/charts';
 
+import {useHistory
+  } from "react-router-dom";
 
 export default function Schema() {
+
+  const history = useHistory()
   const testSchemaData = {
     name: "root",
     children: []
-    // children: [
-    //   {
-    //     "name": "办公用品",
-    //     "children": [
-    //       {
-    //         "name": "容器，箱子",
-    //         "value": 1111987,
-    //         "children": [
-    //           {
-    //             "date": "2010/10/13",
-    //             "value": 261,
-    //             "category": "办公用品",
-    //             "subcategory": "容器，箱子",
-    //             "name": "Eldon Base for stackable storage shelf, platinum"
-    //           },
-    //           {
-    //             "date": "2012/5/7",
-    //             "value": 236,
-    //             "category": "办公用品",
-    //             "subcategory": "容器，箱子",
-    //             "name": "Filing/Storage Totes and Swivel Casters"
-    //           },
-    //         ]
-    //       },
-    //       {
-    //         "name": "家具产品",
-    //         "children": [
-    //           {
-    //             "name": "办公装饰品",
-    //             "value": 708875,
-    //             "children": [
-    //               {
-    //                 "date": "2011/7/15",
-    //                 "value": 2808,
-    //                 "category": "家具产品",
-    //                 "subcategory": "办公装饰品",
-    //                 "name": "\"Tenex Contemporary Contur Chairmats for Low and Medium Pile Carpet, Computer, 39\"\" x 49\"\"\""
-    //               },
-    //             ]
-    //           }
-    //         ]}
-    //       ]
-    //     }]
   }
 
   const [schema, setSchema] = useState([]);
@@ -70,6 +31,10 @@ export default function Schema() {
       breadCrumb: {
         rootText: 'Start over',
       },
+    },
+    onNodeClick: (event, node) => {
+        console.log(event, node)
+
     },
     tooltip: {
       formatter: (v) => {
@@ -108,7 +73,11 @@ export default function Schema() {
 
   return (
     <div>
-      <Treemap {...config} />
+      <Treemap {...config}  onEvent={(node, event) => {
+        if(event.type === 'element:click') {
+            history.push(`/schema/${event.data.data.name}`)
+        }
+      }} />
     </div>
   );
 }
