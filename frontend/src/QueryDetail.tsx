@@ -7,7 +7,6 @@ import { Line } from '@ant-design/plots';
 import { Typography } from 'antd'
 import { Code } from '@mui/icons-material';
 const { Text, Paragraph } = Typography
-import  { format } from 'sql-formatter'
 
 
 
@@ -32,7 +31,7 @@ export default function CollapsibleTable({match}) {
     )
   return (
     <div style={{ height: 300, width: '100%', paddingTop: '5rem', marginBottom: '10rem' }}>
-        {format(queryDetail.query)}
+        {queryDetail.query}
         {queryDetail.execution_count && <Line data={queryDetail.execution_count}
             padding='auto'
         xField='day_start'
