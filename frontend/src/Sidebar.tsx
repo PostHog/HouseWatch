@@ -16,6 +16,7 @@ import SlowQueries from './SlowQueries';
 import Schema from './Schema';
 import QueryDetail from './QueryDetail';
 import SchemaTable from './SchemaTable';
+import Errors from './Errors';
 import {
     BrowserRouter as Router,
     Switch,
@@ -67,6 +68,8 @@ export default function PermanentDrawerLeft(): JSX.Element {
           </Route>
           <Route exact path="/running_queries" component={RunningQueries}>
           </Route>
+          <Route exact path="/errors" component={Errors}>
+          </Route>
         </Switch>
         </div>
       </AppBar>
@@ -93,6 +96,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
             {'path': '/schema', 'text': 'Table sizes'},
             {'path': '/page_cache', 'text': 'Page cache usage'},
             {'path': '/async_migrations', 'text': 'Async migrations'},
+            {'path': '/errors', 'text': 'Errors'},
         ].map((item, index) => (
             <ListItem key={item.text} disablePadding>
               <ListItemButton onClick={() => history.push({pathname: item.path})} selected={false}>
