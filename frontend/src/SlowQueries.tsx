@@ -10,10 +10,10 @@ import {useHistory} from "react-router-dom";
 export default function CollapsibleTable() {
     const history = useHistory()
       const slowQueriesColumns = [
-        { title: 'Query type', dataIndex: 'query_type', key: 'query_type'},
-        { title: 'Query', dataIndex: 'query', key: 'query'},
-        { title: 'Query duration (ms)', dataIndex: 'query_duration_ms', key: 'query_duration_ms'},
-        { title: 'Readable Bytes', dataIndex: 'readable_bytes', key: 'readable_bytes' }
+        { title: 'Query type', dataIndex: 'query_type', key: 'query_type', width: 70, align: 'center'},
+        { title: 'Query', dataIndex: 'query', key: 'query', width: 700},
+        { title: 'Query duration (ms)', dataIndex: 'query_duration_ms', width: 200, key: 'query_duration_ms', sorter: (a, b) => a.query_duration_ms - b.query_duration_ms},
+        { title: 'Readable Bytes', dataIndex: 'readable_bytes', width: 100, key: 'readable_bytes', sorter: (a, b) => a.total_bytes - b.total_bytes }
       ]
 
     const [slowQueries, setSlowQueries] = useState([]);
@@ -33,6 +33,7 @@ export default function CollapsibleTable() {
     <div >
       <h2 style={{ textAlign: 'left' }}>Slow queries</h2>
       <br />
+      <div>
       <Table
         columns={slowQueriesColumns}
         onRow={(query, rowIndex) => {
@@ -44,7 +45,9 @@ export default function CollapsibleTable() {
         }}
         rowClassName={() => 'cursor-pointer'}
         dataSource={slowQueries}
+        size="small"
       />
+      </div>
     </div>
   );
 }
