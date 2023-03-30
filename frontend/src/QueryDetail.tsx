@@ -46,11 +46,12 @@ export default function QueryDetail({match}) {
     { interval: 5000 } // optional
     )
 
+    let index = 0
     return (
     <div style={{ height: 300, width: '100%', paddingTop: '5rem', marginBottom: '10rem', textAlign: 'left' }}>
         <h2>Execution count</h2>
         <code style={{textAlign: 'left'}}>{querySQL.replace(/(\?)/g, () => {
-            let index = index + 1
+            index = index + 1
             return '$'+index
         })}</code>
         <Line {...config} />
