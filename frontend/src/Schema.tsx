@@ -5,8 +5,9 @@ import { usePollingEffect } from './PageCacheHits';
 import { Treemap } from '@ant-design/charts';
 import { Table } from 'antd'
 
-import {useHistory
-  } from "react-router-dom";
+import {
+  useHistory
+} from "react-router-dom";
 
 export default function Schema() {
 
@@ -20,13 +21,13 @@ export default function Schema() {
   const defaultConfig = {
     data: testSchemaData,
     colorField: 'name',
-    style: {cursor: 'pointer'},
+    style: { cursor: 'pointer' },
     label: {
       style: {
         fill: 'black',
         fontSize: 14,
         fontWeight: 600,
-        }
+      }
     },
     drilldown: {
       enabled: true,
@@ -35,7 +36,7 @@ export default function Schema() {
       },
     },
     onNodeClick: (event, node) => {
-        console.log(event, node)
+      console.log(event, node)
 
     },
     tooltip: {
@@ -64,8 +65,8 @@ export default function Schema() {
           const filteredRes = res.filter(r => r.total_bytes > 0)
           const filteredResUrls = filteredRes.map(fr => `http://localhost:8000/api/analyze/${fr.name}/schema`).slice(0, 1)
 
-            const nestedRes = await Promise.all(filteredResUrls.map(e => fetch(e).then(res2 => res2.json())))
-            return [filteredRes, nestedRes]
+          const nestedRes = await Promise.all(filteredResUrls.map(e => fetch(e).then(res2 => res2.json())))
+          return [filteredRes, nestedRes]
         })
         .then(data => {
           const res = data[0]
@@ -114,8 +115,8 @@ export default function Schema() {
           rowClassName={() => 'cursor-pointer'}
           columns={[
             { dataIndex: 'name', title: 'Name', },
-            { dataIndex: 'readable_bytes', title: 'Size' },
-            { dataIndex: 'total_rows', title: 'Rows' }
+            { dataIndex: 'readable_bytes', title: 'Size', sorter: (a, b) => a.total_bytes - b.total_bytes },
+            { dataIndex: 'total_rows', title: 'Rows', defaultSortOrder: "descend", sorter: (a, b) => a.total_rows - b.total_rows }
           ]}
         />
       </div>
