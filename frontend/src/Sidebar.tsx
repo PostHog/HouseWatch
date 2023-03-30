@@ -33,11 +33,10 @@ export default function PermanentDrawerLeft(): JSX.Element {
   const [page, setPage] = useState('Home')
 
   return (
-    <Box sx={{ display: 'flex' }}>
     <Router>
       <CssBaseline />
       <AppBar
-        position="fixed"
+        position='absolute'
         sx={{ width: `calc(100% - ${drawerWidth}px)`, backgroundColor: 'white', color: 'black' }}
       >
         <Toolbar sx={{backgroundColor: '#151515', color: 'white'}}>
@@ -98,13 +97,8 @@ export default function PermanentDrawerLeft(): JSX.Element {
           ))}
         </List>
       </Drawer>
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
-      >
+
         <Toolbar />
-      </Box>
     </Router> 
-    </Box>
   );
 }
