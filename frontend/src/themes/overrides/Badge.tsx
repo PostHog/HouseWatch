@@ -1,6 +1,6 @@
 // ==============================|| OVERRIDES - BADGE ||============================== //
 
-export default function Badge(theme) {
+export default function Badge(theme: any) {
     return {
         MuiBadge: {
             styleOverrides: {

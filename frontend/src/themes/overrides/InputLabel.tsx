@@ -1,6 +1,6 @@
 // ==============================|| OVERRIDES - INPUT LABEL ||============================== //
 
-export default function InputLabel(theme) {
+export default function InputLabel(theme: any) {
     return {
         MuiInputLabel: {
             styleOverrides: {

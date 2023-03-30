@@ -1,6 +1,6 @@
 // ==============================|| DEFAULT THEME - TYPOGRAPHY  ||============================== //
 
-const Typography = (fontFamily) => ({
+const Typography = (fontFamily: any) => ({
     htmlFontSize: 16,
     fontFamily,
     fontWeightLight: 300,

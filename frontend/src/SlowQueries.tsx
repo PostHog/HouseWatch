@@ -126,7 +126,6 @@ export default function CollapsibleTable() {
     usePollingEffect(
     async () => setSlowQueries(await fetch(url)
     .then(response => {
-        debugger
         return response.json()
     }
     )
