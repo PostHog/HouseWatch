@@ -20,16 +20,16 @@ const ASYNC_MIGRATION_STATUS_TO_HUMAN = {
     6: 'Failed at startup'
 }
 
-const triggerAsyncMigration = () => {
-
+const triggerAsyncMigration = async (id) => {
+    await fetch(`http://localhost:8000/api/async_migrations/${id}/trigger`, { method: 'POST' })
 }
 
-export function AsyncMigrationControls({ status, progress }: { status: number, progress: number }): JSX.Element {
+export function AsyncMigrationControls({ status, progress, id }: { status: number, progress: number, id: number }): JSX.Element {
 
     return (
         <div style={{ width: 100 }}>
             {[0, 4, 6].includes(status) ? (
-                <Button variant="contained" >Run</Button>
+                <Button variant="contained" onClick={() => triggerAsyncMigration(id)}>Run</Button>
             ) : status === 3 ? (
                 <Button variant="contained" color='yellow'>Rollback</Button>
             ) : (
@@ -62,38 +62,38 @@ export function AsyncMigrationsList(): JSX.Element {
 
     return (
         <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-                <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell align="right">Description</TableCell>
-                    <TableCell align="right">Status</TableCell>
-                    <TableCell align="right">Progress</TableCell>
-                    <TableCell align="right">Started at</TableCell>
-                    <TableCell align="right">Finished at</TableCell>
-                    <TableCell align="right"></TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {asyncMigrations.map((migration) => (
-                    <TableRow
-                        key={migration.name}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                        <TableCell component="th" scope="row">
-                            {migration.name}
-                        </TableCell>
-                        <TableCell align="right">{migration.description}</TableCell>
-                        <TableCell align="right">{ASYNC_MIGRATION_STATUS_TO_HUMAN[migration.status]}</TableCell>
-                        <TableCell align="right">{migration.progress}</TableCell>
-                        <TableCell align="right">{migration.started_at}</TableCell>
-                        <TableCell align="right">{migration.finished_at}</TableCell>
-                        <TableCell align="right"><AsyncMigrationControls status={migration.status} progress={migration.progress} /></TableCell>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Name</TableCell>
+                        <TableCell align="right">Description</TableCell>
+                        <TableCell align="right">Status</TableCell>
+                        <TableCell align="right">Progress</TableCell>
+                        <TableCell align="right">Started at</TableCell>
+                        <TableCell align="right">Finished at</TableCell>
+                        <TableCell align="right"></TableCell>
                     </TableRow>
-                ))}
-            </TableBody>
-        </Table>
-    </TableContainer>
+                </TableHead>
+                <TableBody>
+                    {asyncMigrations.map((migration) => (
+                        <TableRow
+                            key={migration.name}
+                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                        >
+                            <TableCell component="th" scope="row">
+                                {migration.name}
+                            </TableCell>
+                            <TableCell align="right">{migration.description}</TableCell>
+                            <TableCell align="right">{ASYNC_MIGRATION_STATUS_TO_HUMAN[migration.status]}</TableCell>
+                            <TableCell align="right">{migration.progress}</TableCell>
+                            <TableCell align="right">{migration.started_at}</TableCell>
+                            <TableCell align="right">{migration.finished_at}</TableCell>
+                            <TableCell align="right"><AsyncMigrationControls status={migration.status} progress={migration.progress} id={migration.id} /></TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
     )
 }
 
@@ -102,34 +102,72 @@ export function CreateNewAsyncMigration(): JSX.Element {
 
     const [asyncMigrationOperationsCount, setAsyncMigrationOperationsCount] = useState(1)
 
+    const createAsyncMigration = async () => {
+        const form = document.getElementById('create-migration-form')
+        const formData = new FormData(form)
+
+        const operations = []
+        const rollbackOperations = []
+        const asyncMigrationData = {
+            name: '',
+            description: '',
+            operations: operations,
+            rollbackOperations: rollbackOperations
+        }
+        for (const [key, value] of formData.entries()) {
+            if (key.includes('operation')) {
+                operations.push(value)
+                continue
+            }
+            if (key.includes('rollback')) {
+                rollbackOperations.push(value)
+                continue
+            }
+            asyncMigrationData[key] = value
+
+        }
+
+        await fetch('http://localhost:8000/api/async_migrations', {
+            method: 'POST', 
+            body: JSON.stringify(asyncMigrationData), 
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+
+    }
 
 
     return (
         <div>
-            <form style={{ textAlign: 'left', marginLeft: 20, overflowY: 'auto' }}>
+
+            <form style={{ textAlign: 'left', marginLeft: 20, overflowY: 'auto' }} id='create-migration-form'>
                 <h3>Details</h3>
 
-                <TextField placeholder='Name' style={{ width: 400 }}/><br/><br/>
-                <TextField placeholder='Description' multiline style={{ width: 800 }} rows={3} /><br/><br/>
+                <TextField id='create-migration-form-name' name='name' placeholder='Name' style={{ width: 400 }} /><br /><br />
+                <TextField id='create-migration-form-description' name='description' placeholder='Description' multiline style={{ width: 800 }} rows={3} /><br /><br />
 
                 <h3>Operations</h3>
 
                 {[...Array(asyncMigrationOperationsCount)].map((_, i) => (
                     <span key={i}>
-                        <h4>#{i+1}</h4>
-                        <TextField placeholder='Operation SQL' multiline style={{ width: 800 }} rows={5}  /><br/><br/>
-                        <TextField placeholder='Rollback SQL' multiline style={{ width: 800 }} rows={5}  /><br/><br/>
+                        <h4>#{i + 1}</h4>
+                        <TextField id={`create-migration-form-operation-${i + 1}`} name={`operation-${i + 1}`} placeholder='Operation SQL' multiline style={{ width: 800 }} rows={5} /><br /><br />
+                        <TextField id={`create-migration-form-rollback-${i + 1}`} name={`rollback-${i + 1}`} placeholder='Rollback SQL' multiline style={{ width: 800 }} rows={5} /><br /><br />
                     </span>
                 ))}
                 {asyncMigrationOperationsCount > 1 ? (
                     <>
-                <Button variant='outlined' color='error' onClick={() => setAsyncMigrationOperationsCount(asyncMigrationOperationsCount - 1)}>-</Button>{' '}
-                </>
-                ): null}
-                <Button variant='outlined'  onClick={() => setAsyncMigrationOperationsCount(asyncMigrationOperationsCount + 1)}>+</Button>
+                        <Button variant='outlined' color='error' onClick={() => setAsyncMigrationOperationsCount(asyncMigrationOperationsCount - 1)}>-</Button>{' '}
+                    </>
+                ) : null}
+                <Button variant='outlined' onClick={() => setAsyncMigrationOperationsCount(asyncMigrationOperationsCount + 1)}>+</Button>
 
-                
+
             </form>
+            <div style={{ textAlign: 'center' }}>
+                <Button variant='contained' onClick={createAsyncMigration}>Save</Button>
+            </div>
 
         </div>
 
