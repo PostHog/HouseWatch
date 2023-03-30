@@ -62,7 +62,7 @@ LIMIT 100
 """
 
 PARTS_SQL = """
-select name, data_compressed_bytes, formatReadableSize(data_compressed_bytes) AS readable_bytes
+SELECT name as part, data_compressed_bytes as compressed, formatReadableSize(data_compressed_bytes) AS compressed_readable, formatReadableSize(data_uncompressed_bytes) as uncompressed
 FROM system.parts
 WHERE table = '%(table)s'
 ORDER BY data_compressed_bytes DESC 

@@ -91,8 +91,8 @@ export default function PermanentDrawerLeft(): JSX.Element {
             {'path': '/slow_queries', 'text': 'Slow queries'},
             {'path': '/running_queries', 'text': 'Running queries'},
             {'path': '/schema', 'text': 'Table sizes'},
-            {'path': '/page_cache', 'text': 'Page cache hits'},
-            {'path': '/async_migrations', 'text': 'Async Migrations'},
+            {'path': '/page_cache', 'text': 'Page cache usage'},
+            {'path': '/async_migrations', 'text': 'Async migrations'},
         ].map((item, index) => (
             <ListItem key={item.text} disablePadding>
               <ListItemButton onClick={() => history.push({pathname: item.path})} selected={false}>
