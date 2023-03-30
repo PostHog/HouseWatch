@@ -1,158 +1,81 @@
 // @ts-nocheck
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import React, { useEffect, useState } from 'react';
 import { usePollingEffect } from './PageCacheHits';
-import { DataGrid } from '@mui/x-data-grid';
+// import { DataGrid } from '@mui/x-data-grid';
+import { Table } from 'antd';
 
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number,
-  price: number,
-) {
-  return {
-    name,
-    calories,
-    fat,
-    carbs,
-    protein,
-    price,
-    history: [
-      {
-        date: '2020-01-05',
-        customerId: '11091700',
-        amount: 3,
-      },
-      {
-        date: '2020-01-02',
-        customerId: 'Anonymous',
-        amount: 1,
-      },
-    ],
-  };
-}
 
-function Row(props: { row: ReturnType<typeof createData> }) {
-  const { row } = props;
-  const [open, setOpen] = React.useState(false);
-
-  return (
-    <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {row["toString(normalized_query_hash)"]}
-        </TableCell>
-        <TableCell align="right">{row.query}</TableCell>
-        <TableCell align="right">{row.query_type}</TableCell>
-        <TableCell align="right">{row.query_duration_ms}</TableCell>
-        <TableCell align="right">{row.readable_bytes}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                History
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell align="right">Amount</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {/* {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.date}
-                      </TableCell>
-                      <TableCell>{historyRow.customerId}</TableCell>
-                      <TableCell align="right">{historyRow.amount}</TableCell>
-                      <TableCell align="right">
-                        {Math.round(historyRow.amount * row.price * 100) / 100}
-                      </TableCell>
-                    </TableRow>
-                  ))} */}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </React.Fragment>
-  );
-}
-
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0, 3.99),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3, 4.99),
-  createData('Eclair', 262, 16.0, 24, 6.0, 3.79),
-  createData('Cupcake', 305, 3.7, 67, 4.3, 2.5),
-  createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
-];
 
 export default function CollapsibleTable() {
+    const rows = [
+        { id: 1, lastName: 'Snow', firstName: 'Jon', age: 35 },
+        { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 42 },
+        { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 45 },
+        { id: 4, lastName: 'Stark', firstName: 'Arya', age: 16 },
+        { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
+        { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
+        { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
+        { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
+        { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
+      ];
 
-    const [slowQueries, setSlowQueries] = React.useState([]);
+      const slowQueriesColumns = [
+        { title: 'Query type', dataIndex: 'query_type', key: 'query_type'},
+        // { title: 'Query', dataIndex: 'query', key: 'query'},
+        { title: 'Query duration (ms)', dataIndex: 'query_duration_ms', key: 'query_duration_ms'},
+        { title: 'Readable Bytes', dataIndex: 'readable_bytes', key: 'readable_bytes' }
+      ]
+
+      const columns: ColumnsType<DataType> = [
+        { title: 'Name', dataIndex: 'name', key: 'name' },
+        { title: 'Age', dataIndex: 'age', key: 'age' },
+        { title: 'Address', dataIndex: 'address', key: 'address' },
+        {
+          title: 'Action',
+          dataIndex: '',
+          key: 'x',
+          render: () => <a>Delete</a>,
+        },
+      ];
+
+    const [slowQueries, setSlowQueries] = useState([]);
 
     const url = 'http://localhost:8000/api/analyze/slow_queries'
 
+    // usePollingEffect(() => {
+    //     fetch(url).then(response => response.json()).then(data => {
+    //         setSlowQueries(data.map((d, idx) => ({id: idx, ...d})))
+    //     })
+    // }, [])
+
     usePollingEffect(
-    async () => setSlowQueries(await fetch(url)
-    .then(response => {
-        debugger
-        return response.json()
-    }
-    )
-    .catch(err => {
-        return []
-    })),
+        async () => setSlowQueries(await fetch(url)
+    .then(response => response.json())
+    .then(data => data.map((d, idx) => ({key: idx, ...d})))),
     [],
-    { interval: 3000 } // optional
+    { interval: 5000 } // optional
     )
-    const slowQueriesCols = [
+
+    const slowQueriesCols: GridColDef[] = [
+        { field: 'id', headerName: 'ID', width: 150},
         { field: 'query_type', type: 'number', headerName: 'Query type', width: 100},
-        // { field: 'query', headerName: 'Query', width: 150},
+        { field: 'query', headerName: 'Query', width: 300},
         { field: 'query_duration_ms', type: 'number', headerName: 'Query duration MS', width: 200},
         { field: 'readable_bytes', headerName: 'Readable bytes', width: 200}
     ]
-    console.log('slow queries123', slowQueries)
+
   return (
-    <div style={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={slowQueries}
-        columns={slowQueriesCols}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
-        checkboxSelection
-      />
-    </div>
+    // <div style={{ height: 600, width: '100%' }}>
+      <Table
+        columns={slowQueriesColumns}
+        // expandable={{
+        // expandedRowRender: (record) => <p style={{ margin: 0 }}>{record.description}</p>,
+        // rowExpandable: (record) => record.name !== 'Not Expandable',
+        // }}
+        dataSource={slowQueries}
+    />
+
+    // </div>
     // <TableContainer component={Paper}>
     //   <Table aria-label="collapsible table">
     //     <TableHead>

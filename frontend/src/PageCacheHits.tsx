@@ -19,25 +19,11 @@ function BasicCard({ replica, percent }: { replica: string, percent: string }): 
     return (
         <Card sx={{ minWidth: 275 }}>
             <CardContent>
-                {/* <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-          Word of the Day
-        </Typography>
-        <Typography variant="h5" component="div">
-          be{bull}nev{bull}o{bull}lent
-        </Typography>
-        <Typography sx={{ mb: 1.5 }} color="text.secondary">
-          adjective
-        </Typography>
-        <Typography variant="body2">
-          well meaning and kindly.
-          <br />
-          {'"a benevolent smile"'}
-        </Typography> */}
                 <Typography variant="h5" sx={{fontWeight: 600}}>
                     {replica}
                 </Typography>
                 <Typography variant="h2" sx={{fontWeight: 700}}>
-                    {percent}
+                    {(percent * 100).toFixed(2)}%
                 </Typography>
             </CardContent>
             {/* <CardActions>
@@ -51,7 +37,7 @@ export function usePollingEffect(
     asyncCallback: any,
     dependencies = [],
     { 
-      interval = 10000, // 10 seconds,
+      interval = 3000, // 3 seconds,
       onCleanUp = () => {}
     } = {},
   ) {
@@ -86,7 +72,7 @@ export function PageCacheHits(): JSX.Element {
     const url = 'http://localhost:8000/api/analyze/page_cache'
 
     usePollingEffect(
-    async () => setPageCacheHitsPerReplica(await fetch(url)
+        async () => setPageCacheHitsPerReplica(await fetch(url)
     .then(response => response.json())),
     [],
     { interval: 5000 } // optional
