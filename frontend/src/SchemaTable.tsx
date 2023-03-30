@@ -80,6 +80,7 @@ export function ColumnsData({ table }: { table: string }): JSX.Element {
 
   const schemaCols = [
     { dataIndex: 'column', title: 'Name', },
+    { dataIndex: 'type', title: 'type', },
     { dataIndex: 'compressed_readable', title: 'Compressed' },
     { dataIndex: 'uncompressed', title: 'Uncompressed' }
   ]

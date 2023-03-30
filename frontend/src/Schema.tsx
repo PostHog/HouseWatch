@@ -116,7 +116,9 @@ export default function Schema() {
           columns={[
             { dataIndex: 'name', title: 'Name', },
             { dataIndex: 'readable_bytes', title: 'Size', sorter: (a, b) => a.total_bytes - b.total_bytes },
-            { dataIndex: 'total_rows', title: 'Rows', defaultSortOrder: "descend", sorter: (a, b) => a.total_rows - b.total_rows }
+            { dataIndex: 'total_rows', title: 'Rows', defaultSortOrder: "descend", sorter: (a, b) => a.total_rows - b.total_rows },
+            { dataIndex: 'engine', title: 'Engine', },
+            { dataIndex: 'partition_key', title: 'Partition Key', },
           ]}
         />
       </div>
