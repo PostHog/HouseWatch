@@ -30,8 +30,11 @@ export default function CollapsibleTable({match}) {
     { interval: 3000 } // optional
     )
   return (
-    <div style={{ height: 300, width: '100%', paddingTop: '5rem', marginBottom: '10rem' }}>
-        <code style={{textAlign: 'left'}}>{queryDetail.query}</code>
+    <div style={{ height: 300, width: '100%', paddingTop: '5rem', marginBottom: '10rem', textAlign: 'left' }}>
+        <code style={{textAlign: 'left'}}>{queryDetail.query.replace(/(\?)/g, ()=>{
+            index = index + 1
+            return '$'+index
+        })}</code>
         {queryDetail.execution_count && <Line data={queryDetail.execution_count}
             padding='auto'
         xField='day_start'
