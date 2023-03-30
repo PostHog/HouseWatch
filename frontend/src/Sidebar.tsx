@@ -19,11 +19,10 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link
+    Link,
+    useHistory
 
   } from "react-router-dom";
-import { createBrowserHistory } from "history";
-let history = createBrowserHistory();
 
 import { AsyncMigrations } from './AsyncMigrations';
 
@@ -31,13 +30,13 @@ const drawerWidth = 240;
 
 export default function PermanentDrawerLeft(): JSX.Element {
   const [page, setPage] = useState('Home')
+  const history = useHistory()
 
   return (
-    <Box sx={{ display: 'flex' }}>
-    <Router>
+    <div>
       <CssBaseline />
       <AppBar
-        position="fixed"
+        position='absolute'
         sx={{ width: `calc(100% - ${drawerWidth}px)`, backgroundColor: 'white', color: 'black' }}
       >
         <Toolbar sx={{backgroundColor: '#151515', color: 'white'}}>
@@ -98,13 +97,8 @@ export default function PermanentDrawerLeft(): JSX.Element {
           ))}
         </List>
       </Drawer>
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, bgcolor: 'background.default', p: 3 }}
-      >
+
         <Toolbar />
-      </Box>
-    </Router> 
-    </Box>
+    </div> 
   );
 }
