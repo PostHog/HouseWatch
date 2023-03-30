@@ -141,7 +141,7 @@ def update_migration_progress(migration: AsyncMigration):
 
     migration.refresh_from_db()
     try:
-        update_async_migration(migration=migration, progress=int(migration.current_operation_index/len(migration.operations)))
+        update_async_migration(migration=migration, progress=int((migration.current_operation_index/len(migration.operations))*100))
     except:
         pass
 
@@ -153,22 +153,25 @@ def attempt_migration_rollback(migration: AsyncMigration):
     """
     migration.refresh_from_db()
     ops = migration.rollback_operations
-    # if the migration was completed the index is set 1 after, normally we should try rollback for current op
-    current_index = min(migration.current_operation_index, len(ops) - 1)
-    for op_index in range(current_index, -1, -1):
-        try:
-            op = ops[op_index]
-            execute_op(op, query_id=str(uuid4))
-        except Exception as e:
-            last_error = f"At operation {op_index} rollback failed with error:{str(e)}"
-            process_error(
-                migration=migration,
-                last_error=last_error,
-                rollback=False,
-                current_operation_index=op_index,
-            )
+    if ops is not None:
+        # if the migration was completed the index is set 1 after, normally we should try rollback for current op
+        current_index = min(migration.current_operation_index, len(ops) - 1)
+        for op_index in range(current_index, -1, -1):
+            try:
+                op = ops[op_index]
+                if not op:
+                    continue
+                execute_op(op, query_id=str(uuid4))
+            except Exception as e:
+                last_error = f"At operation {op_index} rollback failed with error:{str(e)}"
+                process_error(
+                    migration=migration,
+                    last_error=last_error,
+                    rollback=False,
+                    current_operation_index=op_index,
+                )
 
-            return
+                return
 
     update_async_migration(
         migration=migration, status=MigrationStatus.RolledBack, progress=0, current_operation_index=0

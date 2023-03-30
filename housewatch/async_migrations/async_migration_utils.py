@@ -115,7 +115,7 @@ def process_error(
     status: int = MigrationStatus.Errored,
     current_operation_index: Optional[int] = None,
 ):
-    logger.error(f"Async migration {migration.name} error: {error}")
+    logger.error(f"Async migration {migration.name} error: {last_error}")
 
     update_async_migration(
         migration=migration,
