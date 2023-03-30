@@ -25,7 +25,7 @@ const ASYNC_MIGRATION_STATUS_TO_FONT_COLOR = {
     1: 'black',
     2: 'green',
     3: 'red',
-    4: 'yellow',
+    4: 'orange',
     5: 'black',
     6: 'red'
 }
