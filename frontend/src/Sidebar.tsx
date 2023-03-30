@@ -19,11 +19,10 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Link
+    Link,
+    useHistory
 
   } from "react-router-dom";
-import { createBrowserHistory } from "history";
-let history = createBrowserHistory();
 
 import { AsyncMigrations } from './AsyncMigrations';
 
@@ -31,10 +30,10 @@ const drawerWidth = 240;
 
 export default function PermanentDrawerLeft(): JSX.Element {
   const [page, setPage] = useState('Home')
+  const history = useHistory()
 
   return (
     <Box sx={{ display: 'flex' }}>
-    <Router>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -104,7 +103,6 @@ export default function PermanentDrawerLeft(): JSX.Element {
       >
         <Toolbar />
       </Box>
-    </Router> 
     </Box>
   );
 }
