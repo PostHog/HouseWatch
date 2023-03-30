@@ -1,5 +1,4 @@
 from typing import Dict
-from clickhouse_driver import Client
 from clickhouse_pool import ChPool
 import os
 
@@ -12,6 +11,7 @@ pool = ChPool(
     ca_certs=os.getenv("CLICKHOUSE_CA", None),
     verify=os.getenv("CLICKHOUSE_VERIFY", True),
     settings={"max_result_rows": "10000"}, 
+    send_receive_timeout=30
 )
     
 

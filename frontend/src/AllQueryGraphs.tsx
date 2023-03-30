@@ -31,13 +31,13 @@ export default function AllQueryGraphs() {
   return (
     <div 
     style={{ width: '100%', paddingTop: '1rem', marginBottom: '10rem' }}>
-        Welcome to HoUsEwAtCh
+        <h1 style={{ color: 'orange'}}>Welcome to HoUsEwAtCh</h1>
         <h3>Execution count</h3>
         <Line data={queryGraphs.execution_count} xField={'day_start'} yField={'total'} xAxis={{tickCount: 5}} slider={{start: 0.1, end: 0.5}}/>
-
+        <br />
         <h3 style={{marginTop: 16}}>Memory usage</h3>
         <Line data={queryGraphs.memory_usage} xField={'day_start'} yField={'total'} xAxis={{tickCount: 5}} slider={{start: 0.1, end: 0.5}}/>
-
+        <br />
         <h3 style={{marginTop: 16}}>Read bytes</h3>
         <Line data={queryGraphs.read_bytes} xField={'day_start'} yField={'total'} xAxis={{tickCount: 5}} slider={{start: 0.1, end: 0.5}}/>
       

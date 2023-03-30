@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Table, Button, notification, Typography } from 'antd';
 import { usePollingEffect } from './PageCacheHits';
 import React, { useState } from 'react';
@@ -44,7 +45,7 @@ export default function RunningQueries() {
   const [runningQueries, setRunningQueries] = useState([]);
 
   const columns = [
-    { title: 'Query', dataIndex: 'normalized_query', key: 'query', render: (_, item ) =>  {
+    { title: 'Query', dataIndex: 'normalized_query', key: 'query', render: (_: any, item: any) =>  {
             let index = 0
         return <Paragraph
         style={{ maxWidth: '100%'}} 
