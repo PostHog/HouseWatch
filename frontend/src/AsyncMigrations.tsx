@@ -7,8 +7,8 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import { Button, LinearProgress, Tab, Tabs } from '@mui/material'
-
+import { Button, Input, LinearProgress, Tab, Tabs, TextField } from '@mui/material'
+import { TextareaAutosize } from '@mui/base'
 
 
 const ASYNC_MIGRATION_STATUS_TO_HUMAN = {
@@ -98,12 +98,49 @@ export function AsyncMigrationsList(): JSX.Element {
     )
 }
 
+export function CreateNewAsyncMigration(): JSX.Element {
+
+
+    const [asyncMigrationOperationsCount, setAsyncMigrationOperationsCount] = useState(1)
+
+
+
+    return (
+        <div>
+            <form style={{ textAlign: 'left', marginLeft: 20, overflowY: 'auto' }}>
+                <h3>Details</h3>
+
+                <TextField placeholder='Name' style={{ width: 400 }}/><br/><br/>
+                <TextField placeholder='Description' multiline style={{ width: 800 }} rows={3} /><br/><br/>
+
+                <h3>Operations</h3>
+
+                {[...Array(asyncMigrationOperationsCount)].map((_, i) => (
+                    <span key={i}>
+                        <h4>#{i+1}</h4>
+                        <TextField placeholder='Operation SQL' multiline style={{ width: 800 }} rows={5}  /><br/><br/>
+                        <TextField placeholder='Rollback SQL' multiline style={{ width: 800 }} rows={5}  /><br/><br/>
+                    </span>
+                ))}
+                {asyncMigrationOperationsCount > 1 ? (
+                    <>
+                <Button variant='outlined' color='error' onClick={() => setAsyncMigrationOperationsCount(asyncMigrationOperationsCount - 1)}>-</Button>{' '}
+                </>
+                ): null}
+                <Button variant='outlined'  onClick={() => setAsyncMigrationOperationsCount(asyncMigrationOperationsCount + 1)}>+</Button>
+
+                
+            </form>
+
+        </div>
+
+    )
+}
 
 export function AsyncMigrations(): JSX.Element {
 
     const [tab, setTab] = useState("list")
 
-    console.log(tab)
 
     return (
         <div style={{ display: 'block', margin: 'auto', width: '90%' }}>
@@ -118,8 +155,9 @@ export function AsyncMigrations(): JSX.Element {
                 <Tab value="create" label="Create migration" />
             </Tabs>
             <br />
-            {tab === "list" ? <AsyncMigrationsList /> : tab === "create" ? <h1>create</h1> : null}
-
+            {tab === "list" ? <AsyncMigrationsList /> : tab === "create" ? <CreateNewAsyncMigration /> : null}
+            <br />
+            <br />
         </div>
     )
 }
