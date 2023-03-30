@@ -89,8 +89,8 @@ export default function PermanentDrawerLeft(): JSX.Element {
           {[
             {'path': '/', 'text': 'Home'},
             {'path': '/slow_queries', 'text': 'Slow queries'},
-            {'path': '/running_queries', 'text': 'Running Queries'},
-            {'path': '/schema', 'text': 'Schema'},
+            {'path': '/running_queries', 'text': 'Running queries'},
+            {'path': '/schema', 'text': 'Table sizes'},
             {'path': '/page_cache', 'text': 'Page cache hits'},
             {'path': '/async_migrations', 'text': 'Async Migrations'},
         ].map((item, index) => (
