@@ -19,6 +19,7 @@ export default function Schema() {
   const defaultConfig = {
     data: testSchemaData,
     colorField: 'name',
+    style: {cursor: 'pointer'},
     label: {
       style: {
         fill: 'black',
@@ -73,7 +74,7 @@ export default function Schema() {
 
   return (
     <div>
-      <Treemap {...config}  onEvent={(node, event) => {
+      <Treemap {...config}   onEvent={(node, event) => {
         if(event.type === 'element:click') {
             history.push(`/schema/${event.data.data.name}`)
         }

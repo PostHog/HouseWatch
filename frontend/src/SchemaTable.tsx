@@ -32,6 +32,7 @@ export default function CollapsibleTable({match}) {
     console.log('slow queries123', slowQueries)
   return (
     <div style={{ height: 800, width: '100%' }}>
+        <h2>Table: {match.params.table}</h2>
       <DataGrid
         rows={slowQueries.map(d => ({id: d.column, ...d}))}
         columns={slowQueriesCols}
