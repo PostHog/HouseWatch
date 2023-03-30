@@ -2,7 +2,11 @@
 // @ts-nocheck
 import * as React from 'react';
 import { usePollingEffect } from './PageCacheHits';
-import { Line } from '@ant-design/charts';
+import { DataGrid } from '@mui/x-data-grid';
+import { Line } from '@ant-design/plots';
+import { Typography } from 'antd'
+import { Code } from '@mui/icons-material';
+const { Text, Paragraph } = Typography
 
 
 
@@ -45,15 +49,18 @@ export default function QueryDetail({match}) {
     )
 
   return (
-    <div 
-    style={{ height: 300, width: '100%', paddingTop: '5rem', marginBottom: '10rem' }}>
-        <h3>Execution count</h3>
-        {queryDetail.length > 0 && 
-        <Line 
-        {...config}
+    <div style={{ height: 300, width: '100%', paddingTop: '5rem', marginBottom: '10rem', textAlign: 'left' }}>
+        <code style={{textAlign: 'left'}}>{queryDetail.query.replace(/(\?)/g, ()=>{
+            index = index + 1
+            return '$'+index
+        })}</code>
+        {queryDetail.execution_count && <Line data={queryDetail.execution_count}
+            padding='auto'
+        xField='day_start'
+        yField='total'
+        xAxis={{tickCount: 10}}
         
         />}
-      
     </div>
   );
 }

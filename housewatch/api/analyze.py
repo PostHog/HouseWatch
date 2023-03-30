@@ -6,7 +6,6 @@ from housewatch.clickhouse.client import run_query, base_params
 from housewatch.clickhouse.queries.sql import (
     SLOW_QUERIES_SQL, 
     SCHEMA_SQL, 
-    SLOW_QUERIES_BY_HASH_SQL, 
     QUERY_EXECUTION_COUNT_SQL, 
     PAGE_CACHE_HIT_PERCENTAGE_SQL, 
     QUERY_LOAD_SQL, 
@@ -16,7 +15,10 @@ from housewatch.clickhouse.queries.sql import (
     TABLES_SQL, 
     RUNNING_QUERIES_SQL, 
     KILL_QUERY_SQL,
-    PARTS_SQL
+    PARTS_SQL,
+    NODE_STORAGE_SQL,
+    NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL,
+    GET_QUERY_BY_NORMALIZED_HASH_SQL
 )
 DEFAULT_TIME = 24 * 7 * 2
 
@@ -27,10 +29,7 @@ class AnalyzeViewset(GenericViewSet):
     @action(detail=False, methods=["GET"])
     def slow_queries(self, request: Request):
         params = { **base_params, "limit": 100, "date_from": "now() - INTERVAL 2 WEEK"}
-        if request.GET.get('by_hash'):
-            query_result = run_query(SLOW_QUERIES_BY_HASH_SQL, params)
-        else:
-            query_result = run_query(SLOW_QUERIES_SQL, params)
+        query_result = run_query(SLOW_QUERIES_SQL, params)
         return Response(query_result)
 
     @action(detail=True, methods=["GET"])
@@ -40,7 +39,9 @@ class AnalyzeViewset(GenericViewSet):
         execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(hours=hours, conditions=conditions))
         memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(hours=hours, conditions=conditions))
         read_bytes = run_query(QUERY_READ_BYTES_SQL.format(hours=hours, conditions=conditions))
+        query = run_query(GET_QUERY_BY_NORMALIZED_HASH_SQL, {'normalized_query_hash': pk})[0]['normalized_query']
         return Response({
+            'query': query,
             'execution_count': execution_count,
             'memory_usage': memory_usage,
             'read_bytes': read_bytes
@@ -57,13 +58,6 @@ class AnalyzeViewset(GenericViewSet):
             'memory_usage': memory_usage,
             'read_bytes': read_bytes
         })
-
-    @action(detail=False, methods=["GET"])
-    def page_cache(self, request: Request):
-        params = { **base_params, "limit": 100, "date_to": "now()", "date_from": "now() - INTERVAL 2 WEEK"}
-        query_result = run_query(PAGE_CACHE_HIT_PERCENTAGE_SQL, params)
-    
-        return Response(query_result)
 
     @action(detail=False, methods=["GET"])
     def tables(self, request: Request):
@@ -117,3 +111,26 @@ class AnalyzeViewset(GenericViewSet):
     def kill_query(self, request: Request, pk: str):
         query_result = run_query(KILL_QUERY_SQL, {'query_id': request.data['query_id']})
         return Response(query_result)
+    
+
+    @action(detail=False, methods=["GET"])
+    def page_cache(self, request: Request):
+        params = { **base_params, "limit": 100, "date_to": "now()", "date_from": "now() - INTERVAL 2 WEEK"}
+        query_result = run_query(PAGE_CACHE_HIT_PERCENTAGE_SQL, params)
+    
+        return Response(query_result)
+    
+    
+    @action(detail=False, methods=["GET"])
+    def cluster_overview(self, request: Request):
+        params = { **base_params, "limit": 100, "date_to": "now()", "date_from": "now() - INTERVAL 2 WEEK"}
+        page_cache_query_result = run_query(PAGE_CACHE_HIT_PERCENTAGE_SQL, params)
+        data_transfer_query_result = run_query(NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL, {})
+        storage_query_result = run_query(NODE_STORAGE_SQL, {})
+        
+        full_result = []
+        for i in range(len(storage_query_result)):
+            node_result = { **page_cache_query_result[i], **data_transfer_query_result[i], **storage_query_result[i] }
+            full_result.append(node_result)
+
+        return Response(full_result)
