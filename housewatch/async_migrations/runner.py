@@ -141,7 +141,7 @@ def update_migration_progress(migration: AsyncMigration):
 
     migration.refresh_from_db()
     try:
-        update_async_migration(migration=migration, progress=int(migration.current_operation_index/len(migration.operations)))
+        update_async_migration(migration=migration, progress=int((migration.current_operation_index/len(migration.operations))*100))
     except:
         pass
 
