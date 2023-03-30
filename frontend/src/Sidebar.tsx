@@ -39,14 +39,14 @@ export default function PermanentDrawerLeft(): JSX.Element {
       <CssBaseline />
       <AppBar
         position='absolute'
-        sx={{ width: `calc(100% - ${drawerWidth}px)`, backgroundColor: 'white', color: 'black' }}
+        sx={{ width: `calc(100% - ${drawerWidth}px)`, height: '100%', backgroundColor: '#eeefe8', color: 'black' }}
       >
-        <Toolbar sx={{backgroundColor: '#151515', color: 'white'}}>
-          <Typography variant="h5" noWrap component="div" sx={{fontWeight: 700}}>
+        <Toolbar sx={{ backgroundColor: '#151515', color: '#eeefe8', position: 'fixed', width: '100%', zIndex: 10 }}>
+          <Typography variant="h5" noWrap component="div" sx={{ fontWeight: 700 }}>
             HouseWatch
           </Typography>
         </Toolbar>
-        <div>
+        <div style={{padding: 12, backgroundColor: '#eeefe8', marginTop: 75 }}>
         <Switch>
           <Route exact path="/">
             Welcome to HouseWatch
@@ -77,20 +77,20 @@ export default function PermanentDrawerLeft(): JSX.Element {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            backgroundColor: "#eeefe8"
           },
         }}
         variant="permanent"
         anchor="left"
       >
-        <Toolbar />
-        <Divider />
-        <List>
+        <Toolbar sx={{backgroundColor: '#151515'}}/>
+        {/* <Divider /> */}
+        <List sx={{ color: "black" }}>
           {[
             {'path': '/', 'text': 'Home'},
             {'path': '/slow_queries', 'text': 'Slow queries'},
             {'path': '/running_queries', 'text': 'Running Queries'},
             {'path': '/schema', 'text': 'Schema'},
-            {'path': '/', 'text': 'Errors'},
             {'path': '/page_cache', 'text': 'Page cache hits'},
             {'path': '/async_migrations', 'text': 'Async Migrations'},
         ].map((item, index) => (
@@ -99,14 +99,14 @@ export default function PermanentDrawerLeft(): JSX.Element {
                 <ListItemIcon>
                   {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                 </ListItemIcon>
-                <ListItemText primary={item.text} />
+                <ListItemText disableTypography primary={item.text} />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
       </Drawer>
 
-        <Toolbar />
-    </div> 
+      <Toolbar />
+    </div>
   );
 }

@@ -7,8 +7,10 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import { Button, Input, LinearProgress, Tab, Tabs, TextField } from '@mui/material'
-
+import { Button, LinearProgress, Tab, Tabs, TextField } from '@mui/material'
+import {
+    useHistory
+ } from 'react-router-dom'
 
 const ASYNC_MIGRATION_STATUS_TO_HUMAN = {
     0: 'Not started',
@@ -20,18 +22,25 @@ const ASYNC_MIGRATION_STATUS_TO_HUMAN = {
     6: 'Failed at startup'
 }
 
-const triggerAsyncMigration = async (id) => {
-    await fetch(`http://localhost:8000/api/async_migrations/${id}/trigger`, { method: 'POST' })
+const ASYNC_MIGRATION_STATUS_TO_FONT_COLOR = {
+    0: 'black',
+    1: 'black',
+    2: 'green',
+    3: 'red',
+    4: 'orange',
+    5: 'black',
+    6: 'red'
 }
 
-export function AsyncMigrationControls({ status, progress, id }: { status: number, progress: number, id: number }): JSX.Element {
+
+export function AsyncMigrationControls({ status, progress, id, triggerAsyncMigration }: { status: number, progress: number, id: number, triggerAsyncMigration: () => Promise<void> }): JSX.Element {
 
     return (
         <div style={{ width: 100 }}>
             {[0, 4, 6].includes(status) ? (
                 <Button variant="contained" onClick={() => triggerAsyncMigration(id)}>Run</Button>
             ) : status === 3 ? (
-                <Button variant="contained" color='yellow'>Rollback</Button>
+                <Button variant="contained" color='warning'>Rollback</Button>
             ) : (
                 <LinearProgress variant="determinate" value={progress} />
             )}
@@ -53,6 +62,10 @@ export function AsyncMigrationsList(): JSX.Element {
         }
     }
 
+    const triggerAsyncMigration = async (id) => {
+        await fetch(`http://localhost:8000/api/async_migrations/${id}/trigger`, { method: 'POST' })
+        await fetchAndUpdateAsyncMigrationsIfNeeded()
+    }
 
     useEffect(() => {
         fetchAndUpdateAsyncMigrationsIfNeeded()
@@ -84,11 +97,13 @@ export function AsyncMigrationsList(): JSX.Element {
                                 {migration.name}
                             </TableCell>
                             <TableCell align="right">{migration.description}</TableCell>
-                            <TableCell align="right">{ASYNC_MIGRATION_STATUS_TO_HUMAN[migration.status]}</TableCell>
+                            <TableCell align="right" style={{ color: ASYNC_MIGRATION_STATUS_TO_FONT_COLOR[migration.status] }}>
+                                <b>{ASYNC_MIGRATION_STATUS_TO_HUMAN[migration.status]}</b>
+                            </TableCell>
                             <TableCell align="right">{migration.progress}</TableCell>
-                            <TableCell align="right">{migration.started_at}</TableCell>
-                            <TableCell align="right">{migration.finished_at}</TableCell>
-                            <TableCell align="right"><AsyncMigrationControls status={migration.status} progress={migration.progress} id={migration.id} /></TableCell>
+                            <TableCell align="right">{migration.started_at ? migration.started_at.split('.')[0] : ''}</TableCell>
+                            <TableCell align="right">{migration.finished_at ? migration.finished_at.split('.')[0] : ''}</TableCell>
+                            <TableCell align="right"><AsyncMigrationControls status={migration.status} progress={migration.progress} id={migration.id} triggerAsyncMigration={triggerAsyncMigration} /></TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
@@ -99,6 +114,7 @@ export function AsyncMigrationsList(): JSX.Element {
 
 export function CreateNewAsyncMigration(): JSX.Element {
 
+    const history = useHistory()
 
     const [asyncMigrationOperationsCount, setAsyncMigrationOperationsCount] = useState(1)
 
@@ -128,12 +144,14 @@ export function CreateNewAsyncMigration(): JSX.Element {
         }
 
         await fetch('http://localhost:8000/api/async_migrations', {
-            method: 'POST', 
-            body: JSON.stringify(asyncMigrationData), 
+            method: 'POST',
+            body: JSON.stringify(asyncMigrationData),
             headers: {
                 "Content-Type": "application/json",
             },
         })
+
+        history.go(0)
 
     }
 
