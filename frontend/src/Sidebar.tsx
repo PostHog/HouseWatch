@@ -39,12 +39,12 @@ export default function PermanentDrawerLeft(): JSX.Element {
         position='absolute'
         sx={{ width: `calc(100% - ${drawerWidth}px)`, height: '100%', backgroundColor: '#eeefe8', color: 'black' }}
       >
-        <Toolbar sx={{ backgroundColor: '#151515', color: '#eeefe8' }}>
+        <Toolbar sx={{ backgroundColor: '#151515', color: '#eeefe8', position: 'fixed', width: '100%', zIndex: 10 }}>
           <Typography variant="h5" noWrap component="div" sx={{ fontWeight: 700 }}>
             HouseWatch
           </Typography>
         </Toolbar>
-        <div style={{padding: 12}}>
+        <div style={{padding: 12, backgroundColor: '#eeefe8', marginTop: 75 }}>
           <Switch>
             <Route exact path="/">
               {/* Welcome to HouseWatch */}
@@ -83,12 +83,12 @@ export default function PermanentDrawerLeft(): JSX.Element {
             { 'path': '/', 'text': 'Home' },
             { 'path': '/slow_queries', 'text': 'Slow queries' },
             { 'path': '/schema', 'text': 'Schema' },
-            { 'path': '/', 'text': 'Errors' },
+            { 'path': '/errors', 'text': 'Errors' },
             { 'path': '/page_cache', 'text': 'Page cache hits' },
             { 'path': '/async_migrations', 'text': 'Async Migrations' },
           ].map((item, index) => (
             <ListItem key={item.text} disablePadding sx={{ fontWeight: 700, fontSize: 16 }}>
-              <ListItemButton onClick={() => history.push({ pathname: item.path })} selected={false}>
+              <ListItemButton onClick={() => history.push({ pathname: item.path })}>
                 <ListItemIcon>
                   {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                 </ListItemIcon>
