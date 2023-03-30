@@ -75,6 +75,7 @@ export default function Schema() {
 
   return (
     <div>
+      <h2 style={{ textAlign: 'left' }}>Table sizes</h2>
       <Treemap {...config}   onEvent={(node, event) => {
         if(event.type === 'element:click') {
             history.push(`/schema/${event.data.data.name}`)
