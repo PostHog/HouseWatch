@@ -31,7 +31,7 @@ export default function AllQueryGraphs() {
   return (
     <div 
     style={{ width: '100%', paddingTop: '1rem', marginBottom: '10rem' }}>
-        <h1 style={{ color: 'orange'}}>Welcome to HoUsEwAtCh</h1>
+        <h1 style={{ color: 'orange', fontWeight: 600}}>🕺 🕺 💃 @! Welcome 2 HoUsEwAtCh !@ 🏠 👀 😎</h1>
         <h3>Execution count</h3>
         <Line data={queryGraphs.execution_count} xField={'day_start'} yField={'total'} xAxis={{tickCount: 5}} slider={{start: 0.1, end: 0.5}}/>
         <br />
