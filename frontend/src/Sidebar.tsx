@@ -14,6 +14,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { PageCacheHits } from './PageCacheHits';
 import SlowQueries from './SlowQueries';
 import Schema from './Schema';
+import QueryDetail from './QueryDetail';
 import SchemaTable from './SchemaTable';
 import {
     BrowserRouter as Router,
@@ -58,6 +59,9 @@ export default function PermanentDrawerLeft(): JSX.Element {
           <Route exact path="/schema" component={Schema}>
           </Route>
           <Route exact path="/schema/:table" component={SchemaTable}>
+          </Route>
+
+          <Route exact path="/query/:query_hash" component={QueryDetail}>
           </Route>
           <Route exact path="/async_migrations" component={AsyncMigrations}>
           </Route>

@@ -93,7 +93,7 @@ FROM
 WHERE
     query_start_time > now() - interval {hours} hour and type = 2 and is_initial_query {conditions}
 GROUP BY toStartOfHour(query_start_time)
-ORDER BY toStartOfHour(query_start_time) DESC
+ORDER BY toStartOfHour(query_start_time) ASC
 """
 
 QUERY_MEMORY_USAGE_SQL = """
@@ -113,7 +113,7 @@ FROM
 WHERE
     event_time > now() - interval 12 hour and type = 2 and is_initial_query {conditions}
 GROUP BY toStartOfHour(query_start_time)
-ORDER BY toStartOfHour(query_start_time) DESC
+ORDER BY toStartOfHour(query_start_time) ASC
 """
 
 QUERY_READ_BYTES_SQL = """
@@ -133,7 +133,7 @@ FROM
 WHERE
     event_time > now() - interval 12 hour and type = 2 and is_initial_query {conditions}
 GROUP BY toStartOfHour(query_start_time)
-ORDER BY toStartOfHour(query_start_time) DESC
+ORDER BY toStartOfHour(query_start_time) ASC
 """
 
 RUNNING_QUERIES_SQL = """

@@ -21,7 +21,7 @@ export default function CollapsibleTable() {
 
       const slowQueriesColumns = [
         { title: 'Query type', dataIndex: 'query_type', key: 'query_type'},
-        // { title: 'Query', dataIndex: 'query', key: 'query'},
+        { title: 'Query', dataIndex: 'query', key: 'query'},
         { title: 'Query duration (ms)', dataIndex: 'query_duration_ms', key: 'query_duration_ms'},
         { title: 'Readable Bytes', dataIndex: 'readable_bytes', key: 'readable_bytes' }
       ]
@@ -50,13 +50,13 @@ export default function CollapsibleTable() {
     { interval: 5000 } // optional
     )
 
-    const slowQueriesCols: GridColDef[] = [
-        { field: 'id', headerName: 'ID', width: 150},
-        { field: 'query_type', type: 'number', headerName: 'Query type', width: 100},
-        { field: 'query', headerName: 'Query', width: 300},
-        { field: 'query_duration_ms', type: 'number', headerName: 'Query duration MS', width: 200},
-        { field: 'readable_bytes', headerName: 'Readable bytes', width: 200}
-    ]
+    // const slowQueriesCols: GridColDef[] = [
+    //     { field: 'id', headerName: 'ID', width: 150},
+    //     { field: 'query_type', type: 'number', headerName: 'Query type', width: 100},
+    //     { field: 'query', headerName: 'Query', width: 300},
+    //     { field: 'query_duration_ms', type: 'number', headerName: 'Query duration MS', width: 200},
+    //     { field: 'readable_bytes', headerName: 'Readable bytes', width: 200}
+    // ]
 
   return (
       <Table
