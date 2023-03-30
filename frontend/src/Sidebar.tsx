@@ -37,30 +37,30 @@ export default function PermanentDrawerLeft(): JSX.Element {
       <CssBaseline />
       <AppBar
         position='absolute'
-        sx={{ width: `calc(100% - ${drawerWidth}px)`, backgroundColor: 'white', color: 'black' }}
+        sx={{ width: `calc(100% - ${drawerWidth}px)`, height: '100%', backgroundColor: '#eeefe8', color: 'black' }}
       >
-        <Toolbar sx={{backgroundColor: '#151515', color: 'white'}}>
-          <Typography variant="h5" noWrap component="div" sx={{fontWeight: 700}}>
+        <Toolbar sx={{ backgroundColor: '#151515', color: '#eeefe8' }}>
+          <Typography variant="h5" noWrap component="div" sx={{ fontWeight: 700 }}>
             HouseWatch
           </Typography>
         </Toolbar>
-        <div>
-        <Switch>
-          <Route exact path="/">
-            Welcome to HouseWatch
-          </Route>
-          <Route exact path="/page_cache">
-            <PageCacheHits />
-          </Route>
-          <Route exact path="/slow_queries" component={SlowQueries}>
-          </Route>
-          <Route exact path="/schema" component={Schema}>
-          </Route>
-          <Route exact path="/schema/:table" component={SchemaTable}>
-          </Route>
+        <div style={{padding: 12}}>
+          <Switch>
+            <Route exact path="/">
+              {/* Welcome to HouseWatch */}
+            </Route>
+            <Route exact path="/page_cache">
+              <PageCacheHits />
+            </Route>
+            <Route exact path="/slow_queries" component={SlowQueries}>
+            </Route>
+            <Route exact path="/schema" component={Schema}>
+            </Route>
+            <Route exact path="/schema/:table" component={SchemaTable}>
+            </Route>
             <Route exact path="/async_migrations" component={AsyncMigrations}>
-          </Route>
-        </Switch>
+            </Route>
+          </Switch>
         </div>
       </AppBar>
       <Drawer
@@ -70,35 +70,36 @@ export default function PermanentDrawerLeft(): JSX.Element {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            backgroundColor: "#eeefe8"
           },
         }}
         variant="permanent"
         anchor="left"
       >
-        <Toolbar />
-        <Divider />
-        <List>
+        <Toolbar sx={{backgroundColor: '#151515'}}/>
+        {/* <Divider /> */}
+        <List sx={{ color: "black" }}>
           {[
-            {'path': '/', 'text': 'Home'},
-            {'path': '/slow_queries', 'text': 'Slow queries'},
-            {'path': '/schema', 'text': 'Schema'},
-            {'path': '/', 'text': 'Errors'},
-            {'path': '/page_cache', 'text': 'Page cache hits'},
-            {'path': '/async_migrations', 'text': 'Async Migrations'},
-        ].map((item, index) => (
-            <ListItem key={item.text} disablePadding>
-              <ListItemButton onClick={() => history.push({pathname: item.path})} selected={false}>
+            { 'path': '/', 'text': 'Home' },
+            { 'path': '/slow_queries', 'text': 'Slow queries' },
+            { 'path': '/schema', 'text': 'Schema' },
+            { 'path': '/', 'text': 'Errors' },
+            { 'path': '/page_cache', 'text': 'Page cache hits' },
+            { 'path': '/async_migrations', 'text': 'Async Migrations' },
+          ].map((item, index) => (
+            <ListItem key={item.text} disablePadding sx={{ fontWeight: 700, fontSize: 16 }}>
+              <ListItemButton onClick={() => history.push({ pathname: item.path })} selected={false}>
                 <ListItemIcon>
                   {/* {index % 2 === 0 ? <InboxIcon /> : <MailIcon />} */}
                 </ListItemIcon>
-                <ListItemText primary={item.text} />
+                <ListItemText disableTypography primary={item.text} />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
       </Drawer>
 
-        <Toolbar />
-    </div> 
+      <Toolbar />
+    </div>
   );
 }
