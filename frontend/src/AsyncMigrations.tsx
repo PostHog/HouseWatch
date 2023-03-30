@@ -7,8 +7,10 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
-import { Button, Input, LinearProgress, Tab, Tabs, TextField } from '@mui/material'
-
+import { Button, LinearProgress, Tab, Tabs, TextField } from '@mui/material'
+import {
+    useHistory
+ } from 'react-router-dom'
 
 const ASYNC_MIGRATION_STATUS_TO_HUMAN = {
     0: 'Not started',
@@ -112,6 +114,7 @@ export function AsyncMigrationsList(): JSX.Element {
 
 export function CreateNewAsyncMigration(): JSX.Element {
 
+    const history = useHistory()
 
     const [asyncMigrationOperationsCount, setAsyncMigrationOperationsCount] = useState(1)
 
@@ -147,6 +150,8 @@ export function CreateNewAsyncMigration(): JSX.Element {
                 "Content-Type": "application/json",
             },
         })
+
+        history.go(0)
 
     }
 
