@@ -20,7 +20,7 @@ from housewatch.clickhouse.queries.sql import (
     NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL,
     GET_QUERY_BY_NORMALIZED_HASH_SQL
 )
-DEFAULT_TIME = 24
+DEFAULT_DAYS = 7
 
 class AnalyzeViewset(GenericViewSet):
     def list(self, request: Request) -> Response:
@@ -34,11 +34,11 @@ class AnalyzeViewset(GenericViewSet):
 
     @action(detail=True, methods=["GET"])
     def query_detail(self, request: Request, pk: str):
-        hours = request.GET.get('hours', DEFAULT_TIME)
+        days = request.GET.get('days', DEFAULT_DAYS)
         conditions = "and toString(normalized_query_hash) = '{}'".format(pk)
-        execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(hours=hours, conditions=conditions))
-        memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(hours=hours, conditions=conditions))
-        read_bytes = run_query(QUERY_READ_BYTES_SQL.format(hours=hours, conditions=conditions))
+        execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(days=days, conditions=conditions))
+        memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(days=days, conditions=conditions))
+        read_bytes = run_query(QUERY_READ_BYTES_SQL.format(days=days, conditions=conditions))
         query = run_query(GET_QUERY_BY_NORMALIZED_HASH_SQL, {'normalized_query_hash': pk})[0]['normalized_query']
         return Response({
             'query': query,
@@ -49,10 +49,11 @@ class AnalyzeViewset(GenericViewSet):
 
     @action(detail=False, methods=["GET"])
     def query_graphs(self, request: Request):
-        hours = request.GET.get('hours', DEFAULT_TIME)
-        execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(hours=hours, conditions=''))
-        memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(hours=hours, conditions=''))
-        read_bytes = run_query(QUERY_READ_BYTES_SQL.format(hours=hours, conditions=''))
+        days = request.GET.get('days', DEFAULT_DAYS)
+        execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(days=days, conditions=''))
+        # print(execution_count)
+        memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(days=days, conditions=''))
+        read_bytes = run_query(QUERY_READ_BYTES_SQL.format(days=days, conditions=''))
         return Response({
             'execution_count': execution_count,
             'memory_usage': memory_usage,

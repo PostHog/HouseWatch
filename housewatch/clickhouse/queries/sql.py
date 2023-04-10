@@ -111,61 +111,65 @@ limit 1
 """
 
 QUERY_EXECUTION_COUNT_SQL = """
-SELECT
-    toUInt16(0) AS total,
-    toStartOfHour(now() - toIntervalHour(number)) AS day_start
-FROM numbers(dateDiff('hour', toStartOfHour(now()  - interval {hours} hour), now()))
-UNION ALL
-
-SELECT
-    count(1) as total,
-    toStartOfHour(query_start_time) as day_start
-FROM
-    clusterAllReplicas('posthog', system.query_log) 
-WHERE
-    query_start_time > now() - interval {hours} hour and type = 2 and is_initial_query {conditions}
-GROUP BY toStartOfHour(query_start_time)
-ORDER BY toStartOfHour(query_start_time) ASC
+SELECT day_start, sum(total) AS total FROM (
+    SELECT
+        0 AS total,
+        toStartOfDay(now() - toIntervalDay(number)) AS day_start
+    FROM numbers(dateDiff('day', toStartOfDay(now()  - interval {days} day), now()))
+    UNION ALL
+    SELECT
+        count(*) as total,
+        toStartOfDay(query_start_time) as day_start
+    FROM
+        clusterAllReplicas('posthog', system.query_log) 
+    WHERE
+        query_start_time > now() - interval {days} day and type = 2 and is_initial_query {conditions}
+    GROUP BY day_start
+)
+GROUP BY day_start
+ORDER BY day_start asc
 """
 
 QUERY_MEMORY_USAGE_SQL = """
-SELECT
-    toUInt16(0) AS total,
-    '' AS total_readable,
-    toStartOfHour(now() - toIntervalHour(number)) AS day_start
-FROM numbers(dateDiff('hour', toStartOfHour(now()  - interval {hours} hour), now()))
-UNION ALL
+SELECT day_start, sum(total) AS total FROM (
+    SELECT
+        0 AS total,
+        toStartOfDay(now() - toIntervalDay(number)) AS day_start
+    FROM numbers(dateDiff('day', toStartOfDay(now()  - interval {days} day), now()))
+    UNION ALL
 
-SELECT
-    sum(memory_usage) as total,
-    formatReadableSize(sum(memory_usage)) as total_readable,
-    toStartOfHour(query_start_time) as day_start
-FROM
-    clusterAllReplicas('posthog', system.query_log) 
-WHERE
-    event_time > now() - interval 12 hour and type = 2 and is_initial_query {conditions}
-GROUP BY toStartOfHour(query_start_time)
-ORDER BY toStartOfHour(query_start_time) ASC
+    SELECT
+        sum(memory_usage) as total,
+        toStartOfDay(query_start_time) as day_start
+    FROM
+        clusterAllReplicas('posthog', system.query_log) 
+    WHERE
+        event_time > now() - interval 12 day and type = 2 and is_initial_query {conditions}
+    GROUP BY day_start
+)
+GROUP BY day_start
+ORDER BY day_start ASC
 """
 
 QUERY_READ_BYTES_SQL = """
-SELECT
-    toUInt16(0) AS total,
-    '' AS total_readable,
-    toStartOfHour(now() - toIntervalHour(number)) AS day_start
-FROM numbers(dateDiff('hour', toStartOfHour(now()  - interval {hours} hour), now()))
-UNION ALL
+SELECT day_start, sum(total) AS total FROM (
+    SELECT
+        0 AS total,
+        toStartOfDay(now() - toIntervalDay(number)) AS day_start
+    FROM numbers(dateDiff('day', toStartOfDay(now()  - interval {days} day), now()))
+    UNION ALL
 
-SELECT
-    sum(read_bytes) as total,
-    formatReadableSize(sum(read_bytes)) as total_readable,
-    toStartOfHour(query_start_time) as day_start
-FROM
-    clusterAllReplicas('posthog', system.query_log) 
-WHERE
-    event_time > now() - interval 12 hour and type = 2 and is_initial_query {conditions}
-GROUP BY toStartOfHour(query_start_time)
-ORDER BY toStartOfHour(query_start_time) ASC
+    SELECT
+        sum(read_bytes) as total,
+        toStartOfDay(query_start_time) as day_start
+    FROM
+        clusterAllReplicas('posthog', system.query_log) 
+    WHERE
+        event_time > now() - interval 12 day and type = 2 and is_initial_query {conditions}
+    GROUP BY day_start
+)
+GROUP BY day_start
+ORDER BY day_start ASC
 """
 
 RUNNING_QUERIES_SQL = """
