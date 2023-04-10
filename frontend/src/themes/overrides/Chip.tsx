@@ -7,12 +7,12 @@ export default function Chip(theme: any) {
                 root: {
                     borderRadius: 4,
                     '&:active': {
-                        boxShadow: 'none'
-                    }
+                        boxShadow: 'none',
+                    },
                 },
                 sizeLarge: {
                     fontSize: '1rem',
-                    height: 40
+                    height: 40,
                 },
                 light: {
                     color: theme.palette.primary.main,
@@ -21,20 +21,20 @@ export default function Chip(theme: any) {
                     '&.MuiChip-lightError': {
                         color: theme.palette.error.main,
                         backgroundColor: theme.palette.error.lighter,
-                        borderColor: theme.palette.error.light
+                        borderColor: theme.palette.error.light,
                     },
                     '&.MuiChip-lightSuccess': {
                         color: theme.palette.success.main,
                         backgroundColor: theme.palette.success.lighter,
-                        borderColor: theme.palette.success.light
+                        borderColor: theme.palette.success.light,
                     },
                     '&.MuiChip-lightWarning': {
                         color: theme.palette.warning.main,
                         backgroundColor: theme.palette.warning.lighter,
-                        borderColor: theme.palette.warning.light
-                    }
-                }
-            }
-        }
-    };
+                        borderColor: theme.palette.warning.light,
+                    },
+                },
+            },
+        },
+    }
 }

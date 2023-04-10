@@ -5,9 +5,9 @@ export default function Typography() {
         MuiTypography: {
             styleOverrides: {
                 gutterBottom: {
-                    marginBottom: 12
-                }
-            }
-        }
-    };
+                    marginBottom: 12,
+                },
+            },
+        },
+    }
 }

@@ -5,9 +5,9 @@ export default function Tabs() {
         MuiTabs: {
             styleOverrides: {
                 vertical: {
-                    overflow: 'visible'
-                }
-            }
-        }
-    };
+                    overflow: 'visible',
+                },
+            },
+        },
+    }
 }

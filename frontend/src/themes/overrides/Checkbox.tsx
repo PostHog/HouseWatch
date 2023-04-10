@@ -5,9 +5,9 @@ export default function Checkbox(theme: any) {
         MuiCheckbox: {
             styleOverrides: {
                 root: {
-                    color: theme.palette.secondary[300]
-                }
-            }
-        }
-    };
+                    color: theme.palette.secondary[300],
+                },
+            },
+        },
+    }
 }

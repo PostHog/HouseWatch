@@ -3,26 +3,26 @@
 export default function Button(theme: any) {
     const disabledStyle = {
         '&.Mui-disabled': {
-            backgroundColor: theme.palette.grey[200]
-        }
-    };
+            backgroundColor: theme.palette.grey[200],
+        },
+    }
 
     return {
         MuiButton: {
             defaultProps: {
-                disableElevation: true
+                disableElevation: true,
             },
             styleOverrides: {
                 root: {
-                    fontWeight: 400
+                    fontWeight: 400,
                 },
                 contained: {
-                    ...disabledStyle
+                    ...disabledStyle,
                 },
                 outlined: {
-                    ...disabledStyle
-                }
-            }
-        }
-    };
+                    ...disabledStyle,
+                },
+            },
+        },
+    }
 }
