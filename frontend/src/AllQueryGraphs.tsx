@@ -17,9 +17,9 @@ export default function AllQueryGraphs() {
         return response.json()
     })
     .then(data => {
-        const execution_count = data.execution_count.splice(0, 200)
-        const memory_usage = data.memory_usage.splice(0, 200)
-        const read_bytes = data.read_bytes.splice(0, 200)
+        const execution_count = data.execution_count
+        const memory_usage = data.memory_usage
+        const read_bytes = data.read_bytes
         return { execution_count, memory_usage, read_bytes }
     })
     .catch(err => {
@@ -28,18 +28,20 @@ export default function AllQueryGraphs() {
     [],
     { interval: 5000 } // optional
     )
+
+    console.log(queryGraphs.memory_usage.map(dataPoint => ({ total: dataPoint.total / 1000000000, day_start: dataPoint.day_start })))
+
   return (
-    <div 
-    style={{ width: '100%', paddingTop: '1rem', marginBottom: '10rem' }}>
-        <h1 style={{ color: 'orange', fontWeight: 600}}>🕺 🕺 💃 @! Welcome 2 HoUsEwAtCh !@ 🏠 👀 😎</h1>
-        <h3>Execution count</h3>
-        <Line data={queryGraphs.execution_count} xField={'day_start'} yField={'total'} xAxis={{tickCount: 5}} slider={{start: 0.1, end: 0.5}}/>
+    <div>
+        <h1 style={{ textAlign: 'left' }}>Overview</h1>
+        <h2>Execution count</h2>
+        <Line data={queryGraphs.memory_usage.map(dataPoint => ({ ...dataPoint, day_start: dataPoint.day_start.split('T')[0] }))} xField={'day_start'} yField={'total'} xAxis={{tickCount: 5}} />
         <br />
-        <h3 style={{marginTop: 16}}>Memory usage</h3>
-        <Line data={queryGraphs.memory_usage} xField={'day_start'} yField={'total'} xAxis={{tickCount: 5}} slider={{start: 0.1, end: 0.5}}/>
+        <h2 style={{marginTop: 16}}>Memory usage (GB)</h2>
+        <Line data={queryGraphs.memory_usage.map(dataPoint => ({ day_start: dataPoint.day_start.split('T')[0], total: dataPoint.total / 1000000000 }))} xField={'day_start'} yField={'total'}  />
         <br />
-        <h3 style={{marginTop: 16}}>Read bytes</h3>
-        <Line data={queryGraphs.read_bytes} xField={'day_start'} yField={'total'} xAxis={{tickCount: 5}} slider={{start: 0.1, end: 0.5}}/>
+        <h2 style={{marginTop: 16}}>Read bytes (GB)</h2>
+        <Line data={queryGraphs.read_bytes.map(dataPoint => ({ day_start: dataPoint.day_start.split('T')[0], total: dataPoint.total / 1000000000 }))} xField={'day_start'} yField={'total'} xAxis={{tickCount: 5}} />
       
     </div>
   );

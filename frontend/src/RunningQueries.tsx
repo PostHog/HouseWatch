@@ -90,7 +90,7 @@ export default function RunningQueries() {
 
   return (
     <>
-      <h2 style={{ textAlign: 'left' }}>Running queries</h2>
+      <h1 style={{ textAlign: 'left' }}>Running queries</h1>
       <br />
       <Table columns={columns} dataSource={runningQueries}  loading={!runningQueries} />
     </>

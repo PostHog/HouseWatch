@@ -92,7 +92,8 @@ export default function Schema() {
 
   return (
     <div>
-      <h2 style={{ textAlign: 'left', fontWeight: 500 }}>Largest tables by data size</h2>
+      <h1 style={{ textAlign: 'left' }}>Schema statistics</h1>
+      <h2>Largest tables</h2>
       <div style={{ marginBottom: 50}}>
         <Treemap {...config} onEvent={(node, event) => {
           if (event.type === 'element:click') {
@@ -101,7 +102,7 @@ export default function Schema() {
         }} />
       </div>
       <div>
-        <h2 style={{textAlign: 'left', fontWeight: 500}}>All tables</h2>
+        <h2 style={{textAlign: 'left' }}>All tables</h2>
         <Table
           dataSource={schema}
           onRow={(table, rowIndex) => {

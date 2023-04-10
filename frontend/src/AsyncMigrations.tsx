@@ -198,8 +198,8 @@ export function AsyncMigrations(): JSX.Element {
 
 
     return (
-        <div style={{ display: 'block', margin: 'auto', width: '90%' }}>
-            <h2 style={{ textAlign: 'left' }}>Async migrations</h2>
+        <div style={{ display: 'block', margin: 'auto' }}>
+            <h1 style={{ textAlign: 'left' }}>Async migrations</h1>
             <br />
             <Tabs
                 value={tab}

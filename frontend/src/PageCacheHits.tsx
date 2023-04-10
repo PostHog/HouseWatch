@@ -179,7 +179,7 @@ export function PageCacheHits(): JSX.Element {
 
   return (
     <div style={{ textAlign: 'left' }}>
-      <h2>Cluster overview</h2>
+      <h1>Cluster overview</h1>
       <br />
       <div style={{ display: 'block' }}>
         {clusterOverviewData.length === 0 ? <Spin /> : (

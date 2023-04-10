@@ -147,7 +147,7 @@ export default function CollapsibleTable({ match }) {
 
   return (
     <div style={{ height: 800, width: '100%' }}>
-      <h2>Table: {match.params.table}</h2>
+      <h1>Table: {match.params.table}</h1>
       <br />
       <Tabs
         value={tab}
