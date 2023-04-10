@@ -9,6 +9,10 @@ import TableRow from '@mui/material/TableRow'
 import Paper from '@mui/material/Paper'
 import { Button, LinearProgress, Tab, Tabs, TextField } from '@mui/material'
 import { useHistory } from 'react-router-dom'
+import Editor from 'react-simple-code-editor'
+import { highlight, languages } from 'prismjs/components/prism-core';
+import 'prismjs/components/prism-sql'
+import 'prismjs/themes/prism.css'
 
 const ASYNC_MIGRATION_STATUS_TO_HUMAN = {
     0: 'Not started',
@@ -136,7 +140,13 @@ export function CreateNewAsyncMigration(): JSX.Element {
 
     const [asyncMigrationOperationsCount, setAsyncMigrationOperationsCount] = useState(1)
 
+    const [code, setCode] = useState(
+        `SELECT 1`
+    );
+
     const createAsyncMigration = async () => {
+
+
         const form = document.getElementById('create-migration-form')
         const formData = new FormData(form)
 
@@ -205,14 +215,32 @@ export function CreateNewAsyncMigration(): JSX.Element {
                         />
                         <br />
                         <br />
-                        <TextField
+                        <Editor
+                            id={`create-migration-form-rollback-${i + 1}`}
+                            name={`rollback-${i + 1}`}
+                            value={code}
+                            onValueChange={code => setCode(code)}
+                            highlight={code => highlight(code, languages.sql)}
+                            padding={10}
+                            style={{
+                                fontFamily: '"Fira code", "Fira Mono", monospace',
+                                fontSize: 14,
+                                width: 800,
+                                minHeight: 200,
+                                border: '1px solid rgb(118, 118, 118)',
+                                borderRadius: 4
+                            }}
+                            multiline
+                            rows={5}
+                        />
+                        {/* <TextField
                             id={`create-migration-form-rollback-${i + 1}`}
                             name={`rollback-${i + 1}`}
                             placeholder="Rollback SQL"
                             multiline
                             style={{ width: 800 }}
                             rows={5}
-                        />
+                        /> */}
                         <br />
                         <br />
                     </span>
