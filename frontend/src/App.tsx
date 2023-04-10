@@ -3,7 +3,6 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import './App.css';
 import Sidebar from './Sidebar';
 import ThemeCustomization from './themes'
-import "antd/dist/antd.css";
 
 
 
