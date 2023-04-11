@@ -2,6 +2,7 @@
 import * as React from 'react'
 import { usePollingEffect } from './PageCacheHits'
 import { Line } from '@ant-design/charts'
+import { Card } from 'antd'
 
 export default function AllQueryGraphs() {
     const [queryGraphs, setQueryGraphs] = React.useState({ execution_count: [], memory_usage: [], read_bytes: [] })
@@ -39,37 +40,41 @@ export default function AllQueryGraphs() {
     return (
         <div>
             <h1 style={{ textAlign: 'left' }}>Overview</h1>
-            <h2>Execution count</h2>
-            <Line
-                data={queryGraphs.memory_usage.map((dataPoint) => ({
-                    ...dataPoint,
-                    day_start: dataPoint.day_start.split('T')[0],
-                }))}
-                xField={'day_start'}
-                yField={'total'}
-                xAxis={{ tickCount: 5 }}
-            />
+            <Card title='Number of queries'>
+                <Line
+                    data={queryGraphs.memory_usage.map((dataPoint) => ({
+                        ...dataPoint,
+                        day_start: dataPoint.day_start.split('T')[0],
+                    }))}
+                    xField={'day_start'}
+                    yField={'total'}
+                    xAxis={{ tickCount: 5 }}
+                    style={{ padding: 20 }}
+                />
+            </Card>
             <br />
-            <h2 style={{ marginTop: 16 }}>Memory usage (GB)</h2>
-            <Line
-                data={queryGraphs.memory_usage.map((dataPoint) => ({
-                    day_start: dataPoint.day_start.split('T')[0],
-                    total: dataPoint.total / 1000000000,
-                }))}
-                xField={'day_start'}
-                yField={'total'}
-            />
+            <Card title='Memory usage (GB)'>
+                <Line
+                    data={queryGraphs.memory_usage.map((dataPoint) => ({
+                        day_start: dataPoint.day_start.split('T')[0],
+                        total: dataPoint.total / 1000000000,
+                    }))}
+                    xField={'day_start'}
+                    yField={'total'}
+                />
+            </ Card>
             <br />
-            <h2 style={{ marginTop: 16 }}>Read bytes (GB)</h2>
-            <Line
-                data={queryGraphs.read_bytes.map((dataPoint) => ({
-                    day_start: dataPoint.day_start.split('T')[0],
-                    total: dataPoint.total / 1000000000,
-                }))}
-                xField={'day_start'}
-                yField={'total'}
-                xAxis={{ tickCount: 5 }}
-            />
+            <Card title='Data read (GB)'>
+                <Line
+                    data={queryGraphs.read_bytes.map((dataPoint) => ({
+                        day_start: dataPoint.day_start.split('T')[0],
+                        total: dataPoint.total / 1000000000,
+                    }))}
+                    xField={'day_start'}
+                    yField={'total'}
+                    xAxis={{ tickCount: 5 }}
+                />
+            </Card>
         </div>
     )
 }
