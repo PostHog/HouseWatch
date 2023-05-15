@@ -60,7 +60,7 @@ export default function RunningQueries() {
                 let index = 0
                 return (
                     <Paragraph
-                        style={{ maxWidth: '100%' }}
+                        style={{ maxWidth: '100%', fontFamily: 'monospace' }}
                         ellipsis={{
                             rows: 2,
                             expandable: true,

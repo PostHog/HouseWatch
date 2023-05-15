@@ -17,7 +17,8 @@ export default function CollapsibleTable() {
                 let index = 0
                 return (
                     <Paragraph
-                        style={{ maxWidth: '100%' }}
+                        className='clickable'
+                        style={{ maxWidth: '100%', fontFamily: 'monospace' }}
                         ellipsis={{
                             rows: 2,
                             expandable: false,

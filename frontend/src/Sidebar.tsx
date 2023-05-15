@@ -1,16 +1,4 @@
 import React, { useState } from 'react'
-import Box from '@mui/material/Box'
-import Drawer from '@mui/material/Drawer'
-import CssBaseline from '@mui/material/CssBaseline'
-import AppBar from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import List from '@mui/material/List'
-import Typography from '@mui/material/Typography'
-import Divider from '@mui/material/Divider'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
 import { PageCacheHits } from './PageCacheHits'
 import SlowQueries from './SlowQueries'
 import Schema from './Schema'
@@ -26,13 +14,8 @@ import {
     ApartmentOutlined,
     CodeOutlined,
     DashboardOutlined,
-    DesktopOutlined,
-    FileOutlined,
     HddOutlined,
     HomeOutlined,
-    PieChartOutlined,
-    TeamOutlined,
-    UserOutlined,
     WarningOutlined,
     ClockCircleOutlined,
 } from '@ant-design/icons'
@@ -79,9 +62,9 @@ export default function PermanentDrawerLeft(): JSX.Element {
     console.log(openPage)
     return (
         <ConfigProvider theme={{ token: { colorPrimary: '#ffb200', colorPrimaryBg: 'black' } }}>
-            <Layout style={{ minHeight: '100vh' }}>
+            <Layout style={{ minHeight: '100vh'}}>
                 <Sider>
-                    <div>
+                    <div className='clickable' onClick={() => history.push('')}>
                         <h1
                             style={{ fontSize: 20, color: '#ffb200', textAlign: 'center', fontFamily: 'Hind Siliguri' }}
                         >
@@ -96,7 +79,11 @@ export default function PermanentDrawerLeft(): JSX.Element {
                         onClick={(info) => history.push(`/${info.key}`)}
                     />
                 </Sider>
-                <Layout className="site-layout">
+                <Layout>
+                    <Header style={{ background: 'rgb(231 231 231)', borderBottom: '1px solid #c7c7c7'}}>
+                        <p style={{ textAlign: 'center', margin: 0 }}><b>ch8.posthog.net</b></p>
+                    </Header>
+
                     <Content style={{ margin: 'auto', display: 'block', width: '85%', marginTop: 20 }}>
                         <Switch>
                             <Route exact path="/" component={AllQueryGraphs}></Route>
