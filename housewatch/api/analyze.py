@@ -2,7 +2,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from housewatch.clickhouse.client import run_query, base_params
+from housewatch.clickhouse.client import run_query, base_params, ch_host
 from housewatch.clickhouse.queries.sql import (
     SLOW_QUERIES_SQL, 
     SCHEMA_SQL, 
@@ -18,7 +18,8 @@ from housewatch.clickhouse.queries.sql import (
     PARTS_SQL,
     NODE_STORAGE_SQL,
     NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL,
-    GET_QUERY_BY_NORMALIZED_HASH_SQL
+    GET_QUERY_BY_NORMALIZED_HASH_SQL,
+    QUERY_CPU_USAGE_SQL
 )
 DEFAULT_DAYS = 7
 
@@ -51,19 +52,24 @@ class AnalyzeViewset(GenericViewSet):
     def query_graphs(self, request: Request):
         days = request.GET.get('days', DEFAULT_DAYS)
         execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(days=days, conditions=''))
-        # print(execution_count)
         memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(days=days, conditions=''))
         read_bytes = run_query(QUERY_READ_BYTES_SQL.format(days=days, conditions=''))
+        cpu = run_query(QUERY_CPU_USAGE_SQL.format(days=days, conditions=''))
         return Response({
             'execution_count': execution_count,
             'memory_usage': memory_usage,
-            'read_bytes': read_bytes
+            'read_bytes': read_bytes,
+            'cpu': cpu
         })
 
     @action(detail=False, methods=["GET"])
     def tables(self, request: Request):
         query_result = run_query(TABLES_SQL)
         return Response(query_result)
+    
+    @action(detail=False, methods=["GET"])
+    def hostname(self, request: Request):
+        return Response({ "hostname": ch_host })
 
     @action(detail=True, methods=["GET"])
     def schema(self, request: Request, pk: str):

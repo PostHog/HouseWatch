@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { PageCacheHits } from './PageCacheHits'
 import SlowQueries from './SlowQueries'
 import Schema from './Schema'
@@ -19,7 +19,7 @@ import {
     WarningOutlined,
     ClockCircleOutlined,
 } from '@ant-design/icons'
-import { ConfigProvider, MenuProps } from 'antd'
+import { ConfigProvider, MenuProps, Tooltip } from 'antd'
 import { Breadcrumb, Layout, Menu, theme } from 'antd'
 
 const { Header, Content, Footer, Sider } = Layout
@@ -56,10 +56,23 @@ const items: MenuItem[] = [
 const drawerWidth = 240
 
 export default function PermanentDrawerLeft(): JSX.Element {
+
+    const [hostname, setHostname] = useState('')
+
+    const fetchHostname = async () => {
+        const response = await fetch(`http://localhost:8000/api/analyze/hostname`)
+        const responseJson = await response.json()
+        setHostname(responseJson.hostname)
+    }
+
+    useEffect(() => {
+        fetchHostname()
+    }, [])
+
+
     const history = useHistory()
     const openPage = history.location.pathname.split('/')[1]
 
-    console.log(openPage)
     return (
         <ConfigProvider theme={{ token: { colorPrimary: '#ffb200', colorPrimaryBg: 'black' } }}>
             <Layout style={{ minHeight: '100vh'}}>
@@ -80,8 +93,8 @@ export default function PermanentDrawerLeft(): JSX.Element {
                     />
                 </Sider>
                 <Layout>
-                    <Header style={{ background: 'rgb(231 231 231)', borderBottom: '1px solid #c7c7c7'}}>
-                        <p style={{ textAlign: 'center', margin: 0 }}><b>ch8.posthog.net</b></p>
+                    <Header style={{ background: 'rgb(231 231 231)', borderBottom: '1px solid #c7c7c7', display: 'inline-block'}}>
+                        <p style={{ textAlign: 'center', margin: 0 }}><b>{hostname}</b></p>
                     </Header>
 
                     <Content style={{ margin: 'auto', display: 'block', width: '85%', marginTop: 20 }}>

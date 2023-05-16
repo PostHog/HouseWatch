@@ -151,6 +151,27 @@ GROUP BY day_start
 ORDER BY day_start ASC
 """
 
+QUERY_CPU_USAGE_SQL = """
+SELECT day_start, sum(total) AS total FROM (
+    SELECT
+        0 AS total,
+        toStartOfDay(now() - toIntervalDay(number)) AS day_start
+    FROM numbers(dateDiff('day', toStartOfDay(now()  - interval {days} day), now()))
+    UNION ALL
+
+    SELECT
+        sum(ProfileEvents['OSCPUVirtualTimeMicroseconds']) as total,
+        toStartOfDay(query_start_time) as day_start
+    FROM
+        clusterAllReplicas('posthog', system.query_log) 
+    WHERE
+        event_time > now() - interval 12 day and type = 2 and is_initial_query {conditions}
+    GROUP BY day_start
+)
+GROUP BY day_start
+ORDER BY day_start ASC
+"""
+
 QUERY_READ_BYTES_SQL = """
 SELECT day_start, sum(total) AS total FROM (
     SELECT
@@ -173,7 +194,11 @@ ORDER BY day_start ASC
 """
 
 RUNNING_QUERIES_SQL = """
-SELECT query, elapsed, read_rows, total_rows_approx, formatReadableSize(memory_usage) as memory_usage, query_id FROM system.processes ORDER BY elapsed DESC
+SELECT query, elapsed, read_rows, total_rows_approx, formatReadableSize(memory_usage) as memory_usage, query_id 
+FROM system.processes
+WHERE Settings['log_comment'] != 'running_queries_lookup'
+ORDER BY elapsed DESC
+SETTINGS log_comment = 'running_queries_lookup'
 """
 
 KILL_QUERY_SQL = """

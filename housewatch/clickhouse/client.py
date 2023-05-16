@@ -2,8 +2,10 @@ from typing import Dict
 from clickhouse_pool import ChPool
 import os
 
+ch_host = os.getenv("CLICKHOUSE_HOST", "localhost")
+
 pool = ChPool(
-    host=os.getenv("CLICKHOUSE_HOST", "localhost"),
+    host=ch_host,
     database=os.getenv("CLICKHOUSE_DATABASE", "default"),
     secure=os.getenv("CLICKHOUSE_SECURE", ""),
     user=os.getenv("CLICKHOUSE_USER", "default"),
