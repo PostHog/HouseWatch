@@ -18,6 +18,7 @@ import {
     HomeOutlined,
     WarningOutlined,
     ClockCircleOutlined,
+    GithubFilled,
 } from '@ant-design/icons'
 import { ConfigProvider, MenuProps, Tooltip } from 'antd'
 import { Breadcrumb, Layout, Menu, theme } from 'antd'
@@ -113,7 +114,10 @@ export default function PermanentDrawerLeft(): JSX.Element {
                             <Route exact path="/errors" component={Errors}></Route>
                         </Switch>
                     </Content>
-                    <Footer style={{ textAlign: 'center' }}>Created by PostHog</Footer>
+                    <Footer style={{ textAlign: 'center' }}>
+                        <p style={{ lineHeight: 2 }}>Created by <a href='https://posthog.com' target='_blank' rel='noopener noreferrer'>PostHog</a></p>
+                        <a href='https://github.com/PostHog/HouseWatch' target='_blank' rel='noopener noreferrer' style={{ color: 'black' }}><GithubFilled /></a>
+                    </Footer>
                 </Layout>
             </Layout>
         </ConfigProvider>
