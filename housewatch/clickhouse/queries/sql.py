@@ -227,3 +227,26 @@ where is_initial_query != 0 and type = 2
 group by node
 order by node
 """
+
+LOGS_SQL = """
+SELECT event_time, toString(level) level, hostName() hostname, message
+FROM clusterAllReplicas('posthog', system.text_log)
+WHERE message ILIKE '%(message)s'
+ORDER BY event_time DESC
+LIMIT 100
+"""
+
+LOGS_FREQUENCY_SQL = """
+SELECT
+    toStartOfHour(now() - toIntervalHour(number)) AS hour,
+    0 AS total
+FROM numbers(dateDiff('hour', toStartOfHour(now()  - interval 3 day), now()))
+GROUP BY hour
+ORDER BY hour
+UNION ALL
+SELECT toStartOfHour(event_time) hour, count() total
+FROM clusterAllReplicas('posthog', system.text_log)
+WHERE event_time > now() - interval 3 day AND message ILIKE '%(message)s'
+GROUP BY hour
+ORDER BY hour
+"""

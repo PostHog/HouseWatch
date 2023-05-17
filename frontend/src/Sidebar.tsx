@@ -10,6 +10,7 @@ import { BrowserRouter as Router, Switch, Route, Link, useHistory } from 'react-
 
 import { AsyncMigrations } from './AsyncMigrations'
 import RunningQueries from './RunningQueries'
+import Logs from './Logs'
 import {
     ApartmentOutlined,
     CodeOutlined,
@@ -19,6 +20,7 @@ import {
     WarningOutlined,
     ClockCircleOutlined,
     GithubFilled,
+    BarsOutlined,
 } from '@ant-design/icons'
 import { ConfigProvider, MenuProps, Tooltip } from 'antd'
 import { Breadcrumb, Layout, Menu, theme } from 'antd'
@@ -42,6 +44,7 @@ const items: MenuItem[] = [
     { key: 'running_queries', label: 'Running queries', icon: <DashboardOutlined /> },
     { key: 'schema', label: 'Table sizes', icon: <HddOutlined /> },
     { key: 'cluster_overview', label: 'Cluster overview', icon: <ApartmentOutlined /> },
+    { key: 'logs', label: 'Logs', icon: <BarsOutlined /> },
     { key: 'errors', label: 'Errors', icon: <WarningOutlined /> },
     { key: 'async_migrations', label: 'Async migrations', icon: <CodeOutlined /> },
 
@@ -111,6 +114,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
                             <Route exact path="/query/:query_hash" component={QueryDetail}></Route>
                             <Route exact path="/async_migrations" component={AsyncMigrations}></Route>
                             <Route exact path="/running_queries" component={RunningQueries}></Route>
+                            <Route exact path="/logs" component={Logs}></Route>
                             <Route exact path="/errors" component={Errors}></Route>
                         </Switch>
                     </Content>

@@ -19,7 +19,9 @@ from housewatch.clickhouse.queries.sql import (
     NODE_STORAGE_SQL,
     NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL,
     GET_QUERY_BY_NORMALIZED_HASH_SQL,
-    QUERY_CPU_USAGE_SQL
+    QUERY_CPU_USAGE_SQL,
+    LOGS_SQL,
+    LOGS_FREQUENCY_SQL
 )
 DEFAULT_DAYS = 7
 
@@ -65,6 +67,16 @@ class AnalyzeViewset(GenericViewSet):
     @action(detail=False, methods=["GET"])
     def tables(self, request: Request):
         query_result = run_query(TABLES_SQL)
+        return Response(query_result)
+    
+    @action(detail=False, methods=["POST"])
+    def logs(self, request: Request):
+        query_result = run_query(LOGS_SQL, { "message": f"%{request.data['message_ilike']}%" if request.data['message_ilike'] else '%'})
+        return Response(query_result)
+    
+    @action(detail=False, methods=["POST"])
+    def logs_frequency(self, request: Request):
+        query_result = run_query(LOGS_FREQUENCY_SQL, { "message": f"%{request.data['message_ilike']}%" if request.data['message_ilike'] else '%'})
         return Response(query_result)
     
     @action(detail=False, methods=["GET"])
