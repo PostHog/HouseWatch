@@ -98,7 +98,7 @@ export default function Schema() {
 
     return (
         <div>
-            <h1 style={{ textAlign: 'left' }}>Schema statistics</h1>
+            <h1 style={{ textAlign: 'left' }}>Schema stats</h1>
             <h2>Largest tables</h2>
             <div style={{ marginBottom: 50 }} className='schema-treemap'>
                 <Treemap

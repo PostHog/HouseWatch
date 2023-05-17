@@ -44,7 +44,7 @@ const items: MenuItem[] = [
     { key: '', icon: <HomeOutlined />, label: 'Overview' },
     { key: 'slow_queries', label: 'Slow queries', icon: <ClockCircleOutlined /> },
     { key: 'running_queries', label: 'Running queries', icon: <DashboardOutlined /> },
-    { key: 'schema', label: 'Table sizes', icon: <HddOutlined /> },
+    { key: 'schema', label: 'Schema stats', icon: <HddOutlined /> },
     { key: 'cluster_overview', label: 'Cluster overview', icon: <ApartmentOutlined /> },
     { key: 'logs', label: 'Logs', icon: <BarsOutlined /> },
     { key: 'errors', label: 'Errors', icon: <WarningOutlined /> },
