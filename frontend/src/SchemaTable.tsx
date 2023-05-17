@@ -138,7 +138,6 @@ export default function CollapsibleTable({ match }) {
     return (
         <div style={{ height: 800, width: '100%' }}>
             <h1>Table: {match.params.table}</h1>
-            <br />
             <Tabs value={tab} textColor="primary" indicatorColor="primary" onChange={(_, value) => setTab(value)}>
                 <Tab value="columns" label="Columns" key="columns" />
                 <Tab value="parts" label="Parts" key="parts" />

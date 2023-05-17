@@ -21,9 +21,11 @@ import {
     ClockCircleOutlined,
     GithubFilled,
     BarsOutlined,
+    FormOutlined,
 } from '@ant-design/icons'
 import { ConfigProvider, MenuProps, Tooltip } from 'antd'
 import { Breadcrumb, Layout, Menu, theme } from 'antd'
+import QueryEditor from './QueryEditor'
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -46,15 +48,8 @@ const items: MenuItem[] = [
     { key: 'cluster_overview', label: 'Cluster overview', icon: <ApartmentOutlined /> },
     { key: 'logs', label: 'Logs', icon: <BarsOutlined /> },
     { key: 'errors', label: 'Errors', icon: <WarningOutlined /> },
-    { key: 'async_migrations', label: 'Async migrations', icon: <CodeOutlined /> },
-
-    // {'path': '/', 'text': 'Home'},
-    // {'path': '/slow_queries', 'text': 'Slow queries'},
-    // {'path': '/running_queries', 'text': 'Running queries'},
-    // {'path': '/schema', 'text': 'Table sizes'},
-    // {'path': '/cluster_overview', 'text': 'Cluster overview'},
-    // {'path': '/async_migrations', 'text': 'Async migrations'},
-    // {'path': '/errors', 'text': 'ErrorWes'},
+    { key: 'query_editor', label: 'Query editor', icon: <FormOutlined /> },
+    { key: 'operations', label: 'Operations', icon: <CodeOutlined /> },
 ]
 
 const drawerWidth = 240
@@ -112,10 +107,11 @@ export default function PermanentDrawerLeft(): JSX.Element {
                             <Route exact path="/schema/:table" component={SchemaTable}></Route>
 
                             <Route exact path="/query/:query_hash" component={QueryDetail}></Route>
-                            <Route exact path="/async_migrations" component={AsyncMigrations}></Route>
+                            <Route exact path="/operations" component={AsyncMigrations}></Route>
                             <Route exact path="/running_queries" component={RunningQueries}></Route>
                             <Route exact path="/logs" component={Logs}></Route>
                             <Route exact path="/errors" component={Errors}></Route>
+                            <Route exact path="/query_editor" component={QueryEditor}></Route>
                         </Switch>
                     </Content>
                     <Footer style={{ textAlign: 'center' }}>

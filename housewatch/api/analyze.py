@@ -79,6 +79,11 @@ class AnalyzeViewset(GenericViewSet):
         query_result = run_query(LOGS_FREQUENCY_SQL, { "message": f"%{request.data['message_ilike']}%" if request.data['message_ilike'] else '%'})
         return Response(query_result)
     
+    @action(detail=False, methods=["POST"])
+    def query(self, request: Request):
+        query_result = run_query(request.data['sql'])
+        return Response(query_result)
+    
     @action(detail=False, methods=["GET"])
     def hostname(self, request: Request):
         return Response({ "hostname": ch_host })
@@ -125,6 +130,8 @@ class AnalyzeViewset(GenericViewSet):
         query_result = run_query(RUNNING_QUERIES_SQL)
 
         return Response(query_result)
+    
+
 
     @action(detail=True, methods=["POST"])
     def kill_query(self, request: Request, pk: str):

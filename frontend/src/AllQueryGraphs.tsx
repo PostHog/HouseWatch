@@ -4,6 +4,7 @@ import { usePollingEffect } from './PageCacheHits'
 import { Line } from '@ant-design/charts'
 import { Card, Col, Divider, Row, Tooltip } from 'antd'
 import { InfoCircleOutlined } from '@ant-design/icons'
+import { clickhouseTips } from './tips'
 
 export default function AllQueryGraphs() {
     const [queryGraphs, setQueryGraphs] = React.useState({ execution_count: [], memory_usage: [], read_bytes: [], cpu: [] })
@@ -29,19 +30,16 @@ export default function AllQueryGraphs() {
                     })
             ),
         [],
-        { interval: 5000 } // optional
     )
 
-    console.log(
-        queryGraphs.memory_usage.map((dataPoint) => ({
-            total: dataPoint.total / 1000000000,
-            day_start: dataPoint.day_start,
-        }))
-    )
+    const now = new Date()
+    const dayOfTheYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24))
 
     return (
         <div>
             <h1 style={{ textAlign: 'left' }}>Overview</h1>
+            <Card title='💡 ClickHouse tip of the day' >{clickhouseTips[dayOfTheYear % clickhouseTips.length]}</Card>
+            <br />
             <Row gutter={8} style={{ paddingBottom: 8 }}>
                 <Col span={12}>
                     <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title='Number of queries'>

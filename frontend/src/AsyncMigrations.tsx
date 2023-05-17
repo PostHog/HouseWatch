@@ -277,11 +277,11 @@ export function AsyncMigrations(): JSX.Element {
 
     return (
         <div style={{ display: 'block', margin: 'auto' }}>
-            <h1 style={{ textAlign: 'left' }}>Async migrations</h1>
+            <h1 style={{ textAlign: 'left' }}>Management operations</h1>
             <br />
             <Tabs value={tab} textColor="primary" indicatorColor="primary" onChange={(_, value) => setTab(value)}>
-                <Tab value="list" label="My migrations" />
-                <Tab value="create" label="Create migration" />
+                <Tab value="list" label="Operations" />
+                <Tab value="create" label="Create new operation" />
             </Tabs>
             <br />
             {tab === 'list' ? <AsyncMigrationsList /> : tab === 'create' ? <CreateNewAsyncMigration /> : null}
