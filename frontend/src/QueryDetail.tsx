@@ -2,23 +2,25 @@
 import * as React from 'react'
 import { usePollingEffect } from './PageCacheHits'
 import { Line } from '@ant-design/plots'
+import { highlight, languages } from 'prismjs/components/prism-core'
+import 'prismjs/components/prism-sql'
+import 'prismjs/components/prism-yaml'
+import 'prismjs/themes/prism.css'
+import Editor from 'react-simple-code-editor'
+import { Tab, Tabs } from '@mui/material'
+
 
 export default function QueryDetail({ match }) {
+    const [tab, setTab] = React.useState('query')
     const [queryDetail, setQueryDetail] = React.useState([])
     const [querySQL, setQuerySQL] = React.useState('')
+    const [data, setData] = React.useState({})
 
     const defaultConfig = {
         data: queryDetail,
         padding: 'auto',
         xField: 'day_start',
         yField: 'total',
-        xAxis: {
-            tickCount: 10,
-        },
-        slider: {
-            start: 0.1,
-            end: 0.5,
-        },
     }
     const [config, setConfig] = React.useState(defaultConfig)
 
@@ -32,7 +34,8 @@ export default function QueryDetail({ match }) {
                         return response.json()
                     })
                     .then((data) => {
-                        const mappedData = data.execution_count.splice(0, 200)
+                        setData(data)
+                        const mappedData = data.execution_count
                         setConfig({ ...config, data: mappedData })
                         setQuerySQL(data.query)
                         return mappedData
@@ -45,17 +48,61 @@ export default function QueryDetail({ match }) {
         { interval: 5000 } // optional
     )
 
+    console.log((data.explain || [{explain: ''}]).map(row => row.explain))
     let index = 0
     return (
-        <div style={{ height: 300, width: '100%', paddingTop: '5rem', marginBottom: '10rem', textAlign: 'left' }}>
-            <h1>Execution count</h1>
-            <code style={{ textAlign: 'left' }}>
-                {querySQL.replace(/(\?)/g, () => {
-                    index = index + 1
-                    return '$' + index
-                })}
-            </code>
-            <Line {...config} />
-        </div>
+        <>
+            <h1>Query analyzer</h1>
+            <Tabs value={tab} textColor="primary" indicatorColor="primary" onChange={(_, value) => setTab(value)}>
+                <Tab value="query" label="Query" />
+                <Tab value="frequency" label="Frequency" />
+                <Tab value="explain" label="EXPLAIN" />
+                <Tab value="Example queries" label="Example queries" />
+            </Tabs>
+            <br />
+            {tab === 'query' ? (
+
+                <Editor
+                    value={querySQL.replace(/(\?)/g, () => {
+                        index = index + 1
+                        return '$' + index
+                    })}
+                    onValueChange={code => setSql(code)}
+                    highlight={code => highlight(code, languages.sql)}
+                    padding={10}
+                    style={{
+                        fontFamily: '"Fira code", "Fira Mono", monospace',
+                        fontSize: 16,
+                        border: '1px solid rgb(216, 216, 216)',
+                        borderRadius: 4,
+                        boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)',
+                        marginBottom: 5
+                    }}
+                    multiline
+                    disabled
+                />
+            )
+                : tab === 'frequency' ? (<Line {...config} />) : tab === 'explain' ?
+                <Editor
+                value={(data.explain || [{explain: ''}]).map(row => row.explain).join('\n')}
+                onValueChange={() => {}}
+                highlight={code => highlight(code, languages.yaml)}
+                padding={10}
+                style={{
+                    fontFamily: '"Fira code", "Fira Mono", monospace',
+                    fontSize: 12,
+                    border: '1px solid rgb(216, 216, 216)',
+                    borderRadius: 4,
+                    boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)',
+                    marginBottom: 5
+                }}
+                multiline
+                disabled
+            />
+                 : null
+            }
+            <br />
+
+        </>
     )
 }

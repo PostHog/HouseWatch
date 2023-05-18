@@ -21,8 +21,10 @@ from housewatch.clickhouse.queries.sql import (
     GET_QUERY_BY_NORMALIZED_HASH_SQL,
     QUERY_CPU_USAGE_SQL,
     LOGS_SQL,
-    LOGS_FREQUENCY_SQL
+    LOGS_FREQUENCY_SQL,
+    EXPLAIN_QUERY
 )
+from sql_formatter.core import format_sql
 DEFAULT_DAYS = 7
 
 class AnalyzeViewset(GenericViewSet):
@@ -42,9 +44,15 @@ class AnalyzeViewset(GenericViewSet):
         execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(days=days, conditions=conditions))
         memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(days=days, conditions=conditions))
         read_bytes = run_query(QUERY_READ_BYTES_SQL.format(days=days, conditions=conditions))
-        query = run_query(GET_QUERY_BY_NORMALIZED_HASH_SQL, {'normalized_query_hash': pk})[0]['normalized_query']
+        query_details = run_query(GET_QUERY_BY_NORMALIZED_HASH_SQL, {'normalized_query_hash': pk})
+        normalized_query = query_details[0]['normalized_query']
+        example_queries = query_details[0]['example_queries']
+        explain = run_query(EXPLAIN_QUERY, {'query': example_queries[0] })
+        
         return Response({
-            'query': query,
+            'query': format_sql(normalized_query),
+            'explain': explain,
+            'example_queries': [format_sql(q) for q in example_queries],
             'execution_count': execution_count,
             'memory_usage': memory_usage,
             'read_bytes': read_bytes

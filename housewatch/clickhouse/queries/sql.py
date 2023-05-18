@@ -104,10 +104,16 @@ order by replica
 """
 
 GET_QUERY_BY_NORMALIZED_HASH_SQL = """
-SELECT normalizeQuery(query) as normalized_query FROM
+SELECT normalizeQuery(query) as normalized_query, groupArray(10)(query) as example_queries FROM
 clusterAllReplicas('posthog', system,query_log)
 where normalized_query_hash = %(normalized_query_hash)s
+group by normalized_query
 limit 1
+"""
+
+EXPLAIN_QUERY = """
+EXPLAIN header=1, indexes=1
+%(query)s
 """
 
 QUERY_EXECUTION_COUNT_SQL = """
@@ -237,16 +243,18 @@ LIMIT 100
 """
 
 LOGS_FREQUENCY_SQL = """
-SELECT
-    toStartOfHour(now() - toIntervalHour(number)) AS hour,
-    0 AS total
-FROM numbers(dateDiff('hour', toStartOfHour(now()  - interval 3 day), now()))
-GROUP BY hour
-ORDER BY hour
-UNION ALL
-SELECT toStartOfHour(event_time) hour, count() total
-FROM clusterAllReplicas('posthog', system.text_log)
-WHERE event_time > now() - interval 3 day AND message ILIKE '%(message)s'
+SELECT hour, sum(total) AS total FROM (
+    SELECT
+        toStartOfHour(now() - toIntervalHour(number)) AS hour,
+        0 AS total
+    FROM numbers(dateDiff('hour', toStartOfHour(now()  - interval 3 day), now()))
+    GROUP BY hour
+    UNION ALL
+    SELECT toStartOfHour(event_time) hour, count() total
+    FROM clusterAllReplicas('posthog', system.text_log)
+    WHERE event_time > now() - interval 3 day AND message ILIKE '%(message)s'
+    GROUP BY hour
+)
 GROUP BY hour
 ORDER BY hour
 """

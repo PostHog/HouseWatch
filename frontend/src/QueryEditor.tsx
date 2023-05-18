@@ -18,31 +18,7 @@ export default function QueryEditor() {
 
 
     const columns = data.length > 0 ? Object.keys(data[0]).map(column => ({ title: column, dataIndex: column })) : []
-    // const columns = [
-    //     { title: 'Time', dataIndex: 'event_time' },
-    //     { title: 'Level', dataIndex: 'level' },
-    //     { title: 'Host', dataIndex: 'hostname' },
-    //     {
-    //         title: 'Message',
-    //         dataIndex: 'message',
-    //         key: 'message',
-    //         render: (_: any, item: any) => {
-    //             let index = 0
-    //             return (
-    //                 <Paragraph
-    //                     style={{ maxWidth: '100%', fontFamily: 'monospace' }}
-    //                     ellipsis={{
-    //                         rows: 2,
-    //                         expandable: true,
-    //                         title: item.query,
-    //                     }}
-    //                 >
-    //                     {item.message}
-    //                 </Paragraph>
-    //             )
-    //         },
-    //     },
-    // ]
+
 
     const url = 'http://localhost:8000/api/analyze/query'
 
@@ -66,36 +42,12 @@ export default function QueryEditor() {
             })
     }
 
-    console.log(columns, data)
-
-    // const fetchLogsFrequency = (messageIlike = '') => {
-    //     fetch('http://localhost:8000/api/analyze/logs_frequency', {
-    //         method: 'POST', body: JSON.stringify({ message_ilike: messageIlike }),
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //     })
-    //         .then((response) => {
-    //             return response.json()
-    //         })
-    //         .then((data) => {
-    //             setLogsFrequency(data)
-    //             return data
-    //         })
-    //         .catch((err) => {
-    //             return []
-    //         })
-    // }
-
-    // useEffect(() => {
-    //     fetchLogs(logMessageFilter)
-    //     fetchLogsFrequency(logMessageFilter)
-    // },[logMessageFilter])
 
     return (
         <>
             <h1 style={{ textAlign: 'left' }}>Query editor</h1>
-            <br />
+            <p><i>Note that HouseWatch does not add limits to queries automatically.</i></p>
+
             <Editor
                 value={sql}
                 onValueChange={code => setSql(code)}
@@ -115,7 +67,6 @@ export default function QueryEditor() {
                 />      
                 <Button type='primary' style={{ width: '100%', boxShadow: 'none', }} onClick={() => query(sql)}>Run</Button>
                 <br />
-
                 <br />
 
 
