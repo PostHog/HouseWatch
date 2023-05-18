@@ -51,7 +51,7 @@ class AnalyzeViewset(GenericViewSet):
         return Response({
             'query': normalized_query,
             'explain': explain,
-            'example_queries': example_queries,
+            'example_queries': [{"query": q } for q in example_queries],
             'execution_count': execution_count,
             'memory_usage': memory_usage,
             'read_bytes': read_bytes
