@@ -9,7 +9,6 @@ import { useHistory } from 'react-router-dom'
 import { Tab, Tabs } from '@mui/material'
 
 function TableTreeMap({ schema, dataIndex }) {
-    const history = useHistory()
 
     const config = {
         data: {
@@ -48,11 +47,6 @@ function TableTreeMap({ schema, dataIndex }) {
         <div>
             <Treemap
                 {...config}
-                onEvent={(node, event) => {
-                    if (event.type === 'element:click') {
-                        history.push(`/schema/${event.data.data.name}`)
-                    }
-                }}
             />
         </div>
     )
@@ -121,7 +115,6 @@ export function PartsData({ table }: { table: string }): JSX.Element {
         { dataIndex: 'uncompressed', title: 'Uncompressed' },
     ]
 
-    console.log(partData)
     return (
         <>
             {partData && <TableTreeMap schema={partData} dataIndex="part" />}
@@ -134,9 +127,11 @@ export function PartsData({ table }: { table: string }): JSX.Element {
 
 export default function CollapsibleTable({ match }) {
     const [tab, setTab] = React.useState('columns')
+    const history = useHistory()
 
     return (
         <div style={{ height: 800, width: '100%' }}>
+            <a onClick={() => history.push(`/schema/`)}>← Return to tables list</a>
             <h1>Table: {match.params.table}</h1>
             <Tabs value={tab} textColor="primary" indicatorColor="primary" onChange={(_, value) => setTab(value)}>
                 <Tab value="columns" label="Columns" key="columns" />

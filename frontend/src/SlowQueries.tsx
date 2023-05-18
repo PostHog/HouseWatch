@@ -83,7 +83,7 @@ export default function CollapsibleTable() {
                     onRow={(query, rowIndex) => {
                         return {
                             onClick: (event) => {
-                                history.push(`/query/${query.normalized_query_hash}`)
+                                history.push(`/slow_queries/${query.normalized_query_hash}`)
                             },
                         }
                     }}

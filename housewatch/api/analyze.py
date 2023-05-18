@@ -43,6 +43,7 @@ class AnalyzeViewset(GenericViewSet):
         execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(days=days, conditions=conditions))
         memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(days=days, conditions=conditions))
         read_bytes = run_query(QUERY_READ_BYTES_SQL.format(days=days, conditions=conditions))
+        cpu = run_query(QUERY_CPU_USAGE_SQL.format(days=days, conditions=conditions))
         query_details = run_query(GET_QUERY_BY_NORMALIZED_HASH_SQL, {'normalized_query_hash': pk})
         normalized_query = query_details[0]['normalized_query']
         example_queries = query_details[0]['example_queries']
@@ -54,7 +55,8 @@ class AnalyzeViewset(GenericViewSet):
             'example_queries': [{"query": q } for q in example_queries],
             'execution_count': execution_count,
             'memory_usage': memory_usage,
-            'read_bytes': read_bytes
+            'read_bytes': read_bytes,
+            'cpu': cpu
         })
 
     @action(detail=False, methods=["GET"])

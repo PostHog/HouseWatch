@@ -11,9 +11,9 @@ code {
 }
 
 .clickable:hover {
-    cursor: pointer;
+    cursor: pointer !important;
 }
 
-.schema-treemap:hover {
-    cursor: pointer;
+.clickable div:hover {
+    cursor: pointer !important;
 }

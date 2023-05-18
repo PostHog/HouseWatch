@@ -100,14 +100,18 @@ export default function Schema() {
         <div>
             <h1 style={{ textAlign: 'left' }}>Schema stats</h1>
             <h2>Largest tables</h2>
-            <div style={{ marginBottom: 50 }} className="schema-treemap">
+            <p>Click on the rectangles to get further information about parts and columns for the table.</p>
+            <div style={{ marginBottom: 50 }}>
                 <Treemap
+                    
                     {...config}
                     onEvent={(node, event) => {
                         if (event.type === 'element:click') {
                             history.push(`/schema/${event.data.data.name}`)
                         }
                     }}
+                    rectStyle={{ cursor: 'pointer '}}
+
                 />
             </div>
             <div>

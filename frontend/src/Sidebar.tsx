@@ -112,7 +112,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
                             <Route exact path="/schema" component={Schema}></Route>
                             <Route exact path="/schema/:table" component={SchemaTable}></Route>
 
-                            <Route exact path="/query/:query_hash" component={QueryDetail}></Route>
+                            <Route exact path="/slow_queries/:query_hash" component={QueryDetail}></Route>
                             <Route exact path="/operations" component={AsyncMigrations}></Route>
                             <Route exact path="/running_queries" component={RunningQueries}></Route>
                             <Route exact path="/logs" component={Logs}></Route>

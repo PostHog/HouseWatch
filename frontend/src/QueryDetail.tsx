@@ -9,13 +9,17 @@ import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 import { Tab, Tabs } from '@mui/material'
 import { format } from 'sql-formatter-plus'
-import { Table } from 'antd'
+import { Card, Col, Row, Table, Tooltip } from 'antd'
+import { InfoCircleOutlined } from '@ant-design/icons'
+import { useHistory } from 'react-router-dom'
 
 export default function QueryDetail({ match }) {
     const [tab, setTab] = React.useState('query')
     const [queryDetail, setQueryDetail] = React.useState([])
     const [querySQL, setQuerySQL] = React.useState('')
     const [data, setData] = React.useState({})
+    const history = useHistory()
+
 
     const defaultConfig = {
         data: queryDetail,
@@ -49,10 +53,10 @@ export default function QueryDetail({ match }) {
         { interval: 5000 } // optional
     )
 
-    console.log((data.explain || [{ explain: '' }]).map((row) => row.explain))
     let index = 0
     return (
         <>
+            <a onClick={() => history.push(`/slow_queries/`)}>← Return to queries list</a>
             <h1>Query analyzer</h1>
             <Tabs value={tab} textColor="primary" indicatorColor="primary" onChange={(_, value) => setTab(value)}>
                 <Tab value="query" label="Query" />
@@ -85,9 +89,81 @@ export default function QueryDetail({ match }) {
                 />
             ) : tab === 'metrics' ? (
                 <>
-                    <h2>Frequency</h2>
-                    <br />
-                    <Line {...config} />
+            <br />
+            <Row gutter={8} style={{ paddingBottom: 8 }}>
+                <Col span={12}>
+                    <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title="Number of queries">
+                        <Line
+                            data={data.execution_count.map((dataPoint) => ({
+                                ...dataPoint,
+                                day_start: dataPoint.day_start.split('T')[0],
+                            }))}
+                            xField={'day_start'}
+                            yField={'total'}
+                            xAxis={{ tickCount: 5 }}
+                            style={{ padding: 20, height: 300 }}
+                            color="#ffb200"
+                        />
+                    </Card>
+                </Col>
+                <Col span={12}>
+                    <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title="Data read (GB)">
+                        <Line
+                            data={data.read_bytes.map((dataPoint) => ({
+                                day_start: dataPoint.day_start.split('T')[0],
+                                total: dataPoint.total / 1000000000,
+                            }))}
+                            xField={'day_start'}
+                            yField={'total'}
+                            xAxis={{ tickCount: 5 }}
+                            style={{ padding: 20, height: 300 }}
+                            color="#ffb200"
+                        />
+                    </Card>
+                </Col>
+            </Row>
+            <Row gutter={8}>
+                <Col span={12}>
+                    <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title="Memory usage (GB)">
+                        <Line
+                            data={data.memory_usage.map((dataPoint) => ({
+                                day_start: dataPoint.day_start.split('T')[0],
+                                total: dataPoint.total / 1000000000,
+                            }))}
+                            xField={'day_start'}
+                            yField={'total'}
+                            style={{ padding: 20, height: 300 }}
+                            color="#ffb200"
+                        />
+                    </Card>
+                </Col>
+                <Col span={12}>
+                    <Card
+                        style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }}
+                        title={
+                            <>
+                                CPU usage (seconds){' '}
+                                <Tooltip
+                                    title={`Calculated from OSCPUVirtualTimeMicroseconds metric from ClickHouse query log's ProfileEvents.`}
+                                >
+                                    <InfoCircleOutlined />
+                                </Tooltip>
+                            </>
+                        }
+                    >
+                        <Line
+                            data={data.cpu.map((dataPoint) => ({
+                                day_start: dataPoint.day_start.split('T')[0],
+                                total: dataPoint.total,
+                            }))}
+                            xField={'day_start'}
+                            yField={'total'}
+                            style={{ padding: 20, height: 300 }}
+                            color="#ffb200"
+                        />
+                    </Card>
+                </Col>
+            </Row>
                 </>
             ) : tab === 'explain' ? (
                 <Editor
