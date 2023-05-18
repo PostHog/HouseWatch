@@ -75,6 +75,7 @@ export default function CollapsibleTable() {
     return (
         <div>
             <h1 style={{ textAlign: 'left' }}>Slow queries</h1>
+            <p>Click on queries to display more details.</p>
             <br />
             <div>
                 <Table

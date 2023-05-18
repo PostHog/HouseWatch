@@ -8,7 +8,8 @@ import 'prismjs/components/prism-yaml'
 import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 import { Tab, Tabs } from '@mui/material'
-import { format } from 'sql-formatter'
+import { format } from 'sql-formatter-plus'
+import { Table } from 'antd'
 
 export default function QueryDetail({ match }) {
     const [tab, setTab] = React.useState('query')
@@ -48,16 +49,16 @@ export default function QueryDetail({ match }) {
         { interval: 5000 } // optional
     )
 
-    console.log((data.explain || [{explain: ''}]).map(row => row.explain))
+    console.log((data.explain || [{ explain: '' }]).map(row => row.explain))
     let index = 0
     return (
         <>
             <h1>Query analyzer</h1>
             <Tabs value={tab} textColor="primary" indicatorColor="primary" onChange={(_, value) => setTab(value)}>
                 <Tab value="query" label="Query" />
-                <Tab value="frequency" label="Frequency" />
+                <Tab value="metrics" label="Metrics" />
                 <Tab value="explain" label="EXPLAIN" />
-                <Tab value="Example queries" label="Example queries" />
+                <Tab value="examples" label="Example queries" />
             </Tabs>
             <br />
             {tab === 'query' ? (
@@ -82,24 +83,38 @@ export default function QueryDetail({ match }) {
                     disabled
                 />
             )
-                : tab === 'frequency' ? (<Line {...config} />) : tab === 'explain' ?
-                <Editor
-                value={(data.explain || [{explain: ''}]).map(row => row.explain).join('\n')}
-                onValueChange={() => {}}
-                highlight={code => highlight(code, languages.yaml)}
-                padding={10}
-                style={{
-                    fontFamily: '"Fira code", "Fira Mono", monospace',
-                    fontSize: 12,
-                    border: '1px solid rgb(216, 216, 216)',
-                    borderRadius: 4,
-                    boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)',
-                    marginBottom: 5
-                }}
-                multiline
-                disabled
-            />
-                 : null
+                : tab === 'metrics' ? (<><h2>Frequency</h2><br /><Line {...config} /></>) : tab === 'explain' ?
+                    <Editor
+                        value={(data.explain || [{ explain: '' }]).map(row => row.explain).join('\n')}
+                        onValueChange={() => { }}
+                        highlight={code => highlight(code, languages.yaml)}
+                        padding={10}
+                        style={{
+                            fontFamily: '"Fira code", "Fira Mono", monospace',
+                            fontSize: 12,
+                            border: '1px solid rgb(216, 216, 216)',
+                            borderRadius: 4,
+                            boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)',
+                            marginBottom: 5
+                        }}
+                        multiline
+                        disabled
+                    />
+                    : tab === 'examples' ? (
+                        <Table columns={[{ title: 'Query', dataIndex: 'query', render: (_, item) =>                    
+                        <Editor
+                        value={item.query}
+                        onValueChange={() => { }}
+                        highlight={code => highlight(code, languages.sql)}
+                        padding={10}
+                        style={{
+                            fontFamily: '"Fira code", "Fira Mono", monospace',
+                        }}
+                        multiline
+                        disabled
+                    /> },
+                        ]} dataSource={data.example_queries}/>
+                    ) : null
             }
             <br />
 
