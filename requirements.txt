@@ -34,7 +34,6 @@ PyYAML==6.0
 redis==4.5.3
 sentry-sdk==1.9.8
 six==1.16.0
-sql-formatter==0.6.2
 sqlparse==0.4.3
 structlog==22.3.0
 tzdata==2023.3

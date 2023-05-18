@@ -8,6 +8,8 @@ function App() {
     return (
         <ThemeCustomization>
             <div className="App">
+            {/* <script src="./sql-formatter.js"></script> */}
+                
                 <Router>
                     <Sidebar />
                 </Router>

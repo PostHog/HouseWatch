@@ -24,7 +24,6 @@ from housewatch.clickhouse.queries.sql import (
     LOGS_FREQUENCY_SQL,
     EXPLAIN_QUERY
 )
-from sql_formatter.core import format_sql
 DEFAULT_DAYS = 7
 
 class AnalyzeViewset(GenericViewSet):
@@ -50,9 +49,9 @@ class AnalyzeViewset(GenericViewSet):
         explain = run_query(EXPLAIN_QUERY, {'query': example_queries[0] })
         
         return Response({
-            'query': format_sql(normalized_query),
+            'query': normalized_query,
             'explain': explain,
-            'example_queries': [format_sql(q) for q in example_queries],
+            'example_queries': example_queries,
             'execution_count': execution_count,
             'memory_usage': memory_usage,
             'read_bytes': read_bytes

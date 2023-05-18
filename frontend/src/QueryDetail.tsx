@@ -8,7 +8,7 @@ import 'prismjs/components/prism-yaml'
 import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 import { Tab, Tabs } from '@mui/material'
-
+import { format } from 'sql-formatter'
 
 export default function QueryDetail({ match }) {
     const [tab, setTab] = React.useState('query')
@@ -63,11 +63,11 @@ export default function QueryDetail({ match }) {
             {tab === 'query' ? (
 
                 <Editor
-                    value={querySQL.replace(/(\?)/g, () => {
+                    value={format(querySQL.replace(/(\?)/g, () => {
                         index = index + 1
                         return '$' + index
-                    })}
-                    onValueChange={code => setSql(code)}
+                    }))}
+                    onValueChange={code => setSql(format(code))}
                     highlight={code => highlight(code, languages.sql)}
                     padding={10}
                     style={{
