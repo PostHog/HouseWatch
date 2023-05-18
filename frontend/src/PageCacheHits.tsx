@@ -115,6 +115,7 @@ export function PageCacheHits(): JSX.Element {
                                             style={{
                                                 display: 'block'
                                             }}
+                                            color={["#FFB816", "#175FFF"]}
                                         />
                                     </Card>
                                 </Col>
