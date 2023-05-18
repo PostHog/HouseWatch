@@ -7,7 +7,6 @@ from housewatch.clickhouse.queries.sql import (
     SLOW_QUERIES_SQL, 
     SCHEMA_SQL, 
     QUERY_EXECUTION_COUNT_SQL, 
-    PAGE_CACHE_HIT_PERCENTAGE_SQL, 
     QUERY_LOAD_SQL, 
     ERRORS_SQL, 
     QUERY_MEMORY_USAGE_SQL, 
