@@ -130,7 +130,7 @@ export default function CollapsibleTable({ match }) {
     const history = useHistory()
 
     return (
-        <div style={{ height: 800, width: '100%' }}>
+        <div>
             <a onClick={() => history.push(`/schema/`)}>← Return to tables list</a>
             <h1>Table: {match.params.table}</h1>
             <Tabs value={tab} textColor="primary" indicatorColor="primary" onChange={(_, value) => setTab(value)}>

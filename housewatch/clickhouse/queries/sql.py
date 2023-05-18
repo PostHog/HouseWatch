@@ -18,20 +18,6 @@ ORDER BY sum(read_bytes) DESC
 LIMIT %(limit)s
 """
 
-# TODO: Consider ThreadPoolReaderPageCacheHit and ThreadPoolReaderPageCacheMiss
-PAGE_CACHE_HIT_PERCENTAGE_SQL = """
-SELECT
-    getMacro('replica') node,
-    (sum(ProfileEvents['OSReadChars']) - sum(ProfileEvents['OSReadBytes'])) / sum(ProfileEvents['OSReadChars']) AS page_cache_read_ratio
-FROM clusterAllReplicas(%(cluster)s, system.query_log)
-WHERE 
-    event_time >= toDateTime(%(date_from)s)
-    AND event_time <= toDateTime(%(date_to)s) 
-    AND type > 1
-    AND is_initial_query 
-GROUP BY node
-ORDER BY node
-"""
 
 QUERY_LOAD_SQL = """
 SELECT toStartOfDay(event_time) as day, %(math_func)s(%(load_metric)s) AS %(column_alias)s
@@ -85,23 +71,6 @@ ORDER BY data_compressed_bytes DESC
 LIMIT 100
 """
 
-PAGE_CACHE_SQL = """
-with 
-    toDateTime( now() ) as target_time, 
-    toIntervalDay( 14 ) as interval
-select
-    getMacro('replica') replica,
-    (sum(ProfileEvents['OSReadChars']) - sum(ProfileEvents['OSReadBytes'])) / sum(ProfileEvents['OSReadChars']) AS page_cache_read_ratio
-from clusterAllReplicas('posthog', system,query_log)
-where 
-    event_time >= target_time - interval 
-    and event_time <= target_time 
-    and type > 1 
-    and is_initial_query 
-    and JSONExtractString(log_comment, 'kind') = 'request'
-group by replica
-order by replica
-"""
 
 GET_QUERY_BY_NORMALIZED_HASH_SQL = """
 SELECT normalizeQuery(query) as normalized_query, groupArray(10)(query) as example_queries FROM
@@ -213,7 +182,7 @@ KILL_QUERY_SQL = """
 
 NODE_STORAGE_SQL = """
 select 
-    getMacro('replica') node, 
+    hostName() node, 
     sum(total_space) space_used, 
     sum(free_space) free_space, 
     (space_used + free_space) total_space_available,
@@ -227,7 +196,7 @@ order by node
 """
 
 NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL = """
-select getMacro('replica') node, sum(read_bytes) total_bytes_transferred, formatReadableSize(total_bytes_transferred) as readable_bytes_transferred
+select hostName() node, sum(read_bytes) total_bytes_transferred, formatReadableSize(total_bytes_transferred) as readable_bytes_transferred
 from clusterAllReplicas('posthog', system.query_log)
 where is_initial_query != 0 and type = 2 
 group by node

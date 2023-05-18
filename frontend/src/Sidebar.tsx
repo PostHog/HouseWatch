@@ -45,7 +45,7 @@ const items: MenuItem[] = [
     { key: 'slow_queries', label: 'Slow queries', icon: <ClockCircleOutlined /> },
     { key: 'running_queries', label: 'Running queries', icon: <DashboardOutlined /> },
     { key: 'schema', label: 'Schema stats', icon: <HddOutlined /> },
-    { key: 'cluster_overview', label: 'Cluster overview', icon: <ApartmentOutlined /> },
+    { key: 'disk_usage', label: 'Disk usage', icon: <ApartmentOutlined /> },
     { key: 'logs', label: 'Logs', icon: <BarsOutlined /> },
     { key: 'errors', label: 'Errors', icon: <WarningOutlined /> },
     { key: 'query_editor', label: 'Query editor', icon: <FormOutlined /> },
@@ -105,7 +105,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
                     <Content style={{ margin: 'auto', display: 'block', width: '85%', marginTop: 20 }}>
                         <Switch>
                             <Route exact path="/" component={AllQueryGraphs}></Route>
-                            <Route exact path="/cluster_overview">
+                            <Route exact path="/disk_usage">
                                 <PageCacheHits />
                             </Route>
                             <Route exact path="/slow_queries" component={SlowQueries}></Route>

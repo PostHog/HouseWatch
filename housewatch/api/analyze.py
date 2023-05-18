@@ -159,13 +159,12 @@ class AnalyzeViewset(GenericViewSet):
     @action(detail=False, methods=["GET"])
     def cluster_overview(self, request: Request):
         params = { **base_params, "limit": 100, "date_to": "now()", "date_from": "now() - INTERVAL 2 WEEK"}
-        page_cache_query_result = run_query(PAGE_CACHE_HIT_PERCENTAGE_SQL, params)
         data_transfer_query_result = run_query(NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL, {})
         storage_query_result = run_query(NODE_STORAGE_SQL, {})
         
         full_result = []
         for i in range(len(storage_query_result)):
-            node_result = { **page_cache_query_result[i], **data_transfer_query_result[i], **storage_query_result[i] }
+            node_result = { **data_transfer_query_result[i], **storage_query_result[i] }
             full_result.append(node_result)
 
         return Response(full_result)
