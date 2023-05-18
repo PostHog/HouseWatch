@@ -6,14 +6,10 @@ import { Bar, Column } from '@ant-design/charts'
 
 const { Paragraph } = Typography
 
-
-
 export default function Logs() {
     const [logs, setLogs] = useState([])
     const [logsFrequency, setLogsFrequency] = useState([])
     const [logMessageFilter, setLogMessageFilter] = useState('')
-
-
 
     const columns = [
         { title: 'Time', dataIndex: 'event_time' },
@@ -43,10 +39,10 @@ export default function Logs() {
 
     const url = 'http://localhost:8000/api/analyze/logs'
 
-
     const fetchLogs = (messageIlike = '') => {
         fetch(url, {
-            method: 'POST', body: JSON.stringify({ message_ilike: messageIlike }),
+            method: 'POST',
+            body: JSON.stringify({ message_ilike: messageIlike }),
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -63,10 +59,10 @@ export default function Logs() {
             })
     }
 
-
     const fetchLogsFrequency = (messageIlike = '') => {
         fetch('http://localhost:8000/api/analyze/logs_frequency', {
-            method: 'POST', body: JSON.stringify({ message_ilike: messageIlike }),
+            method: 'POST',
+            body: JSON.stringify({ message_ilike: messageIlike }),
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -86,23 +82,20 @@ export default function Logs() {
     useEffect(() => {
         fetchLogs(logMessageFilter)
         fetchLogsFrequency(logMessageFilter)
-    },[logMessageFilter])
+    }, [logMessageFilter])
 
     return (
         <>
             <h1 style={{ textAlign: 'left' }}>Logs</h1>
-            <Input style={{ boxShadow: 'none' }} onChange={e => setLogMessageFilter(e.target.value)} value={logMessageFilter} />
+            <Input
+                style={{ boxShadow: 'none' }}
+                onChange={(e) => setLogMessageFilter(e.target.value)}
+                value={logMessageFilter}
+            />
             <br />
             <br />
             <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }}>
-                <Column
-                    xField='hour'
-                    yField='total'
-                    color='#ffb200'
-                    style={{ height: 150 }}
-                    data={logsFrequency}
-
-                />
+                <Column xField="hour" yField="total" color="#ffb200" style={{ height: 150 }} data={logsFrequency} />
             </Card>
             <br />
 

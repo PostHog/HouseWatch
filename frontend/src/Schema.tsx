@@ -100,7 +100,7 @@ export default function Schema() {
         <div>
             <h1 style={{ textAlign: 'left' }}>Schema stats</h1>
             <h2>Largest tables</h2>
-            <div style={{ marginBottom: 50 }} className='schema-treemap'>
+            <div style={{ marginBottom: 50 }} className="schema-treemap">
                 <Treemap
                     {...config}
                     onEvent={(node, event) => {

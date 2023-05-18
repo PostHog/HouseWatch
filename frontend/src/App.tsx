@@ -8,8 +8,6 @@ function App() {
     return (
         <ThemeCustomization>
             <div className="App">
-
-                
                 <Router>
                     <Sidebar />
                 </Router>

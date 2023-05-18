@@ -55,7 +55,6 @@ const items: MenuItem[] = [
 const drawerWidth = 240
 
 export default function PermanentDrawerLeft(): JSX.Element {
-
     const [hostname, setHostname] = useState('')
 
     const fetchHostname = async () => {
@@ -68,15 +67,14 @@ export default function PermanentDrawerLeft(): JSX.Element {
         fetchHostname()
     }, [])
 
-
     const history = useHistory()
     const openPage = history.location.pathname.split('/')[1]
 
     return (
         <ConfigProvider theme={{ token: { colorPrimary: '#ffb200', colorPrimaryBg: 'black' } }}>
-            <Layout style={{ minHeight: '100vh'}}>
+            <Layout style={{ minHeight: '100vh' }}>
                 <Sider>
-                    <div className='clickable' onClick={() => history.push('')}>
+                    <div className="clickable" onClick={() => history.push('')}>
                         <h1
                             style={{ fontSize: 20, color: '#ffb200', textAlign: 'center', fontFamily: 'Hind Siliguri' }}
                         >
@@ -92,8 +90,16 @@ export default function PermanentDrawerLeft(): JSX.Element {
                     />
                 </Sider>
                 <Layout>
-                    <Header style={{ background: 'rgb(231 231 231)', borderBottom: '1px solid #c7c7c7', display: 'inline-block'}}>
-                        <p style={{ textAlign: 'center', margin: 0 }}><b>{hostname}</b></p>
+                    <Header
+                        style={{
+                            background: 'rgb(231 231 231)',
+                            borderBottom: '1px solid #c7c7c7',
+                            display: 'inline-block',
+                        }}
+                    >
+                        <p style={{ textAlign: 'center', margin: 0 }}>
+                            <b>{hostname}</b>
+                        </p>
                     </Header>
 
                     <Content style={{ margin: 'auto', display: 'block', width: '85%', marginTop: 20 }}>
@@ -115,8 +121,20 @@ export default function PermanentDrawerLeft(): JSX.Element {
                         </Switch>
                     </Content>
                     <Footer style={{ textAlign: 'center' }}>
-                        <p style={{ lineHeight: 2 }}>Created by <a href='https://posthog.com' target='_blank' rel='noopener noreferrer'>PostHog</a></p>
-                        <a href='https://github.com/PostHog/HouseWatch' target='_blank' rel='noopener noreferrer' style={{ color: 'black' }}><GithubFilled /></a>
+                        <p style={{ lineHeight: 2 }}>
+                            Created by{' '}
+                            <a href="https://posthog.com" target="_blank" rel="noopener noreferrer">
+                                PostHog
+                            </a>
+                        </p>
+                        <a
+                            href="https://github.com/PostHog/HouseWatch"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: 'black' }}
+                        >
+                            <GithubFilled />
+                        </a>
                     </Footer>
                 </Layout>
             </Layout>

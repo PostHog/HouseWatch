@@ -7,7 +7,12 @@ import { InfoCircleOutlined } from '@ant-design/icons'
 import { clickhouseTips } from './tips'
 
 export default function AllQueryGraphs() {
-    const [queryGraphs, setQueryGraphs] = React.useState({ execution_count: [], memory_usage: [], read_bytes: [], cpu: [] })
+    const [queryGraphs, setQueryGraphs] = React.useState({
+        execution_count: [],
+        memory_usage: [],
+        read_bytes: [],
+        cpu: [],
+    })
 
     const url = `http://localhost:8000/api/analyze/query_graphs`
 
@@ -29,7 +34,7 @@ export default function AllQueryGraphs() {
                         return { execution_count: [], memory_usage: [], read_bytes: [], cpu: [] }
                     })
             ),
-        [],
+        []
     )
 
     const now = new Date()
@@ -38,11 +43,11 @@ export default function AllQueryGraphs() {
     return (
         <div>
             <h1 style={{ textAlign: 'left' }}>Overview</h1>
-            <Card title='💡 ClickHouse tip of the day' >{clickhouseTips[dayOfTheYear % clickhouseTips.length]}</Card>
+            <Card title="💡 ClickHouse tip of the day">{clickhouseTips[dayOfTheYear % clickhouseTips.length]}</Card>
             <br />
             <Row gutter={8} style={{ paddingBottom: 8 }}>
                 <Col span={12}>
-                    <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title='Number of queries'>
+                    <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title="Number of queries">
                         <Line
                             data={queryGraphs.execution_count.map((dataPoint) => ({
                                 ...dataPoint,
@@ -52,12 +57,12 @@ export default function AllQueryGraphs() {
                             yField={'total'}
                             xAxis={{ tickCount: 5 }}
                             style={{ padding: 20, height: 300 }}
-                            color='#ffb200'
+                            color="#ffb200"
                         />
                     </Card>
                 </Col>
                 <Col span={12}>
-                    <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title='Data read (GB)'>
+                    <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title="Data read (GB)">
                         <Line
                             data={queryGraphs.read_bytes.map((dataPoint) => ({
                                 day_start: dataPoint.day_start.split('T')[0],
@@ -67,15 +72,14 @@ export default function AllQueryGraphs() {
                             yField={'total'}
                             xAxis={{ tickCount: 5 }}
                             style={{ padding: 20, height: 300 }}
-                            color='#ffb200'
+                            color="#ffb200"
                         />
                     </Card>
                 </Col>
-
             </Row>
             <Row gutter={8}>
                 <Col span={12}>
-                    <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title='Memory usage (GB)' >
+                    <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title="Memory usage (GB)">
                         <Line
                             data={queryGraphs.memory_usage.map((dataPoint) => ({
                                 day_start: dataPoint.day_start.split('T')[0],
@@ -84,13 +88,25 @@ export default function AllQueryGraphs() {
                             xField={'day_start'}
                             yField={'total'}
                             style={{ padding: 20, height: 300 }}
-                            color='#ffb200'
+                            color="#ffb200"
                         />
-                    </ Card>
+                    </Card>
                 </Col>
                 <Col span={12}>
-                    <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title={<>CPU usage (seconds){' '}<Tooltip title={`Calculated from OSCPUVirtualTimeMicroseconds metric from ClickHouse query log's ProfileEvents.`}><InfoCircleOutlined/></Tooltip></>} >
-                    <Line
+                    <Card
+                        style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }}
+                        title={
+                            <>
+                                CPU usage (seconds){' '}
+                                <Tooltip
+                                    title={`Calculated from OSCPUVirtualTimeMicroseconds metric from ClickHouse query log's ProfileEvents.`}
+                                >
+                                    <InfoCircleOutlined />
+                                </Tooltip>
+                            </>
+                        }
+                    >
+                        <Line
                             data={queryGraphs.cpu.map((dataPoint) => ({
                                 day_start: dataPoint.day_start.split('T')[0],
                                 total: dataPoint.total,
@@ -98,15 +114,12 @@ export default function AllQueryGraphs() {
                             xField={'day_start'}
                             yField={'total'}
                             style={{ padding: 20, height: 300 }}
-                            color='#ffb200'
-
+                            color="#ffb200"
                         />
-                    </ Card>
+                    </Card>
                 </Col>
-
             </Row>
             <br />
-
         </div>
     )
 }

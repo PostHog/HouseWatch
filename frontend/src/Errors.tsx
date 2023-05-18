@@ -9,8 +9,14 @@ const { Text, Paragraph } = Typography
 export default function CollapsibleTable() {
     const history = useHistory()
     const slowQueriesColumns = [
-        { title: 'Error', dataIndex: 'name', render: (_, item) => 
-            <p style={{ }}><b>{item.name}</b></p> 
+        {
+            title: 'Error',
+            dataIndex: 'name',
+            render: (_, item) => (
+                <p style={{}}>
+                    <b>{item.name}</b>
+                </p>
+            ),
         },
         { title: 'Occurrences', dataIndex: 'count', render: (_, item) => <>{item.count}</> },
         {

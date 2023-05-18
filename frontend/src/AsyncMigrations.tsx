@@ -10,7 +10,7 @@ import Paper from '@mui/material/Paper'
 import { Button, LinearProgress, Tab, Tabs, TextField } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import Editor from 'react-simple-code-editor'
-import { highlight, languages } from 'prismjs/components/prism-core';
+import { highlight, languages } from 'prismjs/components/prism-core'
 import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
 
@@ -140,13 +140,9 @@ export function CreateNewAsyncMigration(): JSX.Element {
 
     const [asyncMigrationOperationsCount, setAsyncMigrationOperationsCount] = useState(1)
 
-    const [code, setCode] = useState(
-        `SELECT 1`
-    );
+    const [code, setCode] = useState(`SELECT 1`)
 
     const createAsyncMigration = async () => {
-
-
         const form = document.getElementById('create-migration-form')
         const formData = new FormData(form)
 
@@ -219,8 +215,8 @@ export function CreateNewAsyncMigration(): JSX.Element {
                             id={`create-migration-form-rollback-${i + 1}`}
                             name={`rollback-${i + 1}`}
                             value={code}
-                            onValueChange={code => setCode(code)}
-                            highlight={code => highlight(code, languages.sql)}
+                            onValueChange={(code) => setCode(code)}
+                            highlight={(code) => highlight(code, languages.sql)}
                             padding={10}
                             style={{
                                 fontFamily: '"Fira code", "Fira Mono", monospace',
@@ -228,7 +224,7 @@ export function CreateNewAsyncMigration(): JSX.Element {
                                 width: 800,
                                 minHeight: 200,
                                 border: '1px solid rgb(118, 118, 118)',
-                                borderRadius: 4
+                                borderRadius: 4,
                             }}
                             multiline
                             rows={5}
