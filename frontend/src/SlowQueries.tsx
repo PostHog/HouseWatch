@@ -36,6 +36,7 @@ export default function CollapsibleTable() {
         {
             title: 'Avg time (ms)',
             dataIndex: 'avg_duration',
+            defaultSortOrder: 'descend',
             render: (_, item) => <>{item.avg_duration.toFixed(0)}ms</>,
             sorter: (a, b) => a.avg_duration - b.avg_duration,
         },
@@ -43,17 +44,20 @@ export default function CollapsibleTable() {
             title: 'Calls / min',
             dataIndex: 'calls_per_minute',
             render: (_, item) => <>{item.calls_per_minute.toFixed(3)}</>,
+            sorter: (a, b) => a.calls_per_minute - b.calls_per_minute,
         },
         { title: '% of all iops', render: (_, item) => <>{item.percentage_iops.toFixed(1)}%</> },
         {
             title: '% of runtime',
             render: (_, item) => <>{item.percentage_runtime.toFixed(1)}%</>,
             dataIndex: 'percentage_runtime',
+            sorter: (a, b) => a.percentage_runtime - b.percentage_runtime,
         },
         {
             title: 'Total iops',
             dataIndex: 'total_read_bytes',
             sorter: (a, b) => a.total_read_bytes - b.total_read_bytes,
+            sorter: (a, b) => a.read_bytes - b.read_bytes,
         },
     ]
 
@@ -90,7 +94,7 @@ export default function CollapsibleTable() {
                     rowClassName={() => 'cursor-pointer'}
                     dataSource={slowQueries}
                     loading={!slowQueries}
-                    size="small"
+                    size="small"                    
                 />
             </div>
         </div>

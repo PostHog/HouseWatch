@@ -123,42 +123,43 @@ export function PageCacheHits(): JSX.Element {
                                     {row[1] ? (
                                         <Card>
                                             <h2 style={{ textAlign: 'center' }}>{row[1].node}</h2>
-
                                             <Pie
-                                                data={[
-                                                    {
-                                                        type: 'Used disk space',
-                                                        value: row[1].space_used,
-                                                    },
-                                                    {
-                                                        type: 'Free disk space',
-                                                        value: row[1].free_space,
-                                                        // alias: nodeData.readable_free_space
-                                                    },
-                                                ]}
+                                            data={[
+                                                {
+                                                    type: 'Used disk space',
+                                                    value: row[1].space_used,
+                                                },
+                                                {
+                                                    type: 'Free disk space',
+                                                    value: row[1].free_space,
+                                                    // alias: nodeData.readable_free_space
+                                                },
+                                            ]}
 
-                                                appendPadding={10}
-                                                angleField='value'
-                                                colorField='type'
-                                                radius={0.9}
-                                                label={{
-                                                    type: 'inner',
-                                                    offset: '-30%',
-                                                    content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
-                                                    style: {
-                                                        fontSize: 14,
-                                                        textAlign: 'center',
-                                                    },
-                                                }}
-                                                interactions={[
-                                                    {
-                                                        type: 'element-active',
-                                                    },
-                                                ]}
-                                                style={{
-                                                    float: 'left',
-                                                }}
-                                            />
+                                            appendPadding={10}
+                                            angleField='value'
+                                            colorField='type'
+                                            radius={0.9}
+                                            label={{
+                                                type: 'inner',
+                                                offset: '-30%',
+                                                content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
+                                                style: {
+                                                    fontSize: 14,
+                                                    textAlign: 'center',
+                                                },
+                                            }}
+                                            interactions={[
+                                                {
+                                                    type: 'element-active',
+                                                },
+                                            ]}
+                                            style={{
+                                                display: 'block'
+                                            }}
+                                            color={["#FFB816", "#175FFF"]}
+                                        />
+                                     
                                         </Card>
                                     ) : null}
 

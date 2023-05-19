@@ -58,6 +58,7 @@ export default function AllQueryGraphs() {
                             xAxis={{ tickCount: 5 }}
                             style={{ padding: 20, height: 300 }}
                             color="#ffb200"
+                            loading={queryGraphs.execution_count.length < 1}
                         />
                     </Card>
                 </Col>
@@ -73,6 +74,7 @@ export default function AllQueryGraphs() {
                             xAxis={{ tickCount: 5 }}
                             style={{ padding: 20, height: 300 }}
                             color="#ffb200"
+                            loading={queryGraphs.read_bytes.length < 1}
                         />
                     </Card>
                 </Col>
@@ -89,6 +91,8 @@ export default function AllQueryGraphs() {
                             yField={'total'}
                             style={{ padding: 20, height: 300 }}
                             color="#ffb200"
+                            loading={queryGraphs.memory_usage.length < 1}
+
                         />
                     </Card>
                 </Col>
@@ -115,6 +119,8 @@ export default function AllQueryGraphs() {
                             yField={'total'}
                             style={{ padding: 20, height: 300 }}
                             color="#ffb200"
+                            loading={queryGraphs.cpu.length < 1}
+
                         />
                     </Card>
                 </Col>

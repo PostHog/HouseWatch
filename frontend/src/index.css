@@ -17,3 +17,12 @@ code {
 .clickable div:hover {
     cursor: pointer !important;
 }
+
+
+.code-editor:hover {
+    background-color: #ededed;
+}
+
+.code-editor:hover textarea {
+    cursor: pointer !important;
+}

@@ -14,13 +14,14 @@ export default function QueryEditor() {
     const [sql, setSql] = useState(
         'SELECT type, query, query_duration_ms, formatReadableSize(memory_usage)\nFROM system.query_log\nWHERE type > 1 AND is_initial_query\nORDER BY event_time DESC\nLIMIT 10'
     )
-    const [data, setData] = useState([])
+    const [data, setData] = useState([{}])
 
     const columns = data.length > 0 ? Object.keys(data[0]).map((column) => ({ title: column, dataIndex: column })) : []
 
     const url = 'http://localhost:8000/api/analyze/query'
 
     const query = (sql = '') => {
+        setData([])
         fetch(url, {
             method: 'POST',
             body: JSON.stringify({ sql }),
@@ -64,13 +65,13 @@ export default function QueryEditor() {
                 multiline
                 rows={10}
             />
-            <Button type="primary" style={{ width: '100%', boxShadow: 'none' }} onClick={() => query(sql)}>
+            <Button type="primary" style={{ width: '100%', boxShadow: 'none' }} onClick={() =>  query(sql)}>
                 Run
             </Button>
             <br />
             <br />
 
-            <Table columns={columns} dataSource={data} />
+            <Table columns={columns} dataSource={data} loading={data.length < 1} />
         </>
     )
 }

@@ -73,7 +73,7 @@ LIMIT 100
 
 
 GET_QUERY_BY_NORMALIZED_HASH_SQL = """
-SELECT normalizeQuery(query) as normalized_query, groupArray(10)(query) as example_queries FROM
+SELECT normalizeQuery(query) as normalized_query, groupUniqArray(10)(query) as example_queries FROM
 clusterAllReplicas('posthog', system,query_log)
 where normalized_query_hash = %(normalized_query_hash)s
 group by normalized_query
@@ -209,6 +209,12 @@ FROM clusterAllReplicas('posthog', system.text_log)
 WHERE message ILIKE '%(message)s'
 ORDER BY event_time DESC
 LIMIT 100
+"""
+
+EXISTING_TABLES_SQL = """
+SELECT name
+FROM system.tables
+WHERE database = 'system'
 """
 
 LOGS_FREQUENCY_SQL = """

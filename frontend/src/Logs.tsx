@@ -95,11 +95,11 @@ export default function Logs() {
             <br />
             <br />
             <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }}>
-                <Column xField="hour" yField="total" color="#ffb200" style={{ height: 150 }} data={logsFrequency} />
+                <Column xField="hour" yField="total" color="#ffb200" style={{ height: 150 }} data={logsFrequency} loading={logs.length < 1} />
             </Card>
             <br />
 
-            <Table columns={columns} dataSource={logs} loading={!logs} />
+            <Table columns={columns} dataSource={logs} loading={logs.length < 1} />
         </>
     )
 }

@@ -46,7 +46,7 @@ export default function CollapsibleTable() {
             <h1 style={{ textAlign: 'left' }}>Errors</h1>
             <br />
             <div>
-                <Table columns={slowQueriesColumns} dataSource={slowQueries} size="small" />
+                <Table columns={slowQueriesColumns} dataSource={slowQueries} size="small" loading={slowQueries.length < 1} />
             </div>
         </div>
     )

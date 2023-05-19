@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { usePollingEffect } from './PageCacheHits'
 import { Treemap } from '@ant-design/charts'
-import { Table } from 'antd'
+import { Spin, Table } from 'antd'
 
 import { useHistory } from 'react-router-dom'
 
@@ -96,23 +96,29 @@ export default function Schema() {
         )
     }, [])
 
+
     return (
         <div>
             <h1 style={{ textAlign: 'left' }}>Schema stats</h1>
             <h2>Largest tables</h2>
             <p>Click on the rectangles to get further information about parts and columns for the table.</p>
             <div style={{ marginBottom: 50 }}>
-                <Treemap
-                    
-                    {...config}
-                    onEvent={(node, event) => {
-                        if (event.type === 'element:click') {
-                            history.push(`/schema/${event.data.data.name}`)
-                        }
-                    }}
-                    rectStyle={{ cursor: 'pointer '}}
+                {config.data.children.length < 1 ?
+                    <Spin /> : (
+                        <Treemap
+                            {...config}
+                            onEvent={(node, event) => {
+                                if (event.type === 'element:click') {
+                                    history.push(`/schema/${event.data.data.name}`)
+                                }
+                            }}
+                            rectStyle={{ cursor: 'pointer ' }}
 
-                />
+                        />
+                    )
+                }
+
+
             </div>
             <div>
                 <h2 style={{ textAlign: 'left' }}>All tables</h2>
@@ -138,6 +144,7 @@ export default function Schema() {
                         { dataIndex: 'engine', title: 'Engine' },
                         { dataIndex: 'partition_key', title: 'Partition Key' },
                     ]}
+                    loading={config.data.children.length < 1}
                 />
             </div>
         </div>
