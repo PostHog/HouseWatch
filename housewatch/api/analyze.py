@@ -2,7 +2,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from housewatch.clickhouse.client import run_query, base_params, ch_host
+from housewatch.clickhouse.client import run_query, base_params, ch_host, existing_system_tables
 from housewatch.clickhouse.queries.sql import (
     SLOW_QUERIES_SQL, 
     SCHEMA_SQL, 
@@ -79,17 +79,24 @@ class AnalyzeViewset(GenericViewSet):
     
     @action(detail=False, methods=["POST"])
     def logs(self, request: Request):
+        if 'text_log' not in existing_system_tables:
+            return Response(status=418, data={"error": "text_log table does not exist"})
         query_result = run_query(LOGS_SQL, { "message": f"%{request.data['message_ilike']}%" if request.data['message_ilike'] else '%'})
         return Response(query_result)
     
     @action(detail=False, methods=["POST"])
     def logs_frequency(self, request: Request):
+        if 'text_log' not in existing_system_tables:
+            return Response(status=418, data={"error": "text_log table does not exist"})
         query_result = run_query(LOGS_FREQUENCY_SQL, { "message": f"%{request.data['message_ilike']}%" if request.data['message_ilike'] else '%'})
         return Response(query_result)
     
     @action(detail=False, methods=["POST"])
     def query(self, request: Request):
-        query_result = run_query(request.data['sql'])
+        try:
+            query_result = run_query(request.data['sql'])
+        except Exception as e:
+            return Response(status=418, data={ "error": str(e) })
         return Response(query_result)
     
     @action(detail=False, methods=["GET"])

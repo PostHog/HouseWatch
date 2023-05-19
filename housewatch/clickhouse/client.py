@@ -1,6 +1,7 @@
 from typing import Dict
 from clickhouse_pool import ChPool
 import os
+from housewatch.clickhouse.queries.sql import EXISTING_TABLES_SQL
 
 ch_host = os.getenv("CLICKHOUSE_HOST", "localhost")
 
@@ -32,3 +33,5 @@ def run_query(query: str, params: Dict[str, str | int] = {}, settings: Dict[str,
 base_params = {
     "cluster": os.getenv("CLICKHOUSE_CLUSTER", "posthog")
 }
+
+existing_system_tables = [row['name'] for row in run_query(EXISTING_TABLES_SQL)]

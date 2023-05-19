@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Table, Button, notification, Typography, Input, Card } from 'antd'
+import { Table, Button, notification, Typography, Input, Card, ConfigProvider } from 'antd'
 import { usePollingEffect } from './PageCacheHits'
 import React, { useEffect, useState } from 'react'
 import { Bar, Column } from '@ant-design/charts'
@@ -14,31 +14,28 @@ export default function QueryEditor() {
     const [sql, setSql] = useState(
         'SELECT type, query, query_duration_ms, formatReadableSize(memory_usage)\nFROM system.query_log\nWHERE type > 1 AND is_initial_query\nORDER BY event_time DESC\nLIMIT 10'
     )
+    const [error, setError] = useState('')
     const [data, setData] = useState([{}])
 
     const columns = data.length > 0 ? Object.keys(data[0]).map((column) => ({ title: column, dataIndex: column })) : []
 
     const url = 'http://localhost:8000/api/analyze/query'
 
-    const query = (sql = '') => {
+    const query = async (sql = '') => {
         setData([])
-        fetch(url, {
+        const res = await fetch(url, {
             method: 'POST',
             body: JSON.stringify({ sql }),
             headers: {
                 'Content-Type': 'application/json',
             },
         })
-            .then((response) => {
-                return response.json()
-            })
-            .then((data) => {
-                setData(data)
-                return data
-            })
-            .catch((err) => {
-                return []
-            })
+        const resJson = await res.json()
+        if (resJson.error) {
+            setError(resJson.error)
+        } else {
+            setData(resJson)
+        }
     }
 
     return (
@@ -71,7 +68,11 @@ export default function QueryEditor() {
             <br />
             <br />
 
-            <Table columns={columns} dataSource={data} loading={data.length < 1} />
+            <ConfigProvider renderEmpty={
+                () => <p style={{ color: '#c40000', fontFamily: 'monospace' }}>{error}</p>}
+            >
+                <Table columns={columns} dataSource={data} loading={!error && data.length < 1} />
+            </ConfigProvider>
         </>
     )
 }
