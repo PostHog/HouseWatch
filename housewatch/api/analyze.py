@@ -31,14 +31,14 @@ class AnalyzeViewset(GenericViewSet):
 
     @action(detail=False, methods=["GET"])
     def slow_queries(self, request: Request):
-        params = { **base_params, "limit": 100, "date_from": "now() - INTERVAL 2 WEEK"}
+        params = { **base_params, "limit": 100, "date_from": "now() - INTERVAL 1 WEEK"}
         query_result = run_query(SLOW_QUERIES_SQL, params)
         return Response(query_result)
 
     @action(detail=True, methods=["GET"])
     def query_detail(self, request: Request, pk: str):
         days = request.GET.get('days', DEFAULT_DAYS)
-        conditions = "and toString(normalized_query_hash) = '{}'".format(pk)
+        conditions = "AND event_time > now() - INTERVAL 1 WEEK AND toString(normalized_query_hash) = '{}'".format(pk)
         execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(days=days, conditions=conditions))
         memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(days=days, conditions=conditions))
         read_bytes = run_query(QUERY_READ_BYTES_SQL.format(days=days, conditions=conditions))

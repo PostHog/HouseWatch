@@ -11,6 +11,8 @@ export default function Logs() {
     // mostly because the only error we expect is that the table doesn't exist
     const [error, setError] = useState('')
     const [logs, setLogs] = useState([])
+    const [loadingLogsFrequency, setLoadingLogsFrequency] = useState(false)
+    const [loadingLogs, setLoadingLogs] = useState(false)
     const [logsFrequency, setLogsFrequency] = useState([])
     const [logMessageFilter, setLogMessageFilter] = useState('')
 
@@ -43,6 +45,7 @@ export default function Logs() {
     const url = 'http://localhost:8000/api/analyze/logs'
 
     const fetchLogs = async (messageIlike = '') => {
+        setLoadingLogs(true)
         const res = await fetch(url, {
             method: 'POST',
             body: JSON.stringify({ message_ilike: messageIlike }),
@@ -56,9 +59,11 @@ export default function Logs() {
         } else {
             setLogs(resJson)
         }
+        setLoadingLogs(false)
     }
 
     const fetchLogsFrequency = async (messageIlike = '') => {
+        setLoadingLogsFrequency(true)
         const res = await fetch('http://localhost:8000/api/analyze/logs_frequency', {
             method: 'POST',
             body: JSON.stringify({ message_ilike: messageIlike }),
@@ -72,6 +77,7 @@ export default function Logs() {
         } else {
             setLogsFrequency(resJson)
         }
+        setLoadingLogsFrequency(false)
     }
 
     useEffect(() => {
@@ -90,13 +96,13 @@ export default function Logs() {
             <br />
             <br />
             <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }}>
-                <Column xField="hour" yField="total" color="#ffb200" style={{ height: 150 }} data={logsFrequency} loading={!error && logs.length < 1} />
+                <Column xField="hour" yField="total" color="#ffb200" style={{ height: 150 }} data={logsFrequency} loading={loadingLogsFrequency} />
             </Card>
             <br />
             <ConfigProvider renderEmpty={
                 () => <Empty description={error === 'text_log table does not exist' ?  <>Your ClickHouse instance does not have the <code>text_log</code> table. See <a href="https://clickhouse.com/docs/en/operations/system-tables/text_log" target="_blank" rel="noreferrer noopener">these docs</a> on how to configure it.</> : ''}/>}
             >
-                <Table columns={columns} dataSource={logs} loading={!error && logs.length < 1} />
+                <Table columns={columns} dataSource={logs} loading={loadingLogs} />
             </ConfigProvider>
         </>
     )

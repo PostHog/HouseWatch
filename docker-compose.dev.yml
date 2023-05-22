@@ -6,16 +6,6 @@
 version: '3'
 
 services:
-    db:
-        image: postgres:12-alpine
-        restart: on-failure
-        environment:
-            POSTGRES_USER: posthog_billing
-            POSTGRES_DB: posthog_billing
-            POSTGRES_PASSWORD: posthog_billing
-        ports:
-            - '5433:5432'
-    
     app:
         build: .
         environment:
@@ -28,41 +18,53 @@ services:
             PGDATABASE: posthog_billing
             PGPORT: 5432
             REDIS_URL: redis://redis:6379
+            CLICKHOUSE_HOST: "${CLICKHOUSE_HOST}"
+            CLICKHOUSE_DATABASE: "${CLICKHOUSE_DATABASE}"
+            CLICKHOUSE_USER: "${CLICKHOUSE_USER}"
+            CLICKHOUSE_PASSWORD: "${CLICKHOUSE_PASSWORD}"
+            CLICKHOUSE_CLUSTER: "${CLICKHOUSE_CLUSTER}"
+            CLICKHOUSE_SECURE: "${CLICKHOUSE_SECURE}"
         command:
             - bash
             - -c
             - |
                 python manage.py migrate
-                python manage.py runserver 0.0.0.0:8100
+                python manage.py runserver 0.0.0.0:8000
         volumes:
             - .:/code
-        env_file:
-            - .env
+        # env_file:
+        #    - .env
         ports:
-            - '8100:8100'
-
-    redis:
-        image: redis:6.2.7-alpine
-        restart: on-failure
+            - '8000:8000'
+    web:
+        build: ./frontend
         ports:
-            - '6380:6379'
-        command: redis-server --maxmemory-policy allkeys-lru --maxmemory 200mb
-
-    worker:
-        build: .
-        environment:
-            DEBUG: "true"
-            SECRET_KEY: not-so-secret
-            SITE_URL: http://localhost:8100
-            PGHOST: db
-            PGUSER: posthog_billing
-            PGPASSWORD: posthog_billing
-            PGDATABASE: posthog_billing
-            PGPORT: 5432
-            REDIS_URL: redis://redis:6379
-        command:
-            - ./bin/celery
+            - "3000:3000"
         volumes:
-            - .:/code
-        env_file:
-            - .env
+            - ./frontend:/frontend
+
+    # redis:
+    #     image: redis:6.2.7-alpine
+    #     restart: on-failure
+    #     ports:
+    #         - '6380:6379'
+    #     command: redis-server --maxmemory-policy allkeys-lru --maxmemory 200mb
+
+    # worker:
+    #     build: .
+    #     environment:
+    #         DEBUG: "true"
+    #         SECRET_KEY: not-so-secret
+    #         SITE_URL: http://localhost:8100
+    #         PGHOST: db
+    #         PGUSER: posthog_billing
+    #         PGPASSWORD: posthog_billing
+    #         PGDATABASE: posthog_billing
+    #         PGPORT: 5432
+    #         REDIS_URL: redis://redis:6379
+    #     command:
+    #         - ./bin/celery
+    #     volumes:
+    #        - .:/code
+        #env_file:
+        #    - .env
