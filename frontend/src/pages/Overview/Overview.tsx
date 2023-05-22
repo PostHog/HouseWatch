@@ -1,44 +1,49 @@
-// @ts-nocheck
-import * as React from 'react'
-import { usePollingEffect } from "./utils/usePollingEffect"
+import React, { useEffect, useState } from 'react'
 import { Line } from '@ant-design/charts'
-import { Card, Col, Divider, Row, Tooltip } from 'antd'
+import { Card, Col, Divider, Row, Tooltip, notification } from 'antd'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { clickhouseTips } from './tips'
 
-export default function AllQueryGraphs() {
-    const [queryGraphs, setQueryGraphs] = React.useState({
+interface MetricData {
+    day_start: string
+    total: number
+}
+
+interface QueryGraphsData {
+    execution_count: MetricData[],
+    memory_usage: MetricData[],
+    read_bytes: MetricData[],
+    cpu: MetricData[],
+}
+
+export default function Overview() {
+    const [queryGraphs, setQueryGraphs] = useState<QueryGraphsData>({
         execution_count: [],
         memory_usage: [],
         read_bytes: [],
         cpu: [],
     })
 
-    const url = `http://localhost:8000/api/analyze/query_graphs`
+    const loadData = async () => {
+        try {
+            const res = await fetch('http://localhost:8000/api/analyze/query_graphs')
+            const resJson = await res.json()
+            const execution_count = resJson.execution_count
+            const memory_usage = resJson.memory_usage
+            const read_bytes = resJson.read_bytes
+            const cpu = resJson.cpu
+            setQueryGraphs({ execution_count, memory_usage, read_bytes, cpu })
+        } catch (err) {
+            notification.error({ message: 'Failed to load data' })
+        }
+    }
 
-    usePollingEffect(
-        async () =>
-            setQueryGraphs(
-                await fetch(url)
-                    .then((response) => {
-                        return response.json()
-                    })
-                    .then((data) => {
-                        const execution_count = data.execution_count
-                        const memory_usage = data.memory_usage
-                        const read_bytes = data.read_bytes
-                        const cpu = data.cpu
-                        return { execution_count, memory_usage, read_bytes, cpu }
-                    })
-                    .catch((err) => {
-                        return { execution_count: [], memory_usage: [], read_bytes: [], cpu: [] }
-                    })
-            ),
-        []
-    )
+    useEffect(() => {
+        loadData()
+    }, [])
 
     const now = new Date()
-    const dayOfTheYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24))
+    const dayOfTheYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24))
 
     return (
         <div>

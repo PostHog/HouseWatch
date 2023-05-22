@@ -1,5 +1,5 @@
 import { Table, Button, notification, Typography } from 'antd'
-import { usePollingEffect } from "./utils/usePollingEffect"
+import { usePollingEffect } from "../../utils/usePollingEffect"
 import React, { useState } from 'react'
 import { ColumnType } from 'antd/es/table'
 

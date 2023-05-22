@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { DiskUsage } from './DiskUsage'
 import SlowQueries from './SlowQueries'
-import Schema from './Schema'
+import Schema from './pages/SchemaStats/SchemaStats'
 import QueryDetail from './QueryDetail'
-import SchemaTable from './SchemaTable'
-import AllQueryGraphs from './AllQueryGraphs'
+import SchemaTable from './pages/SchemaStats/SchemaTable'
+import Overview from './pages/Overview/Overview'
 import Errors from './Errors'
 import { BrowserRouter as Router, Switch, Route, Link, useHistory } from 'react-router-dom'
 
 import { AsyncMigrations } from './AsyncMigrations'
-import RunningQueries from './RunningQueries'
+import RunningQueries from './pages/RunningQueries/RunningQueries'
 import Logs from './Logs'
 import {
     ApartmentOutlined,
@@ -104,7 +104,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
 
                     <Content style={{ margin: 'auto', display: 'block', width: '85%', marginTop: 20 }}>
                         <Switch>
-                            <Route exact path="/" component={AllQueryGraphs}></Route>
+                            <Route exact path="/" component={Overview}></Route>
                             <Route exact path="/disk_usage">
                                 <DiskUsage />
                             </Route>
