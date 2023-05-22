@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { Table, Button, notification, Typography, Input, Card, ConfigProvider } from 'antd'
-import { usePollingEffect } from "./utils/usePollingEffect"
+import { usePollingEffect } from "../../utils/usePollingEffect"
 import React, { useEffect, useState } from 'react'
 import { Bar, Column } from '@ant-design/charts'
 import { highlight, languages } from 'prismjs/components/prism-core'

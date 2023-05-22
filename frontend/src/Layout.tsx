@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { DiskUsage } from './DiskUsage'
+import { DiskUsage } from './pages/DiskUsage/DiskUsage'
 import SlowQueries from './pages/SlowQueries/SlowQueries'
 import Schema from './pages/SchemaStats/SchemaStats'
 import QueryDetail from './pages/SlowQueries/QueryDetail'
 import SchemaTable from './pages/SchemaStats/SchemaTable'
 import Overview from './pages/Overview/Overview'
-import Errors from './Errors'
+import Errors from './pages/Errors/Errors'
 import { BrowserRouter as Router, Switch, Route, Link, useHistory } from 'react-router-dom'
 
-import { AsyncMigrations } from './AsyncMigrations'
+import { Operations } from './Operations/Operations'
 import RunningQueries from './pages/RunningQueries/RunningQueries'
-import Logs from './Logs'
+import Logs from './pages/Logs/Logs'
 import {
     ApartmentOutlined,
     CodeOutlined,
@@ -23,22 +23,14 @@ import {
     BarsOutlined,
     FormOutlined,
 } from '@ant-design/icons'
-import { ConfigProvider, MenuProps, Tooltip } from 'antd'
-import { Breadcrumb, Layout, Menu, theme } from 'antd'
-import QueryEditor from './QueryEditor'
+import { ConfigProvider, MenuProps } from 'antd'
+import { Breadcrumb, Layout, Menu } from 'antd'
+import QueryEditor from './pages/QueryEditor/QueryEditor'
 
 const { Header, Content, Footer, Sider } = Layout
 
 type MenuItem = Required<MenuProps>['items'][number]
 
-function getItem(label: React.ReactNode, key: React.Key, icon?: React.ReactNode, children?: MenuItem[]): MenuItem {
-    return {
-        key,
-        icon,
-        children,
-        label,
-    } as MenuItem
-}
 
 const items: MenuItem[] = [
     { key: '', icon: <HomeOutlined />, label: 'Overview' },
@@ -52,9 +44,8 @@ const items: MenuItem[] = [
     { key: 'operations', label: 'Operations', icon: <CodeOutlined /> },
 ]
 
-const drawerWidth = 240
 
-export default function PermanentDrawerLeft(): JSX.Element {
+export default function AppLayout(): JSX.Element {
     const [hostname, setHostname] = useState('')
 
     const fetchHostname = async () => {
@@ -113,7 +104,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
                             <Route exact path="/schema/:table" component={SchemaTable}></Route>
 
                             <Route exact path="/slow_queries/:query_hash" component={QueryDetail}></Route>
-                            <Route exact path="/operations" component={AsyncMigrations}></Route>
+                            <Route exact path="/operations" component={Operations}></Route>
                             <Route exact path="/running_queries" component={RunningQueries}></Route>
                             <Route exact path="/logs" component={Logs}></Route>
                             <Route exact path="/errors" component={Errors}></Route>

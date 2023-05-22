@@ -14,7 +14,7 @@ import { highlight, languages } from 'prismjs/components/prism-core'
 import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
 
-const ASYNC_MIGRATION_STATUS_TO_HUMAN = {
+const OPERATION_STATUS_TO_HUMAN = {
     0: 'Not started',
     1: 'Running',
     2: 'Completed successfully',
@@ -24,7 +24,7 @@ const ASYNC_MIGRATION_STATUS_TO_HUMAN = {
     6: 'Failed at startup',
 }
 
-const ASYNC_MIGRATION_STATUS_TO_FONT_COLOR = {
+const OPERATION_STATUS_TO_FONT_COLOR = {
     0: 'black',
     1: 'black',
     2: 'green',
@@ -34,21 +34,21 @@ const ASYNC_MIGRATION_STATUS_TO_FONT_COLOR = {
     6: 'red',
 }
 
-export function AsyncMigrationControls({
+export function OperationControls({
     status,
     progress,
     id,
-    triggerAsyncMigration,
+    triggerOperation,
 }: {
     status: number
     progress: number
     id: number
-    triggerAsyncMigration: () => Promise<void>
+    triggerOperation: () => Promise<void>
 }): JSX.Element {
     return (
         <div style={{ width: 100 }}>
             {[0, 4, 6].includes(status) ? (
-                <Button variant="contained" onClick={() => triggerAsyncMigration(id)}>
+                <Button variant="contained" onClick={() => triggerOperation(id)}>
                     Run
                 </Button>
             ) : status === 3 ? (
@@ -62,28 +62,28 @@ export function AsyncMigrationControls({
     )
 }
 
-export function AsyncMigrationsList(): JSX.Element {
-    const [asyncMigrations, setAsyncMigrations] = useState([])
+export function OperationsList(): JSX.Element {
+    const [operations, setOperations] = useState([])
 
-    const fetchAndUpdateAsyncMigrationsIfNeeded = async () => {
+    const fetchAndUpdateOperationsIfNeeded = async () => {
         const response = await fetch('http://localhost:8000/api/async_migrations')
         const responseJson = await response.json()
         const results = responseJson.results
-        if (JSON.stringify(results) !== JSON.stringify(asyncMigrations)) {
-            setAsyncMigrations(results)
+        if (JSON.stringify(results) !== JSON.stringify(operations)) {
+            setOperations(results)
         }
     }
 
-    const triggerAsyncMigration = async (id) => {
+    const triggerOperation = async (id) => {
         await fetch(`http://localhost:8000/api/async_migrations/${id}/trigger`, { method: 'POST' })
-        await fetchAndUpdateAsyncMigrationsIfNeeded()
+        await fetchAndUpdateOperationsIfNeeded()
     }
 
     useEffect(() => {
-        fetchAndUpdateAsyncMigrationsIfNeeded()
+        fetchAndUpdateOperationsIfNeeded()
     }, [])
 
-    setInterval(fetchAndUpdateAsyncMigrationsIfNeeded, 5000)
+    setInterval(fetchAndUpdateOperationsIfNeeded, 5000)
 
     return (
         <TableContainer component={Paper}>
@@ -100,7 +100,7 @@ export function AsyncMigrationsList(): JSX.Element {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {asyncMigrations.map((migration) => (
+                    {operations.map((migration) => (
                         <TableRow key={migration.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                             <TableCell component="th" scope="row">
                                 {migration.name}
@@ -108,9 +108,9 @@ export function AsyncMigrationsList(): JSX.Element {
                             <TableCell align="right">{migration.description}</TableCell>
                             <TableCell
                                 align="right"
-                                style={{ color: ASYNC_MIGRATION_STATUS_TO_FONT_COLOR[migration.status] }}
+                                style={{ color: OPERATION_STATUS_TO_FONT_COLOR[migration.status] }}
                             >
-                                <b>{ASYNC_MIGRATION_STATUS_TO_HUMAN[migration.status]}</b>
+                                <b>{OPERATION_STATUS_TO_HUMAN[migration.status]}</b>
                             </TableCell>
                             <TableCell align="right">{migration.progress}</TableCell>
                             <TableCell align="right">
@@ -120,11 +120,11 @@ export function AsyncMigrationsList(): JSX.Element {
                                 {migration.finished_at ? migration.finished_at.split('.')[0] : ''}
                             </TableCell>
                             <TableCell align="right">
-                                <AsyncMigrationControls
+                                <OperationControls
                                     status={migration.status}
                                     progress={migration.progress}
                                     id={migration.id}
-                                    triggerAsyncMigration={triggerAsyncMigration}
+                                    triggerOperation={triggerOperation}
                                 />
                             </TableCell>
                         </TableRow>
@@ -135,20 +135,20 @@ export function AsyncMigrationsList(): JSX.Element {
     )
 }
 
-export function CreateNewAsyncMigration(): JSX.Element {
+export function CreateNewOperation(): JSX.Element {
     const history = useHistory()
 
-    const [asyncMigrationOperationsCount, setAsyncMigrationOperationsCount] = useState(1)
+    const [operationOperationsCount, setOperationOperationsCount] = useState(1)
 
     const [code, setCode] = useState(`SELECT 1`)
 
-    const createAsyncMigration = async () => {
+    const createOperation = async () => {
         const form = document.getElementById('create-migration-form')
         const formData = new FormData(form)
 
         const operations = []
         const rollbackOperations = []
-        const asyncMigrationData = {
+        const operationData = {
             name: '',
             description: '',
             operations: operations,
@@ -163,12 +163,12 @@ export function CreateNewAsyncMigration(): JSX.Element {
                 rollbackOperations.push(value)
                 continue
             }
-            asyncMigrationData[key] = value
+            operationData[key] = value
         }
 
         await fetch('http://localhost:8000/api/async_migrations', {
             method: 'POST',
-            body: JSON.stringify(asyncMigrationData),
+            body: JSON.stringify(operationData),
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -198,7 +198,7 @@ export function CreateNewAsyncMigration(): JSX.Element {
 
                 <h3>Operations</h3>
 
-                {[...Array(asyncMigrationOperationsCount)].map((_, i) => (
+                {[...Array(operationOperationsCount)].map((_, i) => (
                     <span key={i}>
                         <h4>#{i + 1}</h4>
                         <TextField
@@ -241,12 +241,12 @@ export function CreateNewAsyncMigration(): JSX.Element {
                         <br />
                     </span>
                 ))}
-                {asyncMigrationOperationsCount > 1 ? (
+                {operationOperationsCount > 1 ? (
                     <>
                         <Button
                             variant="outlined"
                             color="error"
-                            onClick={() => setAsyncMigrationOperationsCount(asyncMigrationOperationsCount - 1)}
+                            onClick={() => setOperationOperationsCount(operationOperationsCount - 1)}
                         >
                             -
                         </Button>{' '}
@@ -254,13 +254,13 @@ export function CreateNewAsyncMigration(): JSX.Element {
                 ) : null}
                 <Button
                     variant="outlined"
-                    onClick={() => setAsyncMigrationOperationsCount(asyncMigrationOperationsCount + 1)}
+                    onClick={() => setOperationOperationsCount(operationOperationsCount + 1)}
                 >
                     +
                 </Button>
             </form>
             <div style={{ textAlign: 'center' }}>
-                <Button variant="contained" onClick={createAsyncMigration}>
+                <Button variant="contained" onClick={createOperation}>
                     Save
                 </Button>
             </div>
@@ -268,7 +268,7 @@ export function CreateNewAsyncMigration(): JSX.Element {
     )
 }
 
-export function AsyncMigrations(): JSX.Element {
+export function Operations(): JSX.Element {
     const [tab, setTab] = useState('list')
 
     return (
@@ -280,7 +280,7 @@ export function AsyncMigrations(): JSX.Element {
                 <Tab value="create" label="Create new operation" />
             </Tabs>
             <br />
-            {tab === 'list' ? <AsyncMigrationsList /> : tab === 'create' ? <CreateNewAsyncMigration /> : null}
+            {tab === 'list' ? <OperationsList /> : tab === 'create' ? <CreateNewOperation /> : null}
             <br />
             <br />
         </div>
