@@ -1,14 +1,17 @@
-// @ts-nocheck
 import React, { useEffect, useState } from 'react'
-import { usePollingEffect } from "./utils/usePollingEffect"
-// import { DataGrid } from '@mui/x-data-grid';
 import { Table, Typography } from 'antd'
-import { useHistory } from 'react-router-dom'
-const { Text, Paragraph } = Typography
+import { ColumnsType } from 'antd/es/table'
+
+interface ErrorData {
+    name: string
+    count: number
+    max_last_error_time: string
+}
 
 export default function CollapsibleTable() {
-    const history = useHistory()
-    const slowQueriesColumns = [
+    const [slowQueries, setSlowQueries] = useState([])
+
+    const slowQueriesColumns: ColumnsType<ErrorData> = [
         {
             title: 'Error',
             dataIndex: 'name',
@@ -26,20 +29,19 @@ export default function CollapsibleTable() {
         },
     ]
 
-    const [slowQueries, setSlowQueries] = useState([])
+    const loadData = async () => {
+        const res = await fetch('http://localhost:8000/api/analyze/errors')
+        const resJson = await res.json()
 
-    const url = 'http://localhost:8000/api/analyze/errors'
+        const slowQueriesData = resJson.map((error: ErrorData, idx: number) => ({ key: idx, ...error }))
+        setSlowQueries(slowQueriesData)
+    }
 
-    usePollingEffect(
-        async () =>
-            setSlowQueries(
-                await fetch(url)
-                    .then((response) => response.json())
-                    .then((data) => data.map((d, idx) => ({ key: idx, ...d })))
-            ),
-        [],
-        { interval: 5000 } // optional
-    )
+
+    useEffect(() => {
+        loadData()
+    }, [])
+
 
     return (
         <div>

@@ -12,17 +12,15 @@ interface NodeData {
 export function DiskUsage(): JSX.Element {
     const [clusterOverviewData, setClusterOverviewData] = useState<NodeData[]>([])
 
-    const url = 'http://localhost:8000/api/analyze/cluster_overview'
-
     const loadData = async () => {
-        const res = await fetch(url)
+        const res = await fetch('http://localhost:8000/api/analyze/cluster_overview')
         const resJson = await res.json()
         setClusterOverviewData(resJson)
     }
 
     useEffect(() => {
         loadData()
-    })
+    }, [])
 
     const rows = []
     for (let i = 0; i < clusterOverviewData.length; i += 2) {
