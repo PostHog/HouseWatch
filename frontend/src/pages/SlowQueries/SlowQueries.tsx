@@ -1,14 +1,26 @@
-// @ts-nocheck
 import React, { useEffect, useState } from 'react'
-import { usePollingEffect } from "./utils/usePollingEffect"
-// import { DataGrid } from '@mui/x-data-grid';
 import { Table, Typography } from 'antd'
 import { useHistory } from 'react-router-dom'
-const { Text, Paragraph } = Typography
+import { ColumnType } from 'antd/es/table'
+const { Paragraph } = Typography
+
+interface SlowQueryData {
+    normalized_query: string
+    normalized_query_hash: string
+    avg_duration: number
+    calls_per_minute: number
+    percentage_iops: number
+    percentage_runtime: number
+    read_bytes: number
+    total_read_bytes: number
+}
 
 export default function CollapsibleTable() {
+    const [loadingSlowQueries, setLoadingSlowQueries] = useState(false)
+    const [slowQueries, setSlowQueries] = useState<SlowQueryData[]>([])
+
     const history = useHistory()
-    const slowQueriesColumns = [
+    const slowQueriesColumns: ColumnType<SlowQueryData>[] = [
         {
             title: 'Query',
             dataIndex: 'normalized_query',
@@ -22,7 +34,6 @@ export default function CollapsibleTable() {
                         ellipsis={{
                             rows: 2,
                             expandable: false,
-                            title: item.normalized_query,
                         }}
                     >
                         {item.normalized_query.replace(/SELECT.*FROM/g, 'SELECT ... FROM').replace(/(\?)/g, () => {
@@ -57,24 +68,25 @@ export default function CollapsibleTable() {
             title: 'Total iops',
             dataIndex: 'total_read_bytes',
             sorter: (a, b) => a.total_read_bytes - b.total_read_bytes,
-            sorter: (a, b) => a.read_bytes - b.read_bytes,
         },
     ]
 
-    const [slowQueries, setSlowQueries] = useState(false)
 
-    const url = 'http://localhost:8000/api/analyze/slow_queries'
 
-    usePollingEffect(
-        async () =>
-            setSlowQueries(
-                await fetch(url)
-                    .then((response) => response.json())
-                    .then((data) => data.map((d, idx) => ({ key: idx, ...d })))
-            ),
-        [],
-        { interval: 600000 } // optional
-    )
+    const loadData = async () => {
+        setSlowQueries([])
+        setLoadingSlowQueries(true)
+        const res = await fetch('http://localhost:8000/api/analyze/slow_queries')
+        const resJson = await res.json()
+
+        const slowQueriesData = resJson.map((error: SlowQueryData, idx: number) => ({ key: idx, ...error }))
+        setSlowQueries(slowQueriesData)
+        setLoadingSlowQueries(false)
+    }
+
+    useEffect(() => {
+        loadData()
+    }, [])
 
     return (
         <div>
@@ -84,16 +96,16 @@ export default function CollapsibleTable() {
             <div>
                 <Table
                     columns={slowQueriesColumns}
-                    onRow={(query, rowIndex) => {
+                    onRow={(query, _) => {
                         return {
-                            onClick: (event) => {
+                            onClick: () => {
                                 history.push(`/slow_queries/${query.normalized_query_hash}`)
                             },
                         }
                     }}
                     rowClassName={() => 'cursor-pointer'}
                     dataSource={slowQueries}
-                    loading={!slowQueries}
+                    loading={loadingSlowQueries}
                     size="small"                    
                 />
             </div>

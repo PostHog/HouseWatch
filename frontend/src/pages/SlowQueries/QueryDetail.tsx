@@ -1,65 +1,59 @@
-// @ts-nocheck
-import * as React from 'react'
-import { usePollingEffect } from "./utils/usePollingEffect"
+import React, { useEffect, useState } from 'react'
 import { Line } from '@ant-design/plots'
-import { highlight, languages } from 'prismjs/components/prism-core'
+// @ts-ignore
+import { highlight, languages } from 'prismjs/components/prism-core' // @ts-ignore
 import 'prismjs/components/prism-sql'
 import 'prismjs/components/prism-yaml'
 import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 import { Tab, Tabs } from '@mui/material'
+// @ts-ignore
 import { format } from 'sql-formatter-plus'
-import { Button, Card, Col, Row, Spin, Table, Tooltip } from 'antd'
+import { Card, Col, Row, Spin, Table, Tooltip, notification } from 'antd'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { useHistory } from 'react-router-dom'
 
-export default function QueryDetail({ match }) {
-    const [tab, setTab] = React.useState('query')
-    const [queryDetail, setQueryDetail] = React.useState([])
-    const [querySQL, setQuerySQL] = React.useState('')
-    const [data, setData] = React.useState({})
+interface MetricData {
+    day_start: string
+    total: number
+}
+
+interface QueryDetailData {
+    query: string
+    explain: {
+        explain: string
+    }[]
+    example_queries: { 
+        query: string
+    }[]
+    execution_count: MetricData[]
+    memory_usage: MetricData[]
+    read_bytes: MetricData[]
+    cpu: MetricData[]
+}
+
+export default function QueryDetail({ match }: { match: { params: { query_hash: string } } }) {
+    const [tab, setTab] = useState('query')
+    const [querySQL, setQuerySQL] = useState('')
+    const [data, setData] = useState<QueryDetailData | null>(null)
     const history = useHistory()
-    const [showCopiedToClipboardNotice, setShowCopiedToClipboardNotice] = React.useState(false)
 
 
-
-    const defaultConfig = {
-        data: queryDetail,
-        padding: 'auto',
-        xField: 'day_start',
-        yField: 'total',
+    const loadData = async () => {
+        const res = await fetch(`http://localhost:8000/api/analyze/${match.params.query_hash}/query_detail`)
+        const resJson = await res.json()
+        setData(resJson)
+        setQuerySQL(resJson.query)
     }
-    const [config, setConfig] = React.useState(defaultConfig)
 
-    const url = `http://localhost:8000/api/analyze/${match.params.query_hash}/query_detail`
-
-    usePollingEffect(
-        async () =>
-            setQueryDetail(
-                await fetch(url)
-                    .then((response) => {
-                        return response.json()
-                    })
-                    .then((data) => {
-                        setData(data)
-                        const mappedData = data.execution_count
-                        setConfig({ ...config, data: mappedData })
-                        setQuerySQL(data.query)
-                        return mappedData
-                    })
-                    .catch((err) => {
-                        return []
-                    })
-            ),
-        [],
-        { interval: 5000 } // optional
-    )
+    useEffect(() => {
+        loadData()
+    }, [])
 
 
-    const copyToClipboard = (value) => {
+    const copyToClipboard = (value: string) => {
+        notification.info({ message: 'Copied to clipboard!', placement: 'bottomRight', duration: 1.5, style: { fontSize: 10 }})
         navigator.clipboard.writeText(value)
-        setShowCopiedToClipboardNotice(true)
-        setTimeout(() => setShowCopiedToClipboardNotice(false), 1000)
     }
 
     let index = 0
@@ -74,10 +68,7 @@ export default function QueryDetail({ match }) {
                 <Tab value="examples" label="Example queries" />
             </Tabs>
             <br />
-            <div style={{ height: 20, maxHeight: 20 }}>
-                {showCopiedToClipboardNotice ? <p style={{ textAlign: 'center', fontSize: 10, color: '#554e4e', lineHeight: 0, margin: 0, padding: 0 }}>Copied to clipboard!</p> : null}
-            </div>
-            {!data.query ? (
+            {!data ? (
                 <div style={{ height: 500 }}>
                     <Spin size='large' style={{ margin: 'auto', display: 'block', marginTop: 50 }} />
                 </div>
@@ -92,7 +83,7 @@ export default function QueryDetail({ match }) {
                                     return '$' + index
                                 })
                             )}
-                            onValueChange={(code) => setSql(format(code))}
+                            onValueChange={() => { }}
                             highlight={(code) => highlight(code, languages.sql)}
                             padding={10}
                             style={{
@@ -103,7 +94,6 @@ export default function QueryDetail({ match }) {
                                 boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)',
                                 marginBottom: 5,
                             }}
-                            multiline
                             disabled
                             className='code-editor'
                         />
@@ -202,7 +192,6 @@ export default function QueryDetail({ match }) {
                                 boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)',
                                 marginBottom: 5,
                             }}
-                            multiline
                             disabled
                             className='code-editor'
                         />
@@ -222,7 +211,6 @@ export default function QueryDetail({ match }) {
                                         style={{
                                             fontFamily: '"Fira code", "Fira Mono", monospace',
                                         }}
-                                        multiline
                                         disabled
                                     />
                                 ),

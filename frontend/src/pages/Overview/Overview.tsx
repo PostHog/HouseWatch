@@ -10,10 +10,10 @@ interface MetricData {
 }
 
 interface QueryGraphsData {
-    execution_count: MetricData[],
-    memory_usage: MetricData[],
-    read_bytes: MetricData[],
-    cpu: MetricData[],
+    execution_count: MetricData[]
+    memory_usage: MetricData[]
+    read_bytes: MetricData[]
+    cpu: MetricData[]
 }
 
 export default function Overview() {
