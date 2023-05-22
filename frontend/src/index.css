@@ -26,6 +26,10 @@ body {
         'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color: #262626;
+    font-size: 0.875rem;
+    line-height: 1.57;
+    font-weight: 400;
 }
 
 code {
