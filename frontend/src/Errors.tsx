@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Typography } from 'antd'
+import { Table } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 
 interface ErrorData {

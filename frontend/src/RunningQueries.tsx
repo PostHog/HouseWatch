@@ -1,9 +1,18 @@
-// @ts-nocheck
 import { Table, Button, notification, Typography } from 'antd'
 import { usePollingEffect } from "./utils/usePollingEffect"
 import React, { useState } from 'react'
+import { ColumnType } from 'antd/es/table'
 
 const { Paragraph } = Typography
+
+interface RunningQueryData {
+    query: string
+    read_rows: number
+    query_id: string
+    total_rows_approx: number
+    elapsed: number
+    memory_usage: string
+}
 
 function KillQueryButton({ queryId }: any) {
     const [isLoading, setIsLoading] = useState(false)
@@ -11,29 +20,26 @@ function KillQueryButton({ queryId }: any) {
 
     const killQuery = async () => {
         setIsLoading(true)
-        await fetch(`http://localhost:8000/api/analyze/${queryId}/kill_query`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                query_id: queryId,
-            }),
-        })
-            .then((response) => {
-                setIsKilled(true)
-                setIsLoading(false)
-                return response.json()
+        try {
+            const res = await fetch(`http://localhost:8000/api/analyze/${queryId}/kill_query`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    query_id: queryId,
+                }),
             })
-            .catch((err) => {
-                setIsLoading(false)
-                notification.error({
-                    message: 'Killing query failed',
-                    description: err,
-                })
+            setIsKilled(true)
+            setIsLoading(false)
+            return await res.json()
+        } catch (err) {
+            setIsLoading(false)
+            notification.error({
+                message: 'Killing query failed',
+            })
+        }
 
-                return []
-            })
     }
     return (
         <>
@@ -48,15 +54,18 @@ function KillQueryButton({ queryId }: any) {
     )
 }
 
+
+
 export default function RunningQueries() {
     const [runningQueries, setRunningQueries] = useState([])
+    const [loadingRunningQueries, setLoadingRunningQueries] = useState(false)
 
-    const columns = [
+    const columns: ColumnType<RunningQueryData>[] = [
         {
             title: 'Query',
             dataIndex: 'normalized_query',
             key: 'query',
-            render: (_: any, item: any) => {
+            render: (_: any, item) => {
                 let index = 0
                 return (
                     <Paragraph
@@ -64,7 +73,6 @@ export default function RunningQueries() {
                         ellipsis={{
                             rows: 2,
                             expandable: true,
-                            title: item.query,
                         }}
                     >
                         {item.query.replace(/(\?)/g, () => {
@@ -79,42 +87,33 @@ export default function RunningQueries() {
         {
             title: 'Rows read',
             dataIndex: 'read_rows',
-            render: (_: any, item: any) => `~${item.read_rows}/${item.total_rows_approx}`,
+            render: (_: any, item) => `~${item.read_rows}/${item.total_rows_approx}`,
         },
         { title: 'Memory Usage', dataIndex: 'memory_usage' },
         {
             title: 'Actions',
-            render: (_: any, item: any) => <KillQueryButton queryId={item.query_id} />,
+            render: (_: any, item) => <KillQueryButton queryId={item.query_id} />,
         },
     ]
 
-    const url = 'http://localhost:8000/api/analyze/running_queries'
-
     usePollingEffect(
         async () => {
-            setRunningQueries(
-                await fetch(url)
-                    .then((response) => {
-                        return response.json()
-                    })
-                    .then((data) => {
-                        setRunningQueries(data)
-                        return data
-                    })
-                    .catch((err) => {
-                        return []
-                    })
-            )
+            setRunningQueries([])
+            setLoadingRunningQueries(true)
+            const res = await fetch('http://localhost:8000/api/analyze/running_queries')
+            const resJson = await res.json()
+            setRunningQueries(resJson)
+            setLoadingRunningQueries(false)
         },
         [],
-        { interval: 5000 } // optional
+        { interval: 5000 }
     )
 
     return (
         <>
             <h1 style={{ textAlign: 'left' }}>Running queries</h1>
             <br />
-            <Table columns={columns} dataSource={runningQueries} loading={!runningQueries} />
+            <Table columns={columns} dataSource={runningQueries} loading={loadingRunningQueries} />
         </>
     )
 }
