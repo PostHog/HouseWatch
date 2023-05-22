@@ -1,6 +1,6 @@
 // @ts-nocheck
 import * as React from 'react'
-import { usePollingEffect } from './PageCacheHits'
+import { usePollingEffect } from "./utils/usePollingEffect"
 import { Line } from '@ant-design/charts'
 import { Card, Col, Divider, Row, Tooltip } from 'antd'
 import { InfoCircleOutlined } from '@ant-design/icons'

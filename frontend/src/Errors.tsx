@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useEffect, useState } from 'react'
-import { usePollingEffect } from './PageCacheHits'
+import { usePollingEffect } from "./utils/usePollingEffect"
 // import { DataGrid } from '@mui/x-data-grid';
 import { Table, Typography } from 'antd'
 import { useHistory } from 'react-router-dom'

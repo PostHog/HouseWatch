@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useState } from 'react'
-import { usePollingEffect } from './PageCacheHits'
+import { usePollingEffect } from "./utils/usePollingEffect"
 import { Treemap } from '@ant-design/charts'
 import { Spin, Table } from 'antd'
 

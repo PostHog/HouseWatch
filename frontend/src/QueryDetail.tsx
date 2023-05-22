@@ -1,6 +1,6 @@
 // @ts-nocheck
 import * as React from 'react'
-import { usePollingEffect } from './PageCacheHits'
+import { usePollingEffect } from "./utils/usePollingEffect"
 import { Line } from '@ant-design/plots'
 import { highlight, languages } from 'prismjs/components/prism-core'
 import 'prismjs/components/prism-sql'

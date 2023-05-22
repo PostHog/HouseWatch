@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { PageCacheHits } from './PageCacheHits'
+import { DiskUsage } from './DiskUsage'
 import SlowQueries from './SlowQueries'
 import Schema from './Schema'
 import QueryDetail from './QueryDetail'
@@ -106,7 +106,7 @@ export default function PermanentDrawerLeft(): JSX.Element {
                         <Switch>
                             <Route exact path="/" component={AllQueryGraphs}></Route>
                             <Route exact path="/disk_usage">
-                                <PageCacheHits />
+                                <DiskUsage />
                             </Route>
                             <Route exact path="/slow_queries" component={SlowQueries}></Route>
                             <Route exact path="/schema" component={Schema}></Route>

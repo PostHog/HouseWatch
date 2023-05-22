@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { Table, Button, notification, Typography } from 'antd'
-import { usePollingEffect } from './PageCacheHits'
+import { usePollingEffect } from "./utils/usePollingEffect"
 import React, { useState } from 'react'
 
 const { Paragraph } = Typography
