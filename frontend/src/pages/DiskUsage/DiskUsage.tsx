@@ -75,6 +75,14 @@ export function DiskUsage(): JSX.Element {
                                                 display: 'block'
                                             }}
                                             color={["#FFB816", "#175FFF"]}
+                                            tooltip={{
+                                                formatter: (v) => {
+                                                    return {
+                                                        name: v.type,
+                                                        value: `${(v.value / 1000000000).toFixed(2)}GB`,
+                                                    }
+                                                },
+                                            }}
                                         />
                                     </Card>
                                 </Col>
@@ -116,6 +124,14 @@ export function DiskUsage(): JSX.Element {
                                                     display: 'block'
                                                 }}
                                                 color={["#FFB816", "#175FFF"]}
+                                                tooltip={{
+                                                    formatter: (v) => {
+                                                        return {
+                                                            name: v.type,
+                                                            value: `${(v.value / 1000000000).toFixed(2)}GB`,
+                                                        }
+                                                    },
+                                                }}
                                             />
 
                                         </Card>

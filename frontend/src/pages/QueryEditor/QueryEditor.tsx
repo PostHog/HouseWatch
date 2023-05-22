@@ -71,7 +71,7 @@ export default function QueryEditor() {
             <ConfigProvider renderEmpty={
                 () => <p style={{ color: '#c40000', fontFamily: 'monospace' }}>{error}</p>}
             >
-                <Table columns={columns} dataSource={data} loading={!error && data.length < 1} />
+                <Table columns={columns} dataSource={data} loading={!error && data.length < 1} expandable scroll={{ x: 400 }} />
             </ConfigProvider>
         </>
     )

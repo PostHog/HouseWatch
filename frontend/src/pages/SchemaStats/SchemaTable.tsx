@@ -1,7 +1,6 @@
 // @ts-nocheck
 import * as React from 'react'
 import { usePollingEffect } from "../../utils/usePollingEffect"
-import { DataGrid } from '@mui/x-data-grid'
 import { Treemap } from '@ant-design/charts'
 import { Table } from 'antd'
 

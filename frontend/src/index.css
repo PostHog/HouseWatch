@@ -13,6 +13,7 @@ body {
     font-size: 0.875rem;
     line-height: 1.57;
     font-weight: 400;
+    overflow-x: hidden;
 }
 
 .ant-menu-item-selected {
@@ -62,4 +63,3 @@ code {
 .code-editor:hover textarea {
     cursor: pointer !important;
 }
-

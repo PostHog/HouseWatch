@@ -1,6 +1,5 @@
 // @ts-nocheck
-import React, { useState } from 'react'
-import { usePollingEffect } from "../../utils/usePollingEffect"
+import React, { useEffect, useState } from 'react'
 import { Treemap } from '@ant-design/charts'
 import { Spin, Table } from 'antd'
 
@@ -14,7 +13,7 @@ export default function Schema() {
     }
 
     const [schema, setSchema] = useState([])
-    const defaultConfig = {
+    const defaultConfig: React.ComponentProps<typeof Treemap> = {
         data: testSchemaData,
         colorField: 'name',
         style: { cursor: 'pointer' },
@@ -29,17 +28,15 @@ export default function Schema() {
             enabled: true,
             breadCrumb: {
                 rootText: 'Start over',
+                position: 'top-left'
             },
-        },
-        onNodeClick: (event, node) => {
-            console.log(event, node)
         },
         tooltip: {
             formatter: (v) => {
                 const root = v.path[v.path.length - 1]
                 return {
                     name: v.name,
-                    value: `${(v.value / 1000000).toFixed(2)}mb (percentage: ${((v.value / root.value) * 100).toFixed(
+                    value: `${(v.value / 1000000).toFixed(2)}mb (${((v.value / root.value) * 100).toFixed(
                         2
                     )}%)`,
                 }
@@ -50,51 +47,43 @@ export default function Schema() {
 
     const url = 'http://localhost:8000/api/analyze/tables'
 
-    usePollingEffect(async () => {
-        setSchema(
-            await fetch(url)
-                .then((response) => {
-                    return response.json()
-                })
-                .then(async (res) => {
-                    const filteredRes = res.filter((r) => r.total_bytes > 0)
-                    const filteredResUrls = filteredRes
-                        .map((fr) => `http://localhost:8000/api/analyze/${fr.name}/schema`)
-                        .slice(0, 1)
+    const loadData = async () => {
+        const res = await fetch('http://localhost:8000/api/analyze/tables')
+        const resJson = await res.json()
+        const filteredRes = resJson.filter((r: { total_bytes: number }) => r.total_bytes > 0)
+        const filteredResUrls = filteredRes
+            .map((fr: { name: string }) => `http://localhost:8000/api/analyze/${fr.name}/schema`)
+            .slice(0, 1)
 
-                    const nestedRes = await Promise.all(
-                        filteredResUrls.map((e) => fetch(e).then((res2) => res2.json()))
-                    )
-                    return [filteredRes, nestedRes]
-                })
-                .then((data) => {
-                    const res = data[0]
-                    const nestedRes = data[1]
-                    const configDataChildren = res.map((table) => ({
-                        name: table.name,
-                        value: table.total_bytes,
-                        ...table,
-                    }))
-                    const configDataChildrenWithDrilldown = configDataChildren.map((child) => {
-                        if (nestedRes[0][0].table == child.name) {
-                            const nestedChildren = nestedRes[0].map((nR) => ({
-                                name: nR.column,
-                                category: nR.table,
-                                value: nR.compressed,
-                            }))
-                            return { ...child, children: nestedChildren }
-                        }
-                        return child
-                    })
-                    const newConfigData = { ...config.data, children: configDataChildrenWithDrilldown }
-                    setConfig({ ...config, data: newConfigData })
-                    return res
-                })
-                .catch((err) => {
-                    return []
-                })
+        const nestedRes = await Promise.all(
+            filteredResUrls.map((_url: string) => fetch(_url).then((res2) => res2.json()))
         )
+
+        const configDataChildren = filteredRes.map((table: { name: string, total_bytes: number}) => ({
+            value: table.total_bytes,
+            ...table,
+        }))
+        const configDataChildrenWithDrilldown = configDataChildren.map((child) => {
+            if (nestedRes[0][0].table == child.name) {
+                const nestedChildren = nestedRes[0].map((nR) => ({
+                    name: nR.column,
+                    category: nR.table,
+                    value: nR.compressed,
+                }))
+                return { ...child, children: nestedChildren }
+            }
+            return child
+        })
+        const newConfigData = { ...config.data, children: configDataChildrenWithDrilldown }
+        setConfig({ ...config, data: newConfigData })
+        setSchema(filteredRes)
+    }
+
+    useEffect(() => {
+        loadData()
     }, [])
+
+
 
 
     return (
