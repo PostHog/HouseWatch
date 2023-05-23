@@ -46,6 +46,7 @@ One potential approach is to connect HouseWatch to ClickHouse using a read-only 
 
 ## ⭐ Features
 
+<hr />
 <h3 align="center">Query performance</h3>
 
 <hr>
