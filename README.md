@@ -49,10 +49,8 @@ One potential approach is to connect HouseWatch to ClickHouse using a read-only 
 
 ## ⭐ Features
 
-<hr />
-<h3 align="center">Query performance</h3>
+<h2 align="center">Query performance</h3>
 
-<hr>
 <div style="display: flex">
   <img src="./slow-queries.png" width="48%">
   <img src="./normalized-query.png" width="48%">
@@ -63,52 +61,33 @@ One potential approach is to connect HouseWatch to ClickHouse using a read-only 
   <img src="./explain.png" width="48%">
 </div>
 
-<hr />
+<h2 align="center">Schema stats</h3>
 
-<h3 align="center">Schema stats</h3>
-
-<hr>
 <div style="display: flex">
   <img src="./schema.png" width="48%">
   <img src="./schema-drilldown.png" width="48%">
 </div>
 
+<h2 align="center">Logs</h3>
 
-<hr />
-
-<h3 align="center">Logs</h3>
-
-<hr>
 <p align="center">
 <img src="./logs.png" align="center" height=400>
 </p>
 
-<hr />
+<h2 align="center">Query editor</h3>
 
-<h3 align="center">Query editor</h3>
-
-<hr>
 <p align="center">
 <img src="./query-editor.png" height=400>
 </p>
 
-<hr />
+<h2 align="center">Disk usage</h3>
 
-<h3 align="center">Disk usage</h3>
-
-<hr>
 <p align="center">
 <img src="./disk-usage.png" height=400>
 </p>
 
-<hr />
-
-<h3 align="center">Errors</h3>
-
-<hr>
+<h2 align="center">Errors</h3>
 
 <p align="center">
 <img src="./errors.png" height=400>
 </p>
-
-
