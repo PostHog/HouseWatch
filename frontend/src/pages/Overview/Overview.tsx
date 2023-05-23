@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState } from 'react'
 import { Line } from '@ant-design/charts'
 import { Card, Col, Divider, Row, Tooltip, notification } from 'antd'

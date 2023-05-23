@@ -90,7 +90,7 @@ export default function Schema() {
         <div>
             <h1 style={{ textAlign: 'left' }}>Schema stats</h1>
             <h2>Largest tables</h2>
-            <p>Click on the rectangles to get further information about parts and columns for the table.</p>
+            <p>Click on the rectangles to get further information about parts and columns for the table. Note that this only covers data stored on the connected node, not the whole cluster.</p>
             <div style={{ marginBottom: 50 }}>
                 {config.data.children.length < 1 ?
                     <Spin /> : (

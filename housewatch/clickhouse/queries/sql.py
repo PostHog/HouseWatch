@@ -1,27 +1,36 @@
-# TODO: Add enum mapping dict for query `type`
-SLOW_QUERIES_SQL = """
+import os
 
+ch_cluster = os.getenv("CLICKHOUSE_CLUSTER", None)
+
+QUERY_LOG_SYSTEM_TABLE = f'clusterAllReplicas({ch_cluster}, system.query_log)' if ch_cluster else 'system.query_log'
+TEXT_LOG_SYSTEM_TABLE = f'clusterAllReplicas({ch_cluster}, system.text_log)' if ch_cluster else 'system.text' 
+ERRORS_SYSTEM_TABLE = f'clusterAllReplicas({ch_cluster}, system.errors)' if ch_cluster else 'system.errors'
+DISKS_SYSTEM_TABLE = f'clusterAllReplicas({ch_cluster}, system.disks)' if ch_cluster else 'system.disks'
+
+
+# TODO: Add enum mapping dict for query `type`
+SLOW_QUERIES_SQL =f"""
 SELECT
-    normalizeQuery(query) as normalized_query,
-    avg(query_duration_ms) as avg_duration,
+    normalizeQuery(query) AS normalized_query,
+    avg(query_duration_ms) AS avg_duration,
     avg(result_rows),
-    count(1)/date_diff('minute', %(date_from)s, now()) as calls_per_minute,
+    count(1)/date_diff('minute', %(date_from)s, now()) AS calls_per_minute,
     count(1),
-    formatReadableSize(sum(read_bytes)) as total_read_bytes,
-    (sum(read_bytes)/(sum(sum(read_bytes)) over ()))*100 as percentage_iops,
-    (sum(query_duration_ms)/(sum(sum(query_duration_ms)) over ()))*100 as percentage_runtime,
-    toString(normalized_query_hash) as normalized_query_hash
-FROM clusterAllReplicas(%(cluster)s, system.query_log) 
-WHERE is_initial_query AND event_time > %(date_from)s and type = 2
-group by normalized_query_hash, normalizeQuery(query)
+    formatReadableSize(sum(read_bytes)) AS total_read_bytes,
+    (sum(read_bytes)/(sum(sum(read_bytes)) over ()))*100 AS percentage_iops,
+    (sum(query_duration_ms)/(sum(sum(query_duration_ms)) over ()))*100 AS percentage_runtime,
+    toString(normalized_query_hash) AS normalized_query_hash
+FROM {QUERY_LOG_SYSTEM_TABLE} 
+WHERE is_initial_query AND event_time > %(date_from)s AND type = 2
+GROUP BY normalized_query_hash, normalizeQuery(query)
 ORDER BY sum(read_bytes) DESC
 LIMIT %(limit)s
 """
 
 
-QUERY_LOAD_SQL = """
-SELECT toStartOfDay(event_time) as day, %(math_func)s(%(load_metric)s) AS %(column_alias)s
-FROM clusterAllReplicas(%(cluster)s, system.query_log)
+QUERY_LOAD_SQL = f"""
+SELECT toStartOfDay(event_time) AS day, %(math_func)s(%(load_metric)s) AS %(column_alias)s
+FROM {QUERY_LOG_SYSTEM_TABLE}
 WHERE
     event_time >= toDateTime(%(date_from)s)
     AND event_time <= toDateTime(%(date_to)s) 
@@ -29,9 +38,9 @@ GROUP BY day
 ORDER BY day
 """
 
-ERRORS_SQL = """
+ERRORS_SQL = f"""
 SELECT name, count() count, max(last_error_time) max_last_error_time
-FROM clusterAllReplicas(%(cluster)s, system.errors)
+FROM {ERRORS_SYSTEM_TABLE}
 WHERE last_error_time > %(date_from)s
 GROUP BY name
 ORDER BY count DESC
@@ -40,7 +49,7 @@ ORDER BY count DESC
 TABLES_SQL = """
 SELECT
     name,
-    formatReadableSize(total_bytes) as readable_bytes,
+    formatReadableSize(total_bytes) AS readable_bytes,
     total_bytes,
     total_rows,
     engine,
@@ -48,15 +57,14 @@ SELECT
 FROM system.tables ORDER BY total_bytes DESC
 """
 
-
 SCHEMA_SQL = """
 SELECT
     table,
-    name as column,
+    name AS column,
     type,
-    data_compressed_bytes as compressed,
-    formatReadableSize(data_compressed_bytes) as compressed_readable,
-    formatReadableSize(data_uncompressed_bytes) as uncompressed
+    data_compressed_bytes AS compressed,
+    formatReadableSize(data_compressed_bytes) AS compressed_readable,
+    formatReadableSize(data_uncompressed_bytes) AS uncompressed
 FROM system.columns
 WHERE table = '%(table)s'
 ORDER BY data_compressed_bytes DESC
@@ -64,7 +72,7 @@ LIMIT 100
 """
 
 PARTS_SQL = """
-SELECT name as part, data_compressed_bytes as compressed, formatReadableSize(data_compressed_bytes) AS compressed_readable, formatReadableSize(data_uncompressed_bytes) as uncompressed
+SELECT name AS part, data_compressed_bytes AS compressed, formatReadableSize(data_compressed_bytes) AS compressed_readable, formatReadableSize(data_uncompressed_bytes) AS uncompressed
 FROM system.parts
 WHERE table = '%(table)s'
 ORDER BY data_compressed_bytes DESC 
@@ -72,11 +80,11 @@ LIMIT 100
 """
 
 
-GET_QUERY_BY_NORMALIZED_HASH_SQL = """
-SELECT normalizeQuery(query) as normalized_query, groupUniqArray(10)(query) as example_queries FROM
-clusterAllReplicas('posthog', system,query_log)
-where normalized_query_hash = %(normalized_query_hash)s
-group by normalized_query
+GET_QUERY_BY_NORMALIZED_HASH_SQL = f"""
+SELECT normalizeQuery(query) AS normalized_query, groupUniqArray(10)(query) AS example_queries FROM
+{QUERY_LOG_SYSTEM_TABLE}
+WHERE normalized_query_hash = %(normalized_query_hash)s
+GROUP BY normalized_query
 limit 1
 """
 
@@ -85,83 +93,82 @@ EXPLAIN header=1, indexes=1
 %(query)s
 """
 
-QUERY_EXECUTION_COUNT_SQL = """
+QUERY_EXECUTION_COUNT_SQL = f"""
 SELECT day_start, sum(total) AS total FROM (
     SELECT
         0 AS total,
         toStartOfDay(now() - toIntervalDay(number)) AS day_start
-    FROM numbers(dateDiff('day', toStartOfDay(now()  - interval {days} day), now()))
+    FROM numbers(dateDiff('day', toStartOfDay(now()  - INTERVAL %(days)s day), now()))
     UNION ALL
     SELECT
-        count(*) as total,
-        toStartOfDay(query_start_time) as day_start
+        count(*) AS total,
+        toStartOfDay(query_start_time) AS day_start
     FROM
-        clusterAllReplicas('posthog', system.query_log) 
+        {QUERY_LOG_SYSTEM_TABLE}
     WHERE
-        query_start_time > now() - interval {days} day and type = 2 and is_initial_query {conditions}
+        query_start_time > now() - INTERVAL %(days)s day AND type = 2 AND is_initial_query %(conditions)s
     GROUP BY day_start
 )
 GROUP BY day_start
 ORDER BY day_start asc
 """
 
-QUERY_MEMORY_USAGE_SQL = """
+QUERY_MEMORY_USAGE_SQL = f"""
 SELECT day_start, sum(total) AS total FROM (
     SELECT
         0 AS total,
         toStartOfDay(now() - toIntervalDay(number)) AS day_start
-    FROM numbers(dateDiff('day', toStartOfDay(now()  - interval {days} day), now()))
+    FROM numbers(dateDiff('day', toStartOfDay(now()  - INTERVAL %(days)s day), now()))
     UNION ALL
 
     SELECT
-        sum(memory_usage) as total,
-        toStartOfDay(query_start_time) as day_start
+        sum(memory_usage) AS total,
+        toStartOfDay(query_start_time) AS day_start
     FROM
-        clusterAllReplicas('posthog', system.query_log) 
+        {QUERY_LOG_SYSTEM_TABLE}
     WHERE
-        event_time > now() - interval 12 day and type = 2 and is_initial_query {conditions}
+        event_time > now() - INTERVAL 12 day AND type = 2 AND is_initial_query %(conditions)s
     GROUP BY day_start
 )
 GROUP BY day_start
 ORDER BY day_start ASC
 """
 
-QUERY_CPU_USAGE_SQL = """
+QUERY_CPU_USAGE_SQL = f"""
 SELECT day_start, sum(total) AS total FROM (
     SELECT
         0 AS total,
         toStartOfDay(now() - toIntervalDay(number)) AS day_start
-    FROM numbers(dateDiff('day', toStartOfDay(now()  - interval {days} day), now()))
+    FROM numbers(dateDiff('day', toStartOfDay(now()  - INTERVAL %(days)s day), now()))
     UNION ALL
-
     SELECT
-        sum(ProfileEvents['OSCPUVirtualTimeMicroseconds']) as total,
-        toStartOfDay(query_start_time) as day_start
+        sum(ProfileEvents['OSCPUVirtualTimeMicroseconds']) AS total,
+        toStartOfDay(query_start_time) AS day_start
     FROM
-        clusterAllReplicas('posthog', system.query_log) 
+        {QUERY_LOG_SYSTEM_TABLE}
     WHERE
-        event_time > now() - interval 12 day and type = 2 and is_initial_query {conditions}
+        event_time > now() - INTERVAL 12 day AND type = 2 AND is_initial_query %(conditions)s
     GROUP BY day_start
 )
 GROUP BY day_start
 ORDER BY day_start ASC
 """
 
-QUERY_READ_BYTES_SQL = """
+QUERY_READ_BYTES_SQL = f"""
 SELECT day_start, sum(total) AS total FROM (
     SELECT
         0 AS total,
         toStartOfDay(now() - toIntervalDay(number)) AS day_start
-    FROM numbers(dateDiff('day', toStartOfDay(now()  - interval {days} day), now()))
+    FROM numbers(dateDiff('day', toStartOfDay(now()  - INTERVAL %(days)s day), now()))
     UNION ALL
 
     SELECT
-        sum(read_bytes) as total,
-        toStartOfDay(query_start_time) as day_start
+        sum(read_bytes) AS total,
+        toStartOfDay(query_start_time) AS day_start
     FROM
-        clusterAllReplicas('posthog', system.query_log) 
+        {QUERY_LOG_SYSTEM_TABLE}
     WHERE
-        event_time > now() - interval 12 day and type = 2 and is_initial_query {conditions}
+        event_time > now() - INTERVAL 12 day AND type = 2 AND is_initial_query %(conditions)s
     GROUP BY day_start
 )
 GROUP BY day_start
@@ -169,7 +176,7 @@ ORDER BY day_start ASC
 """
 
 RUNNING_QUERIES_SQL = """
-SELECT query, elapsed, read_rows, total_rows_approx, formatReadableSize(memory_usage) as memory_usage, query_id 
+SELECT query, elapsed, read_rows, total_rows_approx, formatReadableSize(memory_usage) AS memory_usage, query_id 
 FROM system.processes
 WHERE Settings['log_comment'] != 'running_queries_lookup'
 ORDER BY elapsed DESC
@@ -177,11 +184,11 @@ SETTINGS log_comment = 'running_queries_lookup'
 """
 
 KILL_QUERY_SQL = """
-    KILL QUERY where query_id = '%(query_id)s'
+KILL QUERY WHERE query_id = '%(query_id)s'
 """
 
-NODE_STORAGE_SQL = """
-select 
+NODE_STORAGE_SQL = f"""
+SELECT 
     hostName() node, 
     sum(total_space) space_used, 
     sum(free_space) free_space, 
@@ -189,23 +196,23 @@ select
     formatReadableSize(total_space_available) readable_total_space_available,
     formatReadableSize(space_used) readable_space_used,
     formatReadableSize(free_space) readable_free_space
-from clusterAllReplicas('posthog', system.disks)
-where type = 'local'
-group by node
-order by node
+FROM {DISKS_SYSTEM_TABLE}
+WHERE type = 'local'
+GROUP BY node
+ORDER BY node
 """
 
-NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL = """
-select hostName() node, sum(read_bytes) total_bytes_transferred, formatReadableSize(total_bytes_transferred) as readable_bytes_transferred
-from clusterAllReplicas('posthog', system.query_log)
-where is_initial_query != 0 and type = 2 
-group by node
-order by node
+NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL = f"""
+SELECT hostName() node, sum(read_bytes) total_bytes_transferred, formatReadableSize(total_bytes_transferred) AS readable_bytes_transferred
+FROM {QUERY_LOG_SYSTEM_TABLE}
+WHERE is_initial_query != 0 AND type = 2 
+GROUP BY node
+ORDER BY node
 """
 
-LOGS_SQL = """
+LOGS_SQL = f"""
 SELECT event_time, toString(level) level, hostName() hostname, message
-FROM clusterAllReplicas('posthog', system.text_log)
+FROM {TEXT_LOG_SYSTEM_TABLE}
 WHERE message ILIKE '%(message)s'
 ORDER BY event_time DESC
 LIMIT 100
@@ -217,17 +224,17 @@ FROM system.tables
 WHERE database = 'system'
 """
 
-LOGS_FREQUENCY_SQL = """
+LOGS_FREQUENCY_SQL = f"""
 SELECT hour, sum(total) AS total FROM (
     SELECT
         toStartOfHour(now() - toIntervalHour(number)) AS hour,
         0 AS total
-    FROM numbers(dateDiff('hour', toStartOfHour(now()  - interval 3 day), now()))
+    FROM numbers(dateDiff('hour', toStartOfHour(now()  - INTERVAL 3 day), now()))
     GROUP BY hour
     UNION ALL
     SELECT toStartOfHour(event_time) hour, count() total
-    FROM clusterAllReplicas('posthog', system.text_log)
-    WHERE event_time > now() - interval 3 day AND message ILIKE '%(message)s'
+    FROM {TEXT_LOG_SYSTEM_TABLE}
+    WHERE event_time > now() - INTERVAL 3 day AND message ILIKE '%(message)s'
     GROUP BY hour
 )
 GROUP BY hour

@@ -4,15 +4,18 @@ import os
 from housewatch.clickhouse.queries.sql import EXISTING_TABLES_SQL
 
 ch_host = os.getenv("CLICKHOUSE_HOST", "localhost")
+ch_verify = os.getenv("CLICKHOUSE_VERIFY", True)
+ch_ca = os.getenv("CLICKHOUSE_CA", None)
+ch_secure = os.getenv("CLICKHOUSE_SECURE", False)
 
 pool = ChPool(
     host=ch_host,
     database=os.getenv("CLICKHOUSE_DATABASE", "default"),
-    secure=os.getenv("CLICKHOUSE_SECURE", False),
     user=os.getenv("CLICKHOUSE_USER", "default"),
     password=os.getenv("CLICKHOUSE_PASSWORD", ""),
-    ca_certs=os.getenv("CLICKHOUSE_CA", None),
-    verify=os.getenv("CLICKHOUSE_VERIFY", True),
+    secure=ch_secure if ch_secure != '' else False,
+    ca_certs=ch_ca if ch_ca != '' else None,
+    verify=ch_verify if ch_verify != '' else True,
     settings={"max_result_rows": "2000"}, 
     send_receive_timeout=30
 )
@@ -30,8 +33,5 @@ def run_query(query: str, params: Dict[str, str | int] = {}, settings: Dict[str,
             response.append(item)
         return response
 
-base_params = {
-    "cluster": os.getenv("CLICKHOUSE_CLUSTER", "posthog")
-}
 
 existing_system_tables = [row['name'] for row in run_query(EXISTING_TABLES_SQL)]

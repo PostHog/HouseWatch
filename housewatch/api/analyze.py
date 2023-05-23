@@ -2,7 +2,7 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from housewatch.clickhouse.client import run_query, base_params, ch_host, existing_system_tables
+from housewatch.clickhouse.client import run_query, ch_host, existing_system_tables
 from housewatch.clickhouse.queries.sql import (
     SLOW_QUERIES_SQL, 
     SCHEMA_SQL, 
@@ -31,7 +31,7 @@ class AnalyzeViewset(GenericViewSet):
 
     @action(detail=False, methods=["GET"])
     def slow_queries(self, request: Request):
-        params = { **base_params, "limit": 100, "date_from": "now() - INTERVAL 1 WEEK"}
+        params = {  "limit": 100, "date_from": "now() - INTERVAL 1 WEEK" }
         query_result = run_query(SLOW_QUERIES_SQL, params)
         return Response(query_result)
 
@@ -39,10 +39,11 @@ class AnalyzeViewset(GenericViewSet):
     def query_detail(self, request: Request, pk: str):
         days = request.GET.get('days', DEFAULT_DAYS)
         conditions = "AND event_time > now() - INTERVAL 1 WEEK AND toString(normalized_query_hash) = '{}'".format(pk)
-        execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(days=days, conditions=conditions))
-        memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(days=days, conditions=conditions))
-        read_bytes = run_query(QUERY_READ_BYTES_SQL.format(days=days, conditions=conditions))
-        cpu = run_query(QUERY_CPU_USAGE_SQL.format(days=days, conditions=conditions))
+        execution_count = run_query(QUERY_EXECUTION_COUNT_SQL, { 'days': days, 'conditions': conditions })
+        print(execution_count)
+        memory_usage = run_query(QUERY_MEMORY_USAGE_SQL, { 'days': days, 'conditions': conditions })
+        read_bytes = run_query(QUERY_READ_BYTES_SQL, { 'days': days, 'conditions': conditions })
+        cpu = run_query(QUERY_CPU_USAGE_SQL, { 'days': days, 'conditions': conditions })
         query_details = run_query(GET_QUERY_BY_NORMALIZED_HASH_SQL, {'normalized_query_hash': pk})
         normalized_query = query_details[0]['normalized_query']
         example_queries = query_details[0]['example_queries']
@@ -61,10 +62,10 @@ class AnalyzeViewset(GenericViewSet):
     @action(detail=False, methods=["GET"])
     def query_graphs(self, request: Request):
         days = request.GET.get('days', DEFAULT_DAYS)
-        execution_count = run_query(QUERY_EXECUTION_COUNT_SQL.format(days=days, conditions=''))
-        memory_usage = run_query(QUERY_MEMORY_USAGE_SQL.format(days=days, conditions=''))
-        read_bytes = run_query(QUERY_READ_BYTES_SQL.format(days=days, conditions=''))
-        cpu = run_query(QUERY_CPU_USAGE_SQL.format(days=days, conditions=''))
+        execution_count = run_query(QUERY_EXECUTION_COUNT_SQL, { "days": days, "conditions": ''})
+        memory_usage = run_query(QUERY_MEMORY_USAGE_SQL, { "days": days, "conditions": ''})
+        read_bytes = run_query(QUERY_READ_BYTES_SQL, { "days": days, "conditions": ''})
+        cpu = run_query(QUERY_CPU_USAGE_SQL, { "days": days, "conditions": ''})
         return Response({
             'execution_count': execution_count,
             'memory_usage': memory_usage,
@@ -116,7 +117,7 @@ class AnalyzeViewset(GenericViewSet):
     @action(detail=False, methods=["GET"])
     def query_load(self, request: Request):
         params = { 
-            **base_params, 
+             
             "column_alias": "average_query_duration",
             "math_func": "avg",
             "load_metric": "query_duration_ms",
@@ -131,7 +132,7 @@ class AnalyzeViewset(GenericViewSet):
     @action(detail=False, methods=["GET"])
     def errors(self, request: Request):
         params = { 
-            **base_params,
+            
             "date_from": "now() - INTERVAL 2 WEEK"
         }
         
@@ -156,7 +157,7 @@ class AnalyzeViewset(GenericViewSet):
 
     @action(detail=False, methods=["GET"])
     def page_cache(self, request: Request):
-        params = { **base_params, "limit": 100, "date_to": "now()", "date_from": "now() - INTERVAL 2 WEEK"}
+        params = {  "limit": 100, "date_to": "now()", "date_from": "now() - INTERVAL 2 WEEK"}
         query_result = run_query(PAGE_CACHE_HIT_PERCENTAGE_SQL, params)
     
         return Response(query_result)
@@ -164,7 +165,7 @@ class AnalyzeViewset(GenericViewSet):
     
     @action(detail=False, methods=["GET"])
     def cluster_overview(self, request: Request):
-        params = { **base_params, "limit": 100, "date_to": "now()", "date_from": "now() - INTERVAL 2 WEEK"}
+        params = {  "limit": 100, "date_to": "now()", "date_from": "now() - INTERVAL 2 WEEK"}
         data_transfer_query_result = run_query(NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL, {})
         storage_query_result = run_query(NODE_STORAGE_SQL, {})
         

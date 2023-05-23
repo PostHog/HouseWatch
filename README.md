@@ -138,6 +138,8 @@ A public list of things we intend to do with HouseWatch in the near future.
 - [ ] Button to force refresh running queries list
 - [ ] Logs pagination
 - [ ] Allow copying example queries
+- [ ] Configurable time ranges
+- [ ] Whole cluster schema stats
 
 <b>Developer experience</b>
 
@@ -154,5 +156,6 @@ A public list of things we intend to do with HouseWatch in the near future.
 - [ ] Get rid of remaining Material UI components
 - [ ] Breakpoint for logs search
 - [ ] Run Django "production server"
+- [ ] Write tests :)
 
 </details>
