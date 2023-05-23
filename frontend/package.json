@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "@ant-design/charts": "^1.4.2",
-        "@ant-design/icons": "^5.0.1",
+        "@ant-design/icons": "^4.0.0",
         "@babel/plugin-proposal-class-properties": "^7.18.6",
         "@emotion/react": "^11.10.6",
         "@emotion/styled": "^11.10.6",
@@ -20,7 +20,7 @@
         "@types/react": "^18.0.31",
         "@types/react-dom": "^18.0.11",
         "@types/react-router-dom": "5.3.3",
-        "antd": "^5.0.0",
+        "antd": "^4.0.0",
         "prismjs": "^1.29.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
