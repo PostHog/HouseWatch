@@ -158,7 +158,7 @@ export default function QueryDetail({ match }: { match: { params: { query_hash: 
                                                 title={`Calculated from OSCPUVirtualTimeMicroseconds metric from ClickHouse query log's ProfileEvents.`}
                                             >
                                                 <span>
-                                                    <InfoCircleOutlined rev={undefined} />
+                                                    <InfoCircleOutlined />
                                                 </span>
                                             </Tooltip>
                                         </>
