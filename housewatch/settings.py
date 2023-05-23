@@ -36,7 +36,7 @@ def get_from_env(key: str, default: Any = None, *, optional: bool = False, type_
             return default
         else:
             if not DEBUG:
-                raise ImproperlyConfigured(f'The environment variable "{key}" is required to run the Billing server!')
+                raise ImproperlyConfigured(f'The environment variable "{key}" is required to run HouseWatch!')
     if type_cast is not None:
         return type_cast(value)
     return value
@@ -54,10 +54,8 @@ TEST = False
 if "pytest" in sys.modules or "mypy" in sys.modules:
     TEST = True
 
-if DEBUG or TEST:
-    SECRET_KEY = get_from_env("SECRET_KEY", "not-so-secret")
-else:
-    SECRET_KEY = get_from_env("SECRET_KEY")
+# this is ok for now as we don't have auth, crypto, or anything that uses the secret key
+SECRET_KEY = get_from_env("SECRET_KEY", "not-so-secret")
 
 if DEBUG:
     print("WARNING: Running debug mode!")
@@ -66,13 +64,6 @@ is_development = DEBUG and not TEST
 
 ALLOWED_HOSTS = ["*"]
 
-# TODO: See if we can enable this to be more limited - K8s health checks will fail if the below is uncommented
-# ALLOWED_HOSTS = [
-#     "housewatch.posthog.com",
-#     "housewatch.dev.posthog.dev",
-#     "127.0.0.1",
-#     "localhost",
-# ]
 
 SECURE_SSL_REDIRECT = False
 if not DEBUG and not TEST:
@@ -80,7 +71,6 @@ if not DEBUG and not TEST:
     USE_X_FORWARDED_PORT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-SITE_URL = get_from_env("SITE_URL", "http://localhost:8100").rstrip("/")
 
 
 CSRF_TRUSTED_ORIGINS = ["https://*.posthog.dev", "https://*.posthog.com"]
@@ -93,7 +83,6 @@ APPEND_SLASH = False
 # Application definition
 
 INSTALLED_APPS = [
-    "whitenoise.runserver_nostatic",  # makes sure that whitenoise handles static files in development
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -106,21 +95,6 @@ INSTALLED_APPS = [
 ]
 
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = get_from_env("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", optional=True)
-
-if SOCIAL_AUTH_GOOGLE_OAUTH2_KEY:
-    SOCIAL_AUTH_JSONFIELD_ENABLED = True
-    SOCIAL_AUTH_REDIRECT_IS_HTTPS = "http://" not in SITE_URL
-    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = get_from_env("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET")
-    SOCIAL_AUTH_GOOGLE_OAUTH2_WHITELISTED_DOMAINS = ["posthog.com"]
-    SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ["email"]
-    LOGIN_URL = "/login/google-oauth2/"
-
-
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-    "social_core.backends.google.GoogleOAuth2",
-]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -131,7 +105,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
 ]
 
 ROOT_URLCONF = "housewatch.urls"
@@ -155,9 +128,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "housewatch.wsgi.application"
 
 
-
-DATABASE_URL = get_from_env("DATABASE_URL")
-
+DATABASE_URL = get_from_env("DATABASE_URL", "")
 
 
 if DATABASE_URL:

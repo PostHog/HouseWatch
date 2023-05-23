@@ -8,12 +8,12 @@ ch_host = os.getenv("CLICKHOUSE_HOST", "localhost")
 pool = ChPool(
     host=ch_host,
     database=os.getenv("CLICKHOUSE_DATABASE", "default"),
-    secure=os.getenv("CLICKHOUSE_SECURE", ""),
+    secure=os.getenv("CLICKHOUSE_SECURE", False),
     user=os.getenv("CLICKHOUSE_USER", "default"),
     password=os.getenv("CLICKHOUSE_PASSWORD", ""),
     ca_certs=os.getenv("CLICKHOUSE_CA", None),
     verify=os.getenv("CLICKHOUSE_VERIFY", True),
-    settings={"max_result_rows": "10000"}, 
+    settings={"max_result_rows": "2000"}, 
     send_receive_timeout=30
 )
     
