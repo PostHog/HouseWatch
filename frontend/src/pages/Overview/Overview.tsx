@@ -1,7 +1,6 @@
-// @ts-nocheck
 import React, { useEffect, useState } from 'react'
 import { Line } from '@ant-design/charts'
-import { Card, Col, Divider, Row, Tooltip, notification } from 'antd'
+import { Card, Col, Row, Tooltip, notification } from 'antd'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { clickhouseTips } from './tips'
 
@@ -111,7 +110,7 @@ export default function Overview() {
                                 <Tooltip
                                     title={`Calculated from OSCPUVirtualTimeMicroseconds metric from ClickHouse query log's ProfileEvents.`}
                                 >
-                                    <InfoCircleOutlined />
+                                    <InfoCircleOutlined rev={undefined} />
                                 </Tooltip>
                             </>
                         }
