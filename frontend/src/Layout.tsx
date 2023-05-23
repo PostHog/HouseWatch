@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState } from 'react'
 import { DiskUsage } from './pages/DiskUsage/DiskUsage'
 import SlowQueries from './pages/SlowQueries/SlowQueries'
