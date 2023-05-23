@@ -1,4 +1,7 @@
-<h1 align="center" style="border: none;">HouseWatch (Beta)</h1>
+<p align="center">
+  <img src="./banner-light.png" height=125>
+</p>
+
 
 <p align="center">
   <img src="./overview.png" height=400>
