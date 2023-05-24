@@ -1,6 +1,4 @@
-// @ts-nocheck
 import { Table, Button, notification, Typography, Input, Card, ConfigProvider, Empty } from 'antd'
-import { usePollingEffect } from "../../utils/usePollingEffect"
 import React, { useEffect, useState } from 'react'
 import { Bar, Column } from '@ant-design/charts'
 
@@ -32,7 +30,6 @@ export default function Logs() {
                         ellipsis={{
                             rows: 2,
                             expandable: true,
-                            title: item.query,
                         }}
                     >
                         {item.message}

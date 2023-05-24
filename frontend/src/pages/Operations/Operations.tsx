@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import Editor from 'react-simple-code-editor'
 // @ts-ignore
@@ -8,6 +8,7 @@ import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
 import { Button, Input, Progress, Table, Tabs } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
+import { ColumnType } from 'antd/es/table'
 
 const OPERATION_STATUS_TO_HUMAN = {
     0: 'Not started',
@@ -29,6 +30,16 @@ const OPERATION_STATUS_TO_FONT_COLOR = {
     4: 'orange',
     5: 'black',
     6: 'red',
+}
+
+interface AsyncMigrationData {
+    id: number
+    name: string
+    description: string
+    status: number
+    progress: number
+    started_at: string
+    finished_at: string
 }
 
 export function OperationControls({
@@ -78,25 +89,27 @@ export function OperationsList(): JSX.Element {
 
     useEffect(() => {
         fetchAndUpdateOperationsIfNeeded()
+        const intervalId = setInterval(fetchAndUpdateOperationsIfNeeded, 5000)
+        return () => {
+            try {
+                clearInterval(intervalId)
+            } catch {}
+        }
     }, [])
 
-    setInterval(fetchAndUpdateOperationsIfNeeded, 5000)
 
 
-    const columns = [
+    const columns: ColumnType<AsyncMigrationData>[] = [
         {
             title: 'Name',
-            data_index: 'name',
             render: (_, migration) => migration.name
         },
         {
             title: 'Description',
-            data_index: 'description',
             render: (_, migration) => migration.description
         },
         {
             title: 'Status',
-            data_index: 'status',
             render: (_, migration) => <span style={{ color: OPERATION_STATUS_TO_FONT_COLOR[migration.status]}}>{OPERATION_STATUS_TO_HUMAN[migration.status]}</span>,
             sorter: (a, b) => statusSortOrder.indexOf(a.status) - statusSortOrder.indexOf(b.status),
             defaultSortOrder: 'ascend',
@@ -104,14 +117,12 @@ export function OperationsList(): JSX.Element {
         ,
         {
             title: 'Started at',
-            data_index: 'started_at',
             render: (_, migration) => migration.started_at ? migration.started_at.split('.')[0] : ''
         }
 
         ,
         {
             title: 'Finished at',
-            data_index: 'finished_at',
             render: (_, migration) => migration.finished_at ? migration.finished_at.split('.')[0] : ''
         }
         ,
@@ -145,8 +156,8 @@ export function CreateNewOperation(): JSX.Element {
         const form = document.getElementById('create-migration-form')
         const formData = new FormData(form)
 
-        const operations = []
-        const rollbackOperations = []
+        const operations: string[] = []
+        const rollbackOperations: string[] = []
         const operationData = {
             name: '',
             description: '',
@@ -188,7 +199,6 @@ export function CreateNewOperation(): JSX.Element {
                     id="create-migration-form-description"
                     name="description"
                     placeholder="Description"
-                    multiline
                     style={{ width: 800 }}
                     rows={3}
                 />
@@ -216,7 +226,6 @@ export function CreateNewOperation(): JSX.Element {
                                 border: '1px solid rgb(118, 118, 118)',
                                 borderRadius: 4,
                             }}
-                            multiline
                             rows={5}
                         />
                         <br />
@@ -236,7 +245,6 @@ export function CreateNewOperation(): JSX.Element {
                                 border: '1px solid rgb(118, 118, 118)',
                                 borderRadius: 4,
                             }}
-                            multiline
                             rows={5}
                         />
                         <br />

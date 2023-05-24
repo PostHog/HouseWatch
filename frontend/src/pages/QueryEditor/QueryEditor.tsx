@@ -59,7 +59,6 @@ export default function QueryEditor() {
                     boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)',
                     marginBottom: 5,
                 }}
-                multiline
                 rows={10}
             />
             <Button type="primary" style={{ width: '100%', boxShadow: 'none' }} onClick={() =>  query(sql)}>
