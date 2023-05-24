@@ -61,7 +61,7 @@ As a result, we felt it was appropriate to have these tools live in one place. U
 
 ## 🏗️ Status of the project
 
-HouseWatch is in its early days and we have a lot more features in mind that we'd like to build into it going forward. As of right now, it is considered Beta software and you should exercise caution when using it in production. 
+HouseWatch is in its early days and we have a lot more features in mind that we'd like to build into it going forward. The code could also use some cleaning up :) As of right now, it is considered Beta software and you should exercise caution when using it in production. 
 
 One potential approach is to connect HouseWatch to ClickHouse using a read-only user. In this case, the cluster management features will not work (e.g. operations, query editor), but the analysis toolset will function normally.
 
@@ -161,6 +161,5 @@ A public list of things we intend to do with HouseWatch in the near future.
 - [ ] Write tests :)
 - [ ] Query editor pipe all errors to client
 - [ ] Clear polling when user navigates to another page 
-- [ ] Make tabs hover blue
 
 </details>

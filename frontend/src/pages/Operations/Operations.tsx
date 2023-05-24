@@ -6,7 +6,7 @@ import Editor from 'react-simple-code-editor'
 import { highlight, languages } from 'prismjs/components/prism-core'
 import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
-import { Button, Input, Progress, Table, Tabs } from 'antd'
+import { Button, Input, Progress, Table, Tabs, notification } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { ColumnType } from 'antd/es/table'
 
@@ -176,15 +176,20 @@ export function CreateNewOperation(): JSX.Element {
             operationData[key] = value
         }
 
-        await fetch('http://localhost:8000/api/async_migrations', {
+        
+        const res = await fetch('http://localhost:8000/api/async_migrations', {
             method: 'POST',
             body: JSON.stringify(operationData),
             headers: {
                 'Content-Type': 'application/json',
             },
         })
+        if (String(res.status)[0] === 2) {
+            history.go(0)
+        } else {
+            notification.error({ message: 'Error creating operation! Check if you do not have an operation with the same name already.' })
+        }
 
-        history.go(0)
     }
 
     return (
@@ -223,8 +228,10 @@ export function CreateNewOperation(): JSX.Element {
                                 fontSize: 14,
                                 width: 800,
                                 minHeight: 200,
-                                border: '1px solid rgb(118, 118, 118)',
+                                border: '1px solid #d9d9d9',
                                 borderRadius: 4,
+                                background: 'white',
+                                boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)'
                             }}
                             rows={5}
                         />
@@ -242,8 +249,10 @@ export function CreateNewOperation(): JSX.Element {
                                 fontSize: 14,
                                 width: 800,
                                 minHeight: 200,
-                                border: '1px solid rgb(118, 118, 118)',
+                                border: '1px solid #d9d9d9',
                                 borderRadius: 4,
+                                background: 'white',
+                                boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)'
                             }}
                             rows={5}
                         />
@@ -254,23 +263,22 @@ export function CreateNewOperation(): JSX.Element {
                 {operationOperationsCount > 1 ? (
                     <>
                         <Button
-                            variant="outlined"
-                            color="error"
                             onClick={() => setOperationOperationsCount(operationOperationsCount - 1)}
+                            danger
                         >
                             -
                         </Button>{' '}
                     </>
                 ) : null}
                 <Button
-                    variant="outlined"
                     onClick={() => setOperationOperationsCount(operationOperationsCount + 1)}
+                    style={{ color: 'rgb(22 166 255)', borderColor: 'rgb(22 166 255)' }}
                 >
                     +
                 </Button>
             </form>
             <div style={{ textAlign: 'center' }}>
-                <Button variant="contained" onClick={createOperation}>
+                <Button style={{ color: 'white', background: '#1677ff' }} variant="contained" onClick={createOperation}>
                     Save
                 </Button>
             </div>
