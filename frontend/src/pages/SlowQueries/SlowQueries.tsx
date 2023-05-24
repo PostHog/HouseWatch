@@ -90,7 +90,7 @@ export default function CollapsibleTable() {
 
     return (
         <div>
-            <h1 style={{ textAlign: 'left' }}>Slow queries</h1>
+            <h1 style={{ textAlign: 'left' }}>Query performance</h1>
             <p>Click on queries to display more details.</p>
             <br />
             <div>
@@ -99,7 +99,7 @@ export default function CollapsibleTable() {
                     onRow={(query, _) => {
                         return {
                             onClick: () => {
-                                history.push(`/slow_queries/${query.normalized_query_hash}`)
+                                history.push(`/query_performance/${query.normalized_query_hash}`)
                             },
                         }
                     }}

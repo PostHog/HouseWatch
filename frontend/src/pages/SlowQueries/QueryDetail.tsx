@@ -79,7 +79,7 @@ export default function QueryDetail({ match }: { match: { params: { query_hash: 
     
     return (
         <>
-            <a onClick={() => history.push(`/slow_queries/`)}>← Return to queries list</a>
+            <a onClick={() => history.push(`/query_performance/`)}>← Return to queries list</a>
             <h1>Query analyzer</h1>
             <Tabs items={items} defaultActiveKey='query' />
 

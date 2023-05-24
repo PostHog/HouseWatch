@@ -35,7 +35,7 @@ type MenuItem = Required<MenuProps>['items'][number]
 
 const items: MenuItem[] = [
     { key: '', icon: <HomeOutlined />, label: 'Overview' },
-    { key: 'slow_queries', label: 'Slow queries', icon: <ClockCircleOutlined /> },
+    { key: 'query_performance', label: 'Query performance', icon: <ClockCircleOutlined /> },
     { key: 'running_queries', label: 'Running queries', icon: <DashboardOutlined /> },
     { key: 'schema', label: 'Schema stats', icon: <HddOutlined /> },
     { key: 'disk_usage', label: 'Disk usage', icon: <ApartmentOutlined /> },
@@ -100,11 +100,11 @@ export default function AppLayout(): JSX.Element {
                             <Route exact path="/disk_usage">
                                 <DiskUsage />
                             </Route>
-                            <Route exact path="/slow_queries" component={SlowQueries}></Route>
+                            <Route exact path="/query_performance" component={SlowQueries}></Route>
                             <Route exact path="/schema" component={Schema}></Route>
                             <Route exact path="/schema/:table" component={SchemaTable}></Route>
 
-                            <Route exact path="/slow_queries/:query_hash" component={QueryDetail}></Route>
+                            <Route exact path="/query_performance/:query_hash" component={QueryDetail}></Route>
                             <Route exact path="/operations" component={Operations}></Route>
                             <Route exact path="/running_queries" component={RunningQueries}></Route>
                             <Route exact path="/logs" component={Logs}></Route>
