@@ -9,7 +9,7 @@ import Overview from './pages/Overview/Overview'
 import Errors from './pages/Errors/Errors'
 import { BrowserRouter as Router, Switch, Route, Link, useHistory } from 'react-router-dom'
 
-import { Operations } from './Operations/Operations'
+import { Operations } from './pages/Operations/Operations'
 import RunningQueries from './pages/RunningQueries/RunningQueries'
 import Logs from './pages/Logs/Logs'
 import {

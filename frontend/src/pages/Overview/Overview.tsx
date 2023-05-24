@@ -110,7 +110,7 @@ export default function Overview() {
                                 <Tooltip
                                     title={`Calculated from OSCPUVirtualTimeMicroseconds metric from ClickHouse query log's ProfileEvents.`}
                                 >
-                                    <InfoCircleOutlined />
+                                    <InfoCircleOutlined rev={undefined} />
                                 </Tooltip>
                             </>
                         }

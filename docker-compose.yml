@@ -27,8 +27,6 @@ services:
         build: ./frontend
         ports:
             - "3000:3000"
-        volumes:
-            - ./frontend:/frontend
 
     redis:
         image: redis:6.2.7-alpine
