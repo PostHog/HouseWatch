@@ -84,6 +84,7 @@ Contributions are certainly welcome! However, if you'd like to build a new featu
   <img src="./explain.png" width="48%">
 </div>
 
+<br />
 <h2 align="center">Schema stats</h3>
 
 <div style="display: flex">
@@ -91,24 +92,28 @@ Contributions are certainly welcome! However, if you'd like to build a new featu
   <img src="./schema-drilldown.png" width="48%">
 </div>
 
+<br />
 <h2 align="center">Logs</h3>
 
 <p align="center">
 <img src="./logs.png" align="center" height=400>
 </p>
 
+<br />
 <h2 align="center">Query editor</h3>
 
 <p align="center">
 <img src="./query-editor.png" height=400>
 </p>
 
+<br />
 <h2 align="center">Disk usage</h3>
 
 <p align="center">
 <img src="./disk-usage.png" height=400>
 </p>
 
+<br />
 <h2 align="center">Errors</h3>
 
 <p align="center">
