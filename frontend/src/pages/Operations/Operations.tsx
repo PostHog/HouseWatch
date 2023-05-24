@@ -283,8 +283,8 @@ export function Operations(): JSX.Element {
     return (
         <div style={{ display: 'block', margin: 'auto' }}>
             <h1 style={{ textAlign: 'left' }}>Operations (Alpha)</h1>
-            <br />
-
+            <p>Create long-running operations to run in the background in your ClickHouse cluster. Useful for large data migrations, specify SQL commands to run in order with corresponding rollbacks, such that if the operation fails, you rollback to a safe state.</p>
+            <p><b>Please exercise caution!</b> This funtionality is still in Alpha.</p>
             <Tabs items={[
                 {
                     key: 'list',

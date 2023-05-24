@@ -161,5 +161,6 @@ A public list of things we intend to do with HouseWatch in the near future.
 - [ ] Write tests :)
 - [ ] Query editor pipe all errors to client
 - [ ] Clear polling when user navigates to another page 
+- [ ] Make tabs hover blue
 
 </details>
