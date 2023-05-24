@@ -120,6 +120,14 @@ Contributions are certainly welcome! However, if you'd like to build a new featu
 <img src="./errors.png" height=400>
 </p>
 
+<br />
+<h2 align="center">Operations</h3>
+
+<p align="center">
+<img src="./operations.png" height=400>
+</p>
+
+
 
 ## 🗒️ To-do list
 
