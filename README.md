@@ -140,6 +140,8 @@ A public list of things we intend to do with HouseWatch in the near future.
 - [ ] Allow copying example queries
 - [ ] Configurable time ranges
 - [ ] Whole cluster schema stats
+- [ ] Kill queries on query editor
+
 
 <b>Developer experience</b>
 
@@ -157,5 +159,7 @@ A public list of things we intend to do with HouseWatch in the near future.
 - [ ] Breakpoint for logs search
 - [ ] Run Django "production server"
 - [ ] Write tests :)
+- [ ] Query editor pipe all errors to client
+- [ ] Clear polling when user navigates to another page 
 
 </details>

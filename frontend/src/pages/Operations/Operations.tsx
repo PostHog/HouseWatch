@@ -1,18 +1,13 @@
 // @ts-nocheck
 import React, { useEffect, useRef, useState } from 'react'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableHead from '@mui/material/TableHead'
-import TableRow from '@mui/material/TableRow'
-import Paper from '@mui/material/Paper'
-import { Button, LinearProgress, Tab, Tabs, TextField } from '@mui/material'
 import { useHistory } from 'react-router-dom'
 import Editor from 'react-simple-code-editor'
+// @ts-ignore
 import { highlight, languages } from 'prismjs/components/prism-core'
 import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
+import { Button, Input, Progress, Table, Tabs } from 'antd'
+import TextArea from 'antd/es/input/TextArea'
 
 const OPERATION_STATUS_TO_HUMAN = {
     0: 'Not started',
@@ -23,6 +18,8 @@ const OPERATION_STATUS_TO_HUMAN = {
     5: 'Starting',
     6: 'Failed at startup',
 }
+
+const statusSortOrder = [5, 1, 0, 4, 6, 3, 2]
 
 const OPERATION_STATUS_TO_FONT_COLOR = {
     0: 'black',
@@ -48,15 +45,15 @@ export function OperationControls({
     return (
         <div style={{ width: 100 }}>
             {[0, 4, 6].includes(status) ? (
-                <Button variant="contained" onClick={() => triggerOperation(id)}>
+                <Button className='run-async-migration-btn' style={{ color: 'white', background: '#1677ff' }} onClick={() => triggerOperation(id)}>
                     Run
                 </Button>
             ) : status === 3 ? (
-                <Button variant="contained" color="warning">
+                <Button danger>
                     Rollback
                 </Button>
             ) : (
-                <LinearProgress variant="determinate" value={progress} />
+                <Progress percent={progress} />
             )}
         </div>
     )
@@ -85,53 +82,55 @@ export function OperationsList(): JSX.Element {
 
     setInterval(fetchAndUpdateOperationsIfNeeded, 5000)
 
+
+    const columns = [
+        {
+            title: 'Name',
+            data_index: 'name',
+            render: (_, migration) => migration.name
+        },
+        {
+            title: 'Description',
+            data_index: 'description',
+            render: (_, migration) => migration.description
+        },
+        {
+            title: 'Status',
+            data_index: 'status',
+            render: (_, migration) => <span style={{ color: OPERATION_STATUS_TO_FONT_COLOR[migration.status]}}>{OPERATION_STATUS_TO_HUMAN[migration.status]}</span>,
+            sorter: (a, b) => statusSortOrder.indexOf(a.status) - statusSortOrder.indexOf(b.status),
+            defaultSortOrder: 'ascend',
+        }
+        ,
+        {
+            title: 'Started at',
+            data_index: 'started_at',
+            render: (_, migration) => migration.started_at ? migration.started_at.split('.')[0] : ''
+        }
+
+        ,
+        {
+            title: 'Finished at',
+            data_index: 'finished_at',
+            render: (_, migration) => migration.finished_at ? migration.finished_at.split('.')[0] : ''
+        }
+        ,
+        {
+            title: '',
+            render: (_, migration) =>
+                <OperationControls
+                    status={migration.status}
+                    progress={migration.progress}
+                    id={migration.id}
+                    triggerOperation={triggerOperation}
+                />
+        }
+    ]
+
+
+
     return (
-        <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell align="right">Description</TableCell>
-                        <TableCell align="right">Status</TableCell>
-                        <TableCell align="right">Progress</TableCell>
-                        <TableCell align="right">Started at</TableCell>
-                        <TableCell align="right">Finished at</TableCell>
-                        <TableCell align="right"></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {operations.map((migration) => (
-                        <TableRow key={migration.name} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                            <TableCell component="th" scope="row">
-                                {migration.name}
-                            </TableCell>
-                            <TableCell align="right">{migration.description}</TableCell>
-                            <TableCell
-                                align="right"
-                                style={{ color: OPERATION_STATUS_TO_FONT_COLOR[migration.status] }}
-                            >
-                                <b>{OPERATION_STATUS_TO_HUMAN[migration.status]}</b>
-                            </TableCell>
-                            <TableCell align="right">{migration.progress}</TableCell>
-                            <TableCell align="right">
-                                {migration.started_at ? migration.started_at.split('.')[0] : ''}
-                            </TableCell>
-                            <TableCell align="right">
-                                {migration.finished_at ? migration.finished_at.split('.')[0] : ''}
-                            </TableCell>
-                            <TableCell align="right">
-                                <OperationControls
-                                    status={migration.status}
-                                    progress={migration.progress}
-                                    id={migration.id}
-                                    triggerOperation={triggerOperation}
-                                />
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <Table columns={columns} dataSource={operations} />
     )
 }
 
@@ -140,7 +139,7 @@ export function CreateNewOperation(): JSX.Element {
 
     const [operationOperationsCount, setOperationOperationsCount] = useState(1)
 
-    const [code, setCode] = useState(`SELECT 1`)
+    const [code, setCode] = useState({})
 
     const createOperation = async () => {
         const form = document.getElementById('create-migration-form')
@@ -182,10 +181,10 @@ export function CreateNewOperation(): JSX.Element {
             <form style={{ textAlign: 'left', marginLeft: 20, overflowY: 'auto' }} id="create-migration-form">
                 <h3>Details</h3>
 
-                <TextField id="create-migration-form-name" name="name" placeholder="Name" style={{ width: 400 }} />
+                <Input id="create-migration-form-name" name="name" placeholder="Name" style={{ width: 400 }} />
                 <br />
                 <br />
-                <TextField
+                <TextArea
                     id="create-migration-form-description"
                     name="description"
                     placeholder="Description"
@@ -201,21 +200,12 @@ export function CreateNewOperation(): JSX.Element {
                 {[...Array(operationOperationsCount)].map((_, i) => (
                     <span key={i}>
                         <h4>#{i + 1}</h4>
-                        <TextField
+
+                        <Editor
                             id={`create-migration-form-operation-${i + 1}`}
                             name={`operation-${i + 1}`}
-                            placeholder="Operation SQL"
-                            multiline
-                            style={{ width: 800 }}
-                            rows={5}
-                        />
-                        <br />
-                        <br />
-                        <Editor
-                            id={`create-migration-form-rollback-${i + 1}`}
-                            name={`rollback-${i + 1}`}
-                            value={code}
-                            onValueChange={(code) => setCode(code)}
+                            value={code[`operation-${i + 1}`] || `CREATE TABLE test_table ( foo String ) Engine=MergeTree()`}
+                            onValueChange={(value) => setCode({ ...code, [`operation-${i + 1}`]: value })}
                             highlight={(code) => highlight(code, languages.sql)}
                             padding={10}
                             style={{
@@ -229,14 +219,26 @@ export function CreateNewOperation(): JSX.Element {
                             multiline
                             rows={5}
                         />
-                        {/* <TextField
+                        <br />
+                        <br />
+                        <Editor
                             id={`create-migration-form-rollback-${i + 1}`}
                             name={`rollback-${i + 1}`}
-                            placeholder="Rollback SQL"
+                            value={code[`rollback-${i + 1}`] || `DROP TABLE IF EXISTS test_table`}
+                            onValueChange={(value) => setCode({ ...code, [`rollback-${i + 1}`]: value })}
+                            highlight={(code) => highlight(code, languages.sql)}
+                            padding={10}
+                            style={{
+                                fontFamily: '"Fira code", "Fira Mono", monospace',
+                                fontSize: 14,
+                                width: 800,
+                                minHeight: 200,
+                                border: '1px solid rgb(118, 118, 118)',
+                                borderRadius: 4,
+                            }}
                             multiline
-                            style={{ width: 800 }}
                             rows={5}
-                        /> */}
+                        />
                         <br />
                         <br />
                     </span>
@@ -269,19 +271,27 @@ export function CreateNewOperation(): JSX.Element {
 }
 
 export function Operations(): JSX.Element {
-    const [tab, setTab] = useState('list')
 
     return (
         <div style={{ display: 'block', margin: 'auto' }}>
-            <h1 style={{ textAlign: 'left' }}>Management operations</h1>
+            <h1 style={{ textAlign: 'left' }}>Operations (Alpha)</h1>
             <br />
-            <Tabs value={tab} textColor="primary" indicatorColor="primary" onChange={(_, value) => setTab(value)}>
-                <Tab value="list" label="Operations" />
-                <Tab value="create" label="Create new operation" />
-            </Tabs>
-            <br />
-            {tab === 'list' ? <OperationsList /> : tab === 'create' ? <CreateNewOperation /> : null}
-            <br />
+
+            <Tabs items={[
+                {
+                    key: 'list',
+                    label: `Operations`,
+                    children: <OperationsList />,
+                },
+                {
+                    key: 'create',
+                    label: `Create new operation`,
+                    children: <CreateNewOperation />,
+                },
+            ]}
+                defaultActiveKey='list' />
+
+
             <br />
         </div>
     )

@@ -2,10 +2,9 @@
 import * as React from 'react'
 import { usePollingEffect } from "../../utils/usePollingEffect"
 import { Treemap } from '@ant-design/charts'
-import { Table } from 'antd'
+import { Table, Tabs, TabsProps } from 'antd'
 
 import { useHistory } from 'react-router-dom'
-import { Tab, Tabs } from '@mui/material'
 
 function TableTreeMap({ schema, dataIndex }) {
 
@@ -51,6 +50,8 @@ function TableTreeMap({ schema, dataIndex }) {
     )
 }
 
+
+
 export function ColumnsData({ table }: { table: string }): JSX.Element {
     const [schema, setSchema] = React.useState([])
 
@@ -77,6 +78,7 @@ export function ColumnsData({ table }: { table: string }): JSX.Element {
         { dataIndex: 'compressed_readable', title: 'Compressed' },
         { dataIndex: 'uncompressed', title: 'Uncompressed' },
     ]
+
 
     return (
         <>
@@ -128,16 +130,26 @@ export default function CollapsibleTable({ match }) {
     const [tab, setTab] = React.useState('columns')
     const history = useHistory()
 
+
+    const items: TabsProps['items'] = [
+        {
+            key: 'columns',
+            label: `Columns`,
+            children: <ColumnsData table={match.params.table} />,
+        },
+        {
+            key: 'parts',
+            label: `Parts`,
+            children: <PartsData table={match.params.table} />,
+        },
+    ]
+
+
     return (
         <div>
             <a onClick={() => history.push(`/schema/`)}>← Return to tables list</a>
             <h1>Table: {match.params.table}</h1>
-            <Tabs value={tab} textColor="primary" indicatorColor="primary" onChange={(_, value) => setTab(value)}>
-                <Tab value="columns" label="Columns" key="columns" />
-                <Tab value="parts" label="Parts" key="parts" />
-            </Tabs>
-            <br />
-            {tab === 'columns' ? <ColumnsData table={match.params.table} /> : <PartsData table={match.params.table} />}
+            <Tabs defaultActiveKey='columns' items={items} />
         </div>
     )
 }

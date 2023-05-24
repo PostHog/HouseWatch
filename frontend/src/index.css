@@ -43,13 +43,10 @@ code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-.clickable:hover {
+.clickable:hover, .clickable div:hover, .code-editor:hover textarea {
     cursor: pointer !important;
 }
 
-.clickable div:hover {
-    cursor: pointer !important;
-}
 
 .code-editor textarea {
     line-height: 2 !important;
@@ -60,6 +57,19 @@ code {
     background-color: #ededed;
 }
 
-.code-editor:hover textarea {
-    cursor: pointer !important;
+.ant-tabs-tab-active .ant-tabs-tab-btn  {
+    color: #1677ff !important;
+}
+
+.ant-tabs-ink-bar  {
+    background: #1677ff !important;
+}
+
+.run-async-migration-btn:hover {
+    border-color: #64a0f4 !important;
+    background: #13a5ff !important;
+}
+
+input, textarea {
+    box-shadow: none !important;
 }
