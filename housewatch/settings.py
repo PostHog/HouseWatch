@@ -62,8 +62,6 @@ if DEBUG:
 
 is_development = DEBUG and not TEST
 
-ALLOWED_HOSTS = ["*"]
-
 
 SECURE_SSL_REDIRECT = False
 if not DEBUG and not TEST:
@@ -74,7 +72,6 @@ if not DEBUG and not TEST:
 
 
 CSRF_TRUSTED_ORIGINS = ["https://*.posthog.dev", "https://*.posthog.com"]
-CORS_ORIGIN_ALLOW_ALL = True
 
 
 APPEND_SLASH = False
@@ -124,6 +121,10 @@ TEMPLATES = [
         },
     },
 ]
+
+ALLOWED_HOSTS = ["*"]
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 WSGI_APPLICATION = "housewatch.wsgi.application"
 
