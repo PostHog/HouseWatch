@@ -160,6 +160,7 @@ A public list of things we intend to do with HouseWatch in the near future.
 
 - [ ] Configure instance from UI
 - [ ] Publish a Docker image
+- [ ] Development docker-compose.yml with baked in ClickHouse
 
 <b>Cleanup</b>
 
