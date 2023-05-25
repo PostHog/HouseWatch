@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 // @ts-ignore
 import { highlight, languages } from 'prismjs/components/prism-core' // @ts-ignore
 import 'prismjs/components/prism-sql'
@@ -7,11 +7,24 @@ import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 // @ts-ignore
 import { Table } from 'antd'
-import { QueryDetailData } from './QueryDetail'
+import { NoDataSpinner, QueryDetailData } from './QueryDetail'
 
 
-export default function ExampleQueriesTab({ data }: { data: QueryDetailData }) {
+export default function ExampleQueriesTab({ query_hash }: { query_hash: string }) {
+    const [data, setData] = useState<{ example_queries: QueryDetailData['example_queries'] } | null>(null)
+
+    const loadData = async () => {
+        const res = await fetch(`http://localhost:8000/api/analyze/${query_hash}/query_examples`)
+        const resJson = await res.json()
+        setData(resJson)
+    }
+
+    useEffect(() => {
+        loadData()
+    }, [])
+    
     return (
+        data ? (
         <Table
             columns={[
                 {
@@ -32,6 +45,6 @@ export default function ExampleQueriesTab({ data }: { data: QueryDetailData }) {
                 },
             ]}
             dataSource={data.example_queries}
-        />
+        /> ) : NoDataSpinner
     )
 }

@@ -1,13 +1,25 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Line } from '@ant-design/plots'
 // @ts-ignore
 import { Card, Col, Row, Tooltip } from 'antd'
 import { InfoCircleOutlined } from '@ant-design/icons'
-import { QueryDetailData } from './QueryDetail'
+import { NoDataSpinner, QueryDetailData } from './QueryDetail'
 
-export default function MetricsTab({ data }: { data: QueryDetailData }) {
+export default function MetricsTab({ query_hash }: { query_hash: string }) {
+    const [data, setData] = useState<Omit<QueryDetailData, 'explain' | 'normalized_query' | 'example_queries'> | null>(null)
+
+    const loadData = async () => {
+        const res = await fetch(`http://localhost:8000/api/analyze/${query_hash}/query_metrics`)
+        const resJson = await res.json()
+        setData(resJson)
+    }
+
+    useEffect(() => {
+        loadData()
+    }, [])
 
     return (
+        data ? (
         <>
             <br />
             <Row gutter={8} style={{ paddingBottom: 8 }}>
@@ -86,6 +98,6 @@ export default function MetricsTab({ data }: { data: QueryDetailData }) {
                     </Card>
                 </Col>
             </Row>
-        </>
+        </> ) : NoDataSpinner
     )
 }

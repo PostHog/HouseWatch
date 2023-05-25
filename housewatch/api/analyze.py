@@ -40,7 +40,6 @@ class AnalyzeViewset(GenericViewSet):
         days = request.GET.get('days', DEFAULT_DAYS)
         conditions = "AND event_time > now() - INTERVAL 1 WEEK AND toString(normalized_query_hash) = '{}'".format(pk)
         execution_count = run_query(QUERY_EXECUTION_COUNT_SQL, { 'days': days, 'conditions': conditions })
-        print(execution_count)
         memory_usage = run_query(QUERY_MEMORY_USAGE_SQL, { 'days': days, 'conditions': conditions })
         read_bytes = run_query(QUERY_READ_BYTES_SQL, { 'days': days, 'conditions': conditions })
         cpu = run_query(QUERY_CPU_USAGE_SQL, { 'days': days, 'conditions': conditions })
@@ -58,7 +57,55 @@ class AnalyzeViewset(GenericViewSet):
             'read_bytes': read_bytes,
             'cpu': cpu
         })
-
+        
+    @action(detail=True, methods=["GET"])
+    def query_normalized(self, request: Request, pk: str):
+        query_details = run_query(GET_QUERY_BY_NORMALIZED_HASH_SQL, {'normalized_query_hash': pk})
+        normalized_query = query_details[0]['normalized_query']
+        
+        return Response({
+            'query': normalized_query,
+        })
+        
+        
+        
+    @action(detail=True, methods=["GET"])
+    def query_metrics(self, request: Request, pk: str):
+        days = request.GET.get('days', DEFAULT_DAYS)
+        conditions = "AND event_time > now() - INTERVAL 1 WEEK AND toString(normalized_query_hash) = '{}'".format(pk)
+        execution_count = run_query(QUERY_EXECUTION_COUNT_SQL, { 'days': days, 'conditions': conditions })
+        memory_usage = run_query(QUERY_MEMORY_USAGE_SQL, { 'days': days, 'conditions': conditions })
+        read_bytes = run_query(QUERY_READ_BYTES_SQL, { 'days': days, 'conditions': conditions })
+        cpu = run_query(QUERY_CPU_USAGE_SQL, { 'days': days, 'conditions': conditions })
+        
+        return Response({
+            'execution_count': execution_count,
+            'memory_usage': memory_usage,
+            'read_bytes': read_bytes,
+            'cpu': cpu
+        })
+        
+    @action(detail=True, methods=["GET"])
+    def query_explain(self, request: Request, pk: str):
+        query_details = run_query(GET_QUERY_BY_NORMALIZED_HASH_SQL, {'normalized_query_hash': pk})
+        example_queries = query_details[0]['example_queries']
+        explain = run_query(EXPLAIN_QUERY, {'query': example_queries[0] })
+        
+        return Response({
+            'explain': explain,
+        })
+        
+    @action(detail=True, methods=["GET"])
+    def query_examples(self, request: Request, pk: str):
+        query_details = run_query(GET_QUERY_BY_NORMALIZED_HASH_SQL, {'normalized_query_hash': pk})
+        example_queries = query_details[0]['example_queries']
+        
+        return Response({
+            'example_queries': [{"query": q } for q in example_queries],
+        })
+        
+        
+        
     @action(detail=False, methods=["GET"])
     def query_graphs(self, request: Request):
         days = request.GET.get('days', DEFAULT_DAYS)

@@ -36,8 +36,8 @@ export function DiskUsage(): JSX.Element {
                     <Spin />
                 ) : (
                     <>
-                        {rows.map(row => (
-                            <Row gutter={8} style={{ marginBottom: 8 }}>
+                        {rows.map((row, i)=> (
+                            <Row key={`disk-usage-row-${i}`} gutter={8} style={{ marginBottom: 8 }}>
                                 <Col span={12}>
                                     <Card>
                                         <h2 style={{ textAlign: 'center' }}>{row[0].node}</h2>

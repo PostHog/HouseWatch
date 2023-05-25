@@ -26,6 +26,12 @@ export interface QueryDetailData {
     cpu: MetricData[]
 }
 
+export const NoDataSpinner = (
+    <div style={{ height: 500 }}>
+        <Spin size='large' style={{ margin: 'auto', display: 'block', marginTop: 50 }} />
+    </div>
+)
+
 export const copyToClipboard = (value: string) => {
     notification.info({ message: 'Copied to clipboard!', placement: 'bottomRight', duration: 1.5, style: { fontSize: 10 }})
     navigator.clipboard.writeText(value)
@@ -33,46 +39,30 @@ export const copyToClipboard = (value: string) => {
 
 
 export default function QueryDetail({ match }: { match: { params: { query_hash: string } } }) {
-    const [data, setData] = useState<QueryDetailData | null>(null)
     const history = useHistory()
 
 
-    const loadData = async () => {
-        const res = await fetch(`http://localhost:8000/api/analyze/${match.params.query_hash}/query_detail`)
-        const resJson = await res.json()
-        setData(resJson)
-    }
-
-    useEffect(() => {
-        loadData()
-    }, [])
-
-    const NoDataSpinner = (
-        <div style={{ height: 500 }}>
-            <Spin size='large' style={{ margin: 'auto', display: 'block', marginTop: 50 }} />
-        </div>
-    )
 
     const items: TabsProps['items'] = [
         {
             key: 'query',
             label: `Query`,
-            children: data ? <NormalizedQueryTab data={data} /> : NoDataSpinner,
+            children: <NormalizedQueryTab query_hash={match.params.query_hash} />,
         },
         {
             key: 'metrics',
             label: `Metrics`,
-            children: data ? <MetricsTab data={data} /> : NoDataSpinner,
+            children: <MetricsTab query_hash={match.params.query_hash} />
         },
         {
             key: 'explain',
             label: `Explain`,
-            children: data ? <ExplainTab data={data} /> : NoDataSpinner,
+            children: <ExplainTab query_hash={match.params.query_hash} />,
         },
         {
             key: 'examples',
             label: `Example queries`,
-            children: data ? <ExampleQueriesTab data={data} /> : NoDataSpinner,
+            children: <ExampleQueriesTab query_hash={match.params.query_hash} />,
         },
     ]
 
