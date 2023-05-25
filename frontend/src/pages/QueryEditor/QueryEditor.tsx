@@ -1,14 +1,11 @@
-// @ts-nocheck
-import { Table, Button, notification, Typography, Input, Card, ConfigProvider } from 'antd'
-import { usePollingEffect } from '../../utils/usePollingEffect'
-import React, { useEffect, useState } from 'react'
-import { Bar, Column } from '@ant-design/charts'
+import { Table, Button, ConfigProvider } from 'antd'
+import React, { useState } from 'react'
+// @ts-ignore
 import { highlight, languages } from 'prismjs/components/prism-core'
 import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 
-const { Paragraph } = Typography
 
 export default function QueryEditor() {
     const [sql, setSql] = useState(
@@ -19,22 +16,24 @@ export default function QueryEditor() {
 
     const columns = data.length > 0 ? Object.keys(data[0]).map((column) => ({ title: column, dataIndex: column })) : []
 
-    const url = 'http://localhost:8000/api/analyze/query'
-
     const query = async (sql = '') => {
-        setData([])
-        const res = await fetch(url, {
-            method: 'POST',
-            body: JSON.stringify({ sql }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        const resJson = await res.json()
-        if (resJson.error) {
-            setError(resJson.error)
-        } else {
-            setData(resJson)
+        try {
+            setData([])
+            const res = await fetch('http://localhost:8000/api/analyze/query', {
+                method: 'POST',
+                body: JSON.stringify({ sql }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            const resJson = await res.json()
+            if (resJson.error) {
+                setError(resJson.error)
+            } else {
+                setData(resJson)
+            }
+        } catch (error) {
+            setError(String(error))
         }
     }
 
@@ -59,7 +58,6 @@ export default function QueryEditor() {
                     boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)',
                     marginBottom: 5,
                 }}
-                rows={10}
             />
             <Button type="primary" style={{ width: '100%', boxShadow: 'none' }} onClick={() => query(sql)}>
                 Run
@@ -72,7 +70,6 @@ export default function QueryEditor() {
                     columns={columns}
                     dataSource={data}
                     loading={!error && data.length < 1}
-                    expandable
                     scroll={{ x: 400 }}
                 />
             </ConfigProvider>
