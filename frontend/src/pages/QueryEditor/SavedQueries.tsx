@@ -11,7 +11,6 @@ import QueryEditor from './QueryEditor'
 import SavedQuery from './SavedQuery'
 import { ReloadOutlined } from '@ant-design/icons'
 
-
 export interface SavedQueryData {
     id: number
     name: string
@@ -32,23 +31,27 @@ export default function SavedQueries() {
         loadData()
     }, [])
 
-    const columns: ColumnType<{ name: string, id: number, query: string }>[] = [
+    const columns: ColumnType<{ name: string; id: number; query: string }>[] = [
         { title: 'ID', dataIndex: 'id' },
         {
             title: 'Name',
             dataIndex: 'name',
-            render: (_, item) =>
-                <span style={{ color: '#1677ff', cursor: 'pointer' }} onClick={() => setActiveQuery(item)}>{item.name}</span>
+            render: (_, item) => (
+                <span style={{ color: '#1677ff', cursor: 'pointer' }} onClick={() => setActiveQuery(item)}>
+                    {item.name}
+                </span>
+            ),
         },
-        { title: 'Created at', dataIndex: 'created_at' }
+        { title: 'Created at', dataIndex: 'created_at' },
     ]
-
 
     return (
         <>
             {activeQuery ? (
                 <>
-                    <a onClick={() => setActiveQuery(null)} style={{ float: 'right' }}>← Return to saved queries list</a>
+                    <a onClick={() => setActiveQuery(null)} style={{ float: 'right' }}>
+                        ← Return to saved queries list
+                    </a>
                     <SavedQuery {...activeQuery} />
                 </>
             ) : (
@@ -56,11 +59,10 @@ export default function SavedQueries() {
                     <Row style={{ marginBottom: 2 }}>
                         <Col span={23}></Col>
                         <Col span={1}>
-                            <Tooltip title='Refresh list'>
+                            <Tooltip title="Refresh list">
                                 <Button style={{ background: 'transparent' }} onClick={loadData}>
                                     <ReloadOutlined rev={undefined} />
                                 </Button>
-
                             </Tooltip>
                         </Col>
                     </Row>

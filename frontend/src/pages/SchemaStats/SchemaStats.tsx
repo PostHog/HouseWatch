@@ -43,7 +43,6 @@ export default function Schema() {
     }
     const [config, setConfig] = useState(defaultConfig)
 
-
     const loadData = async () => {
         try {
             const res = await fetch('http://localhost:8000/api/analyze/tables')

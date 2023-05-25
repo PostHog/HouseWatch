@@ -7,7 +7,6 @@ import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 import { SavedQueryData } from './SavedQueries'
 
-
 export default function SavedQuery({ id, query, name }: SavedQueryData) {
     const [error, setError] = useState('')
     const [data, setData] = useState([{}])
@@ -24,7 +23,7 @@ export default function SavedQuery({ id, query, name }: SavedQueryData) {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-            })            
+            })
             const resJson = await res.json()
             if (resJson.error) {
                 setError(resJson.error)
@@ -63,12 +62,7 @@ export default function SavedQuery({ id, query, name }: SavedQueryData) {
             <br />
 
             <ConfigProvider renderEmpty={() => <p style={{ color: '#c40000', fontFamily: 'monospace' }}>{error}</p>}>
-                <Table
-                    columns={columns}
-                    dataSource={data}
-                    loading={!error && data.length < 1}
-                    scroll={{ x: 400 }}
-                />
+                <Table columns={columns} dataSource={data} loading={!error && data.length < 1} scroll={{ x: 400 }} />
             </ConfigProvider>
         </>
     )
