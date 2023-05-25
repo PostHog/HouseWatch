@@ -1,4 +1,4 @@
-import { Table, Button, ConfigProvider, Spin } from 'antd'
+import { Table, Button, ConfigProvider, Row, Col, Tooltip, Modal, Input, notification } from 'antd'
 import React, { useState } from 'react'
 // @ts-ignore
 import { highlight, languages } from 'prismjs/components/prism-core'
@@ -6,7 +6,32 @@ import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 import { v4 as uuidv4 } from 'uuid'
+import { SaveOutlined } from '@ant-design/icons'
 
+function CreateSavedQueryModal({
+    modalOpen = false,
+    setModalOpen,
+    saveQuery,
+}: {
+    modalOpen: boolean
+    setModalOpen: (open: boolean) => void
+    saveQuery: (name: string) => Promise<void>
+}) {
+    const [queryName, setQueryName] = useState<string>('')
+
+    return (
+        <>
+            <Modal
+                title="Query name"
+                open={modalOpen}
+                onOk={() => saveQuery(queryName)}
+                onCancel={() => setModalOpen(false)}
+            >
+                <Input value={queryName} onChange={(e) => setQueryName(e.target.value)} />
+            </Modal>
+        </>
+    )
+}
 
 export default function QueryEditor() {
     const [sql, setSql] = useState(
@@ -15,8 +40,28 @@ export default function QueryEditor() {
     const [error, setError] = useState('')
     const [data, setData] = useState([{}])
     const [runningQueryId, setRunningQueryId] = useState<null | string>(null)
+    const [modalOpen, setModalOpen] = useState(false)
 
     const columns = data.length > 0 ? Object.keys(data[0]).map((column) => ({ title: column, dataIndex: column })) : []
+
+    const saveQuery = async (queryName: string) => {
+        try {
+            const res = await fetch('http://localhost:8000/api/saved_queries', {
+                method: 'POST',
+                body: JSON.stringify({ name: queryName, query: sql }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            if (String(res.status)[0] !== '2') {
+                throw new Error()
+            }
+            setModalOpen(false)
+            notification.success({ message: 'Query saved successfully' })
+        } catch (error) {
+            notification.error({ message: `Couldn't save query` })
+        }
+    }
 
     const query = async (sql = '') => {
         const queryId = uuidv4()
@@ -57,15 +102,27 @@ export default function QueryEditor() {
             setRunningQueryId(null)
             setData([{}])
         }
-
     }
 
     return (
         <>
-            <h1 style={{ textAlign: 'left' }}>Query editor</h1>
-            <p>
-                <i>Note that HouseWatch does not add limits to queries automatically.</i>
-            </p>
+            <Row>
+                <Col span={23}>
+                    {' '}
+                    <p>
+                        <i>Note that HouseWatch does not add limits to queries automatically.</i>
+                    </p>
+                </Col>
+                <Col span={1}>
+                    {data && Object.keys(data[0] || {}).length > 0 ? (
+                        <Tooltip title="Save query">
+                            <Button style={{ background: 'transparent' }} onClick={() => setModalOpen(true)}>
+                                <SaveOutlined rev={undefined} />
+                            </Button>
+                        </Tooltip>
+                    ) : null}
+                </Col>
+            </Row>
 
             <Editor
                 value={sql}
@@ -82,20 +139,20 @@ export default function QueryEditor() {
                     marginBottom: 5,
                 }}
             />
-            <Button type="primary" style={{ width: '100%', boxShadow: 'none' }} onClick={() => runningQueryId ? cancelRunningQuery() : query(sql)}>
+            <Button
+                type="primary"
+                style={{ width: '100%', boxShadow: 'none' }}
+                onClick={() => (runningQueryId ? cancelRunningQuery() : query(sql))}
+            >
                 {runningQueryId ? 'Cancel' : 'Run'}
             </Button>
             <br />
             <br />
 
             <ConfigProvider renderEmpty={() => <p style={{ color: '#c40000', fontFamily: 'monospace' }}>{error}</p>}>
-                <Table
-                    columns={columns}
-                    dataSource={data}
-                    loading={!error && data.length < 1}
-                    scroll={{ x: 400 }}
-                />
+                <Table columns={columns} dataSource={data} loading={!error && data.length < 1} scroll={{ x: 400 }} />
             </ConfigProvider>
+            <CreateSavedQueryModal setModalOpen={setModalOpen} saveQuery={saveQuery} modalOpen={modalOpen} />
         </>
     )
 }

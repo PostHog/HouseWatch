@@ -155,8 +155,8 @@ A public list of things we intend to do with HouseWatch in the near future.
 - [ ] Allow copying example queries
 - [ ] Configurable time ranges
 - [ ] Whole cluster schema stats
-- [ ] Saved queries
-- [ ] More operation controls: view, delete, edit, re-run
+- [ ] More operation controls: view, delete, edit, re-run, display errors
+- [ ] Link to saved query by ID
 
 
 <b>Developer experience</b>

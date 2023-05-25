@@ -25,8 +25,8 @@ import {
     FormOutlined,
 } from '@ant-design/icons'
 import { ConfigProvider, MenuProps } from 'antd'
-import { Breadcrumb, Layout, Menu } from 'antd'
-import QueryEditor from './pages/QueryEditor/QueryEditor'
+import { Layout, Menu } from 'antd'
+import QueryEditorPage from './pages/QueryEditor/QueryEditorPage'
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -107,7 +107,7 @@ export default function AppLayout(): JSX.Element {
                             <Route exact path="/running_queries" component={RunningQueries}></Route>
                             <Route exact path="/logs" component={Logs}></Route>
                             <Route exact path="/errors" component={Errors}></Route>
-                            <Route exact path="/query_editor" component={QueryEditor}></Route>
+                            <Route exact path="/query_editor" component={QueryEditorPage}></Route>
                         </Switch>
                     </Content>
                     <Footer style={{ textAlign: 'center' }}>

@@ -10,7 +10,7 @@ class MigrationStatus:
     Starting = 5  # only relevant for the UI
     FailedAtStartup = 6
 
-
+# Async migrations are now called "Operations" in the frontend
 class AsyncMigration(models.Model):
     class Meta:
         constraints = [models.UniqueConstraint(fields=["name"], name="unique name")]
