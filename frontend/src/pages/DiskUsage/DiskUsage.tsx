@@ -13,7 +13,7 @@ export function DiskUsage(): JSX.Element {
 
     const loadData = async () => {
         try {
-            const res = await fetch('http://localhost:8000/api/analyze/cluster_overview')
+            const res = await fetch('/api/analyze/cluster_overview')
             const resJson = await res.json()
             setClusterOverviewData(resJson)
         } catch {

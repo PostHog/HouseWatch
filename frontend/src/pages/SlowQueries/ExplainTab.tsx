@@ -14,7 +14,7 @@ export default function ExplainTab({ query_hash }: { query_hash: string }) {
 
     const loadData = async () => {
         try {
-            const res = await fetch(`http://localhost:8000/api/analyze/${query_hash}/query_explain`)
+            const res = await fetch(`/api/analyze/${query_hash}/query_explain`)
             const resJson = await res.json()
             setData(resJson)
         } catch {

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: housewatch
+description: Open source tool for monitoring and managing ClickHouse clusters
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

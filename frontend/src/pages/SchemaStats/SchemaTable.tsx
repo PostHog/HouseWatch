@@ -50,7 +50,7 @@ function TableTreeMap({ schema, dataIndex }) {
 export function ColumnsData({ table }: { table: string }): JSX.Element {
     const [schema, setSchema] = React.useState([])
 
-    const url = `http://localhost:8000/api/analyze/${table}/schema`
+    const url = `/api/analyze/${table}/schema`
 
     useEffect
 
@@ -91,7 +91,7 @@ export function PartsData({ table }: { table: string }): JSX.Element {
 
     const loadData = async () => {
         try {
-            const res = await fetch(`http://localhost:8000/api/analyze/${table}/parts`)
+            const res = await fetch(`/api/analyze/${table}/parts`)
             const resJson = await res.json()
             setPartData(resJson)
         } catch {

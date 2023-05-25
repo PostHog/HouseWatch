@@ -75,7 +75,7 @@ export default function CollapsibleTable() {
         setSlowQueries([])
         setLoadingSlowQueries(true)
         try {
-            const res = await fetch('http://localhost:8000/api/analyze/slow_queries')
+            const res = await fetch('/api/analyze/slow_queries')
             const resJson = await res.json()
             const slowQueriesData = resJson.map((error: SlowQueryData, idx: number) => ({ key: idx, ...error }))
             setSlowQueries(slowQueriesData)

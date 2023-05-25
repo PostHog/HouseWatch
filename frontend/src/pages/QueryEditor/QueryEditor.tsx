@@ -19,7 +19,7 @@ export default function QueryEditor() {
     const query = async (sql = '') => {
         try {
             setData([])
-            const res = await fetch('http://localhost:8000/api/analyze/query', {
+            const res = await fetch('/api/analyze/query', {
                 method: 'POST',
                 body: JSON.stringify({ sql }),
                 headers: {

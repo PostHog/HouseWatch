@@ -26,7 +26,7 @@ export default function Overview() {
 
     const loadData = async () => {
         try {
-            const res = await fetch('http://localhost:8000/api/analyze/query_graphs')
+            const res = await fetch('/api/analyze/query_graphs')
             const resJson = await res.json()
             const execution_count = resJson.execution_count
             const memory_usage = resJson.memory_usage
