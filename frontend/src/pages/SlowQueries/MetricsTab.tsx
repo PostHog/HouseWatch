@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Line } from '@ant-design/plots'
 // @ts-ignore
-import { Card, Col, Row, Tooltip } from 'antd'
+import { Card, Col, Row, Tooltip, notification } from 'antd'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { NoDataSpinner, QueryDetailData } from './QueryDetail'
 
@@ -11,9 +11,13 @@ export default function MetricsTab({ query_hash }: { query_hash: string }) {
     )
 
     const loadData = async () => {
-        const res = await fetch(`http://localhost:8000/api/analyze/${query_hash}/query_metrics`)
-        const resJson = await res.json()
-        setData(resJson)
+        try {
+            const res = await fetch(`http://localhost:8000/api/analyze/${query_hash}/query_metrics`)
+            const resJson = await res.json()
+            setData(resJson)
+        } catch {
+            notification.error({ message: 'Failed to load data' })
+        }
     }
 
     useEffect(() => {

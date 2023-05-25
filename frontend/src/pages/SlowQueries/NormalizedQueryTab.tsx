@@ -8,14 +8,19 @@ import Editor from 'react-simple-code-editor'
 // @ts-ignore
 import { format } from 'sql-formatter-plus'
 import { NoDataSpinner, copyToClipboard } from './QueryDetail'
+import { notification } from 'antd'
 
 export default function NormalizedQueryTab({ query_hash }: { query_hash: string }) {
     const [data, setData] = useState<{ query: string } | null>(null)
 
     const loadData = async () => {
-        const res = await fetch(`http://localhost:8000/api/analyze/${query_hash}/query_normalized`)
-        const resJson = await res.json()
-        setData(resJson)
+        try {
+            const res = await fetch(`http://localhost:8000/api/analyze/${query_hash}/query_normalized`)
+            const resJson = await res.json()
+            setData(resJson)
+        } catch {
+            notification.error({ message: 'Failed to load data' })
+        }
     }
 
     useEffect(() => {

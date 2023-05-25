@@ -6,16 +6,20 @@ import 'prismjs/components/prism-yaml'
 import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 // @ts-ignore
-import { Table } from 'antd'
+import { Table, notification } from 'antd'
 import { NoDataSpinner, QueryDetailData } from './QueryDetail'
 
 export default function ExampleQueriesTab({ query_hash }: { query_hash: string }) {
     const [data, setData] = useState<{ example_queries: QueryDetailData['example_queries'] } | null>(null)
 
     const loadData = async () => {
-        const res = await fetch(`http://localhost:8000/api/analyze/${query_hash}/query_examples`)
-        const resJson = await res.json()
-        setData(resJson)
+        try {
+            const res = await fetch(`http://localhost:8000/api/analyze/${query_hash}/query_examples`)
+            const resJson = await res.json()
+            setData(resJson)
+        } catch {
+            notification.error({ message: 'Failed to load data' })
+        }
     }
 
     useEffect(() => {

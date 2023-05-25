@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table } from 'antd'
+import { Table, notification } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 
 interface ErrorData {
@@ -30,11 +30,15 @@ export default function CollapsibleTable() {
     ]
 
     const loadData = async () => {
-        const res = await fetch('http://localhost:8000/api/analyze/errors')
-        const resJson = await res.json()
+        try {
+            const res = await fetch('http://localhost:8000/api/analyze/errors')
+            const resJson = await res.json()
 
-        const slowQueriesData = resJson.map((error: ErrorData, idx: number) => ({ key: idx, ...error }))
-        setSlowQueries(slowQueriesData)
+            const slowQueriesData = resJson.map((error: ErrorData, idx: number) => ({ key: idx, ...error }))
+            setSlowQueries(slowQueriesData)
+        } catch {
+            notification.error({ message: 'Failed to load data' })
+        }
     }
 
     useEffect(() => {

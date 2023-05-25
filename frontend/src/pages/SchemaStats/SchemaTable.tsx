@@ -1,8 +1,8 @@
 // @ts-nocheck
-import * as React from 'react'
+import React, { useEffect } from 'react'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import { Treemap } from '@ant-design/charts'
-import { Table, Tabs, TabsProps } from 'antd'
+import { Table, Tabs, TabsProps, notification } from 'antd'
 
 import { useHistory } from 'react-router-dom'
 
@@ -52,6 +52,8 @@ export function ColumnsData({ table }: { table: string }): JSX.Element {
 
     const url = `http://localhost:8000/api/analyze/${table}/schema`
 
+    useEffect
+
     usePollingEffect(
         async () =>
             setSchema(
@@ -87,22 +89,19 @@ export function ColumnsData({ table }: { table: string }): JSX.Element {
 export function PartsData({ table }: { table: string }): JSX.Element {
     const [partData, setPartData] = React.useState([])
 
-    const url = `http://localhost:8000/api/analyze/${table}/parts`
+    const loadData = async () => {
+        try {
+            const res = await fetch(`http://localhost:8000/api/analyze/${table}/parts`)
+            const resJson = await res.json()
+            setPartData(resJson)
+        } catch {
+            notification.error({ message: 'Failed to load data' })
+        }
+    }
 
-    usePollingEffect(
-        async () =>
-            setPartData(
-                await fetch(url)
-                    .then((response) => {
-                        return response.json()
-                    })
-                    .catch((err) => {
-                        return []
-                    })
-            ),
-        [],
-        { interval: 3000 } // optional
-    )
+    useEffect(() => {
+        loadData()
+    }, [])
 
     const schemaCols = [
         { dataIndex: 'part', title: 'Name' },
@@ -121,7 +120,6 @@ export function PartsData({ table }: { table: string }): JSX.Element {
 }
 
 export default function CollapsibleTable({ match }) {
-    const [tab, setTab] = React.useState('columns')
     const history = useHistory()
 
     const items: TabsProps['items'] = [

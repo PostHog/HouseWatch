@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Typography } from 'antd'
+import { Table, Typography, notification } from 'antd'
 import { useHistory } from 'react-router-dom'
 import { ColumnType } from 'antd/es/table'
 const { Paragraph } = Typography
@@ -74,12 +74,15 @@ export default function CollapsibleTable() {
     const loadData = async () => {
         setSlowQueries([])
         setLoadingSlowQueries(true)
-        const res = await fetch('http://localhost:8000/api/analyze/slow_queries')
-        const resJson = await res.json()
-
-        const slowQueriesData = resJson.map((error: SlowQueryData, idx: number) => ({ key: idx, ...error }))
-        setSlowQueries(slowQueriesData)
-        setLoadingSlowQueries(false)
+        try {
+            const res = await fetch('http://localhost:8000/api/analyze/slow_queries')
+            const resJson = await res.json()
+            const slowQueriesData = resJson.map((error: SlowQueryData, idx: number) => ({ key: idx, ...error }))
+            setSlowQueries(slowQueriesData)
+            setLoadingSlowQueries(false)
+        } catch {
+            notification.error({ message: 'Failed to load data' })
+        }
     }
 
     useEffect(() => {

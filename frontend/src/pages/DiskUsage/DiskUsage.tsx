@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Pie } from '@ant-design/plots'
-import { Card, Spin, Row, Col } from 'antd'
+import { Card, Spin, Row, Col, notification } from 'antd'
 
 interface NodeData {
     node: string
@@ -12,9 +12,13 @@ export function DiskUsage(): JSX.Element {
     const [clusterOverviewData, setClusterOverviewData] = useState<NodeData[]>([])
 
     const loadData = async () => {
-        const res = await fetch('http://localhost:8000/api/analyze/cluster_overview')
-        const resJson = await res.json()
-        setClusterOverviewData(resJson)
+        try {
+            const res = await fetch('http://localhost:8000/api/analyze/cluster_overview')
+            const resJson = await res.json()
+            setClusterOverviewData(resJson)
+        } catch {
+            notification.error({ message: 'Failed to load data' })
+        }
     }
 
     useEffect(() => {

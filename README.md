@@ -165,14 +165,11 @@ A public list of things we intend to do with HouseWatch in the near future.
 
 - [ ] Extract README images out of repo 
 - [ ] Make banner subtitle work on dark mode
-- [ ] Handle cluster being undefined
-- [ ] Standardize everything to use async/await syntax
 - [ ] Fetch data independently on the query analyzer
-- [ ] Get rid of remaining Material UI components
 - [ ] Breakpoint for logs search
 - [ ] Run Django "production server"
 - [ ] Write tests :)
 - [ ] Query editor pipe all errors to client
-- [ ] Clear polling when user navigates to another page 
+- [ ] Abstraction to load data from API as JSON
 
 </details>

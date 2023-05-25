@@ -43,11 +43,16 @@ export default function Schema() {
     }
     const [config, setConfig] = useState(defaultConfig)
 
-    const url = 'http://localhost:8000/api/analyze/tables'
 
     const loadData = async () => {
-        const res = await fetch('http://localhost:8000/api/analyze/tables')
-        const resJson = await res.json()
+        try {
+            const res = await fetch('http://localhost:8000/api/analyze/tables')
+            const resJson = await res.json()
+        } catch {
+            notification.error({ message: 'Failed to load data' })
+            return
+        }
+        
         const filteredRes = resJson.filter((r: { total_bytes: number }) => r.total_bytes > 0)
         const filteredResUrls = filteredRes
             .map((fr: { name: string }) => `http://localhost:8000/api/analyze/${fr.name}/schema`)
