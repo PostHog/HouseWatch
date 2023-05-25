@@ -181,7 +181,7 @@ export function CreateNewOperation(): JSX.Element {
                 'Content-Type': 'application/json',
             },
         })
-        if (String(res.status)[0] === 2) {
+        if (String(res.status)[0] === '2') {
             history.go(0)
         } else {
             notification.error({
@@ -219,7 +219,7 @@ export function CreateNewOperation(): JSX.Element {
                             name={`operation-${i + 1}`}
                             value={
                                 code[`operation-${i + 1}`] ||
-                                `CREATE TABLE test_table ( foo String ) Engine=MergeTree()`
+                                `CREATE TABLE test_table ( foo String ) Engine=MergeTree() ORDER BY foo`
                             }
                             onValueChange={(value) => setCode({ ...code, [`operation-${i + 1}`]: value })}
                             highlight={(code) => highlight(code, languages.sql)}
