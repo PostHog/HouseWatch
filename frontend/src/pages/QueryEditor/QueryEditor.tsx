@@ -1,10 +1,11 @@
-import { Table, Button, ConfigProvider } from 'antd'
+import { Table, Button, ConfigProvider, Spin } from 'antd'
 import React, { useState } from 'react'
 // @ts-ignore
 import { highlight, languages } from 'prismjs/components/prism-core'
 import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
+import { v4 as uuidv4 } from 'uuid'
 
 
 export default function QueryEditor() {
@@ -13,15 +14,19 @@ export default function QueryEditor() {
     )
     const [error, setError] = useState('')
     const [data, setData] = useState([{}])
+    const [runningQueryId, setRunningQueryId] = useState<null | string>(null)
 
     const columns = data.length > 0 ? Object.keys(data[0]).map((column) => ({ title: column, dataIndex: column })) : []
 
     const query = async (sql = '') => {
+        const queryId = uuidv4()
+        setRunningQueryId(queryId)
         try {
             setData([])
+            setError('')
             const res = await fetch('http://localhost:8000/api/analyze/query', {
                 method: 'POST',
-                body: JSON.stringify({ sql }),
+                body: JSON.stringify({ sql, query_id: queryId }),
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -30,11 +35,29 @@ export default function QueryEditor() {
             if (resJson.error) {
                 setError(resJson.error)
             } else {
-                setData(resJson)
+                setData(resJson.result)
             }
         } catch (error) {
             setError(String(error))
         }
+        setRunningQueryId(null)
+    }
+
+    const cancelRunningQuery = async () => {
+        if (runningQueryId) {
+            await fetch(`http://localhost:8000/api/analyze/${runningQueryId}/kill_query`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    query_id: runningQueryId,
+                }),
+            })
+            setRunningQueryId(null)
+            setData([{}])
+        }
+
     }
 
     return (
@@ -59,8 +82,8 @@ export default function QueryEditor() {
                     marginBottom: 5,
                 }}
             />
-            <Button type="primary" style={{ width: '100%', boxShadow: 'none' }} onClick={() => query(sql)}>
-                Run
+            <Button type="primary" style={{ width: '100%', boxShadow: 'none' }} onClick={() => runningQueryId ? cancelRunningQuery() : query(sql)}>
+                {runningQueryId ? 'Cancel' : 'Run'}
             </Button>
             <br />
             <br />

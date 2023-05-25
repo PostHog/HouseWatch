@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Optional
 from clickhouse_pool import ChPool
 import os
 from housewatch.clickhouse.queries.sql import EXISTING_TABLES_SQL
@@ -21,9 +21,9 @@ pool = ChPool(
 )
 
 
-def run_query(query: str, params: Dict[str, str | int] = {}, settings: Dict[str, str | int] = {}):
+def run_query(query: str, params: Dict[str, str | int] = {}, settings: Dict[str, str | int] = {}, query_id: Optional[str] = None):
     with pool.get_client() as client:
-        result = client.execute(query % (params or {}), settings=settings, with_column_types=True)
+        result = client.execute(query % (params or {}), settings=settings, with_column_types=True, query_id=query_id)
         response = []
         for res in result[0]:
             item = {}

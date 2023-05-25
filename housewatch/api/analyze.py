@@ -121,10 +121,10 @@ class AnalyzeViewset(GenericViewSet):
     @action(detail=False, methods=["POST"])
     def query(self, request: Request):
         try:
-            query_result = run_query(request.data["sql"])
+            query_result = run_query(request.data["sql"], query_id=request.data["query_id"])
         except Exception as e:
             return Response(status=418, data={"error": str(e)})
-        return Response(query_result)
+        return Response({ "result": query_result })
 
     @action(detail=False, methods=["GET"])
     def hostname(self, request: Request):
