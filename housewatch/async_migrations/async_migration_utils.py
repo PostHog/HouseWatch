@@ -19,23 +19,15 @@ logger = structlog.get_logger(__name__)
 #     op.rollback_fn(uuid) if rollback else op.fn(uuid)
 
 
-def execute_op(
-    sql: str,
-    args=None,
-    *,
-    query_id: str,
-    timeout_seconds: int = 600,
-    settings=None
-):
+def execute_op(sql: str, args=None, *, query_id: str, timeout_seconds: int = 600, settings=None):
     from housewatch.clickhouse.client import run_query
-    
+
     settings = settings if settings else {"max_execution_time": timeout_seconds, "log_comment": query_id}
 
     try:
         run_query(sql, args, settings=settings)
     except Exception as e:
         raise Exception(f"Failed to execute ClickHouse op: sql={sql},\nquery_id={query_id},\nexception={str(e)}")
-
 
 
 def mark_async_migration_as_running(migration: AsyncMigration) -> bool:
@@ -107,7 +99,6 @@ def update_async_migration(
         execute_update()
 
 
-
 def process_error(
     migration: AsyncMigration,
     last_error: str,
@@ -125,10 +116,7 @@ def process_error(
         finished_at=now(),
     )
 
-    if (
-        not rollback
-        or status == MigrationStatus.FailedAtStartup
-    ):
+    if not rollback or status == MigrationStatus.FailedAtStartup:
         return
 
     from housewatch.async_migrations.runner import attempt_migration_rollback
@@ -186,4 +174,3 @@ def complete_migration(migration: AsyncMigration, email: bool = True):
             finished_at=finished_at,
             progress=100,
         )
-

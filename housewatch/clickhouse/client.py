@@ -13,13 +13,13 @@ pool = ChPool(
     database=os.getenv("CLICKHOUSE_DATABASE", "default"),
     user=os.getenv("CLICKHOUSE_USER", "default"),
     password=os.getenv("CLICKHOUSE_PASSWORD", ""),
-    secure=ch_secure if ch_secure != '' else True,
-    ca_certs=ch_ca if ch_ca != '' else None,
-    verify=ch_verify if ch_verify != '' else True,
-    settings={"max_result_rows": "2000"}, 
-    send_receive_timeout=30
+    secure=ch_secure if ch_secure != "" else True,
+    ca_certs=ch_ca if ch_ca != "" else None,
+    verify=ch_verify if ch_verify != "" else True,
+    settings={"max_result_rows": "2000"},
+    send_receive_timeout=30,
 )
-    
+
 
 def run_query(query: str, params: Dict[str, str | int] = {}, settings: Dict[str, str | int] = {}):
     with pool.get_client() as client:
@@ -29,9 +29,9 @@ def run_query(query: str, params: Dict[str, str | int] = {}, settings: Dict[str,
             item = {}
             for index, key in enumerate(result[1]):
                 item[key[0]] = res[index]
-            
+
             response.append(item)
         return response
 
 
-existing_system_tables = [row['name'] for row in run_query(EXISTING_TABLES_SQL)]
+existing_system_tables = [row["name"] for row in run_query(EXISTING_TABLES_SQL)]

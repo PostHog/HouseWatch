@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class MigrationStatus:
     NotStarted = 0
     Running = 1
@@ -25,17 +26,17 @@ class AsyncMigration(models.Model):
     current_operation_index: models.PositiveSmallIntegerField = models.PositiveSmallIntegerField(
         null=False, blank=False, default=0
     )
-    
+
     current_query_id: models.CharField = models.CharField(max_length=100, null=False, blank=False, default="")
     task_id: models.CharField = models.CharField(max_length=100, null=True, blank=True, default="")
-    
+
     started_at: models.DateTimeField = models.DateTimeField(null=True, blank=True)
     finished_at: models.DateTimeField = models.DateTimeField(null=True, blank=True)
-    
+
     last_error: models.CharField = models.CharField(max_length=800, null=True, blank=True, default="")
-    
+
     # list of SQL operations
     operations: models.JSONField = models.JSONField(null=False, blank=False)
     rollback_operations: models.JSONField = models.JSONField(null=True, blank=True)
-    
+
     # TODO: Add precheck, healthcheck, postcheck

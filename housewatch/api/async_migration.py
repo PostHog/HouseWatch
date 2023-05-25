@@ -10,7 +10,6 @@ logger = structlog.get_logger(__name__)
 
 
 class AsyncMigrationSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = AsyncMigration
         fields = [
@@ -26,7 +25,7 @@ class AsyncMigrationSerializer(serializers.ModelSerializer):
             "finished_at",
             "operations",
             "rollback_operations",
-            "last_error"
+            "last_error",
         ]
         read_only_fields = [
             "id",
@@ -37,26 +36,24 @@ class AsyncMigrationSerializer(serializers.ModelSerializer):
             "task_id",
             "started_at",
             "finished_at",
-            "last_error"
+            "last_error",
         ]
-        
-    def create(self, validated_data):
-        validated_data['progress'] = 0
-        validated_data['current_operation_index'] = 0
-        validated_data['status'] = MigrationStatus.NotStarted
-        return super().create(validated_data)
 
+    def create(self, validated_data):
+        validated_data["progress"] = 0
+        validated_data["current_operation_index"] = 0
+        validated_data["status"] = MigrationStatus.NotStarted
+        return super().create(validated_data)
 
 
 class AsyncMigrationsViewset(viewsets.ModelViewSet):
     queryset = AsyncMigration.objects.all().order_by("name")
     serializer_class = AsyncMigrationSerializer
-    
+
     @action(methods=["POST"], detail=True)
     def trigger(self, request, **kwargs):
 
         migration = self.get_object()
-
 
         migration.status = MigrationStatus.Starting
         migration.save()

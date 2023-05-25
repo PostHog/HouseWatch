@@ -2,14 +2,14 @@ import os
 
 ch_cluster = os.getenv("CLICKHOUSE_CLUSTER", None)
 
-QUERY_LOG_SYSTEM_TABLE = f'clusterAllReplicas({ch_cluster}, system.query_log)' if ch_cluster else 'system.query_log'
-TEXT_LOG_SYSTEM_TABLE = f'clusterAllReplicas({ch_cluster}, system.text_log)' if ch_cluster else 'system.text' 
-ERRORS_SYSTEM_TABLE = f'clusterAllReplicas({ch_cluster}, system.errors)' if ch_cluster else 'system.errors'
-DISKS_SYSTEM_TABLE = f'clusterAllReplicas({ch_cluster}, system.disks)' if ch_cluster else 'system.disks'
+QUERY_LOG_SYSTEM_TABLE = f"clusterAllReplicas({ch_cluster}, system.query_log)" if ch_cluster else "system.query_log"
+TEXT_LOG_SYSTEM_TABLE = f"clusterAllReplicas({ch_cluster}, system.text_log)" if ch_cluster else "system.text"
+ERRORS_SYSTEM_TABLE = f"clusterAllReplicas({ch_cluster}, system.errors)" if ch_cluster else "system.errors"
+DISKS_SYSTEM_TABLE = f"clusterAllReplicas({ch_cluster}, system.disks)" if ch_cluster else "system.disks"
 
 
 # TODO: Add enum mapping dict for query `type`
-SLOW_QUERIES_SQL =f"""
+SLOW_QUERIES_SQL = f"""
 SELECT
     normalizeQuery(query) AS normalized_query,
     avg(query_duration_ms) AS avg_duration,

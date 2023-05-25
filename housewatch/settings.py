@@ -70,7 +70,6 @@ if not DEBUG and not TEST:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
-
 CSRF_TRUSTED_ORIGINS = ["https://*.posthog.dev", "https://*.posthog.com"]
 
 
@@ -90,7 +89,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
 ]
-
 
 
 MIDDLEWARE = [
@@ -136,9 +134,9 @@ if DATABASE_URL:
     DATABASES = {"default": dj_database_url.config(default=DATABASE_URL, conn_max_age=600)}
 else:
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'housewatch.sqlite3'),
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "housewatch.sqlite3"),
         }
     }
 
@@ -189,7 +187,6 @@ REST_FRAMEWORK = {
         # "rest_framework.authentication.BasicAuthentication",
         # "rest_framework.authentication.SessionAuthentication",
     ],
-
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.LimitOffsetPagination",
     "DEFAULT_PERMISSION_CLASSES": [],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
@@ -228,9 +225,7 @@ else:
 
 # if TEST:
 #     CACHES["default"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
-CACHES = {
-    "default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
-}
+CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 
 
 # Only listen to the default queue "celery", unless overridden via the CLI
@@ -251,7 +246,4 @@ if TEST:
     celery.current_app.conf.task_eager_propagates = True
 
 
-
 POSTHOG_PROJECT_API_KEY = get_from_env("POSTHOG_PROJECT_API_KEY", "123456789")
-
-

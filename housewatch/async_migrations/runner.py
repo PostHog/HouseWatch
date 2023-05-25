@@ -13,6 +13,7 @@ from housewatch.async_migrations.async_migration_utils import (
 )
 from housewatch.models.async_migration import AsyncMigration, MigrationStatus
 from uuid import uuid4
+
 # from posthog.models.instance_setting import get_instance_setting
 # from posthog.models.utils import UUIDT
 # from posthog.version_requirement import ServiceVersionRequirement
@@ -25,11 +26,7 @@ MAX_CONCURRENT_ASYNC_MIGRATIONS = 1
 logger = structlog.get_logger(__name__)
 
 
-def start_async_migration(
-    migration: AsyncMigration, ignore_posthog_version=False
-) -> bool:
-
-
+def start_async_migration(migration: AsyncMigration, ignore_posthog_version=False) -> bool:
 
     if migration.status not in [MigrationStatus.Starting, MigrationStatus.NotStarted]:
         logger.error(f"Initial check failed for async migration {migration.name}")
@@ -76,9 +73,8 @@ def run_async_migration_next_op(migration: AsyncMigration):
     - migration: The migration object as stored in the DB
     - migration_definition: The actual migration class outlining the operations (e.g. async_migrations/examples/example.py)
     """
-    
-    migration.refresh_from_db()
 
+    migration.refresh_from_db()
 
     if migration.current_operation_index > len(migration.operations) - 1:
         logger.info(
@@ -141,7 +137,9 @@ def update_migration_progress(migration: AsyncMigration):
 
     migration.refresh_from_db()
     try:
-        update_async_migration(migration=migration, progress=int((migration.current_operation_index/len(migration.operations))*100))
+        update_async_migration(
+            migration=migration, progress=int((migration.current_operation_index / len(migration.operations)) * 100)
+        )
     except:
         pass
 
@@ -176,5 +174,3 @@ def attempt_migration_rollback(migration: AsyncMigration):
     update_async_migration(
         migration=migration, status=MigrationStatus.RolledBack, progress=0, current_operation_index=0
     )
-
-

@@ -38,7 +38,6 @@ def setup_periodic_tasks(sender: Celery, **kwargs):
 def run_async_migration(migration_name: str):
     from housewatch.async_migrations.runner import start_async_migration
     from housewatch.models.async_migration import AsyncMigration
+
     migration = AsyncMigration.objects.get(name=migration_name)
     start_async_migration(migration)
-    
-    

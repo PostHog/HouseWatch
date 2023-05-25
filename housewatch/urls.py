@@ -7,6 +7,7 @@ from housewatch.api.analyze import AnalyzeViewset
 from housewatch.api.async_migration import AsyncMigrationsViewset
 from housewatch.views import healthz
 
+
 class DefaultRouterPlusPlus(ExtendedDefaultRouter):
     """DefaultRouter with optional trailing slash and drf-extensions nesting."""
 

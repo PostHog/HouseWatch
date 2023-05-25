@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 
 
-
 class Instance(models.Model):
     created_at: models.DateTimeField = models.DateTimeField(default=timezone.now)
     username: models.CharField = models.CharField(max_length=200)
