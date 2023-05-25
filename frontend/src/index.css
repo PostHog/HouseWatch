@@ -33,9 +33,8 @@ h6 {
     font-family: sans-serif;
 }
 
-
-
-strong, b {
+strong,
+b {
     font-weight: 600;
 }
 
@@ -43,10 +42,11 @@ code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-.clickable:hover, .clickable div:hover, .code-editor:hover textarea {
+.clickable:hover,
+.clickable div:hover,
+.code-editor:hover textarea {
     cursor: pointer !important;
 }
-
 
 .code-editor textarea {
     line-height: 2 !important;
@@ -57,11 +57,12 @@ code {
     background-color: #ededed;
 }
 
-.ant-tabs-tab-active .ant-tabs-tab-btn, .ant-tabs-tab-btn:hover  {
+.ant-tabs-tab-active .ant-tabs-tab-btn,
+.ant-tabs-tab-btn:hover {
     color: #1677ff !important;
 }
 
-.ant-tabs-ink-bar  {
+.ant-tabs-ink-bar {
     background: #1677ff !important;
 }
 
@@ -70,6 +71,7 @@ code {
     background: #13a5ff !important;
 }
 
-input, textarea {
+input,
+textarea {
     box-shadow: none !important;
 }

@@ -9,7 +9,6 @@ import Editor from 'react-simple-code-editor'
 import { Table } from 'antd'
 import { NoDataSpinner, QueryDetailData } from './QueryDetail'
 
-
 export default function ExampleQueriesTab({ query_hash }: { query_hash: string }) {
     const [data, setData] = useState<{ example_queries: QueryDetailData['example_queries'] } | null>(null)
 
@@ -22,9 +21,8 @@ export default function ExampleQueriesTab({ query_hash }: { query_hash: string }
     useEffect(() => {
         loadData()
     }, [])
-    
-    return (
-        data ? (
+
+    return data ? (
         <Table
             columns={[
                 {
@@ -33,7 +31,7 @@ export default function ExampleQueriesTab({ query_hash }: { query_hash: string }
                     render: (_, item) => (
                         <Editor
                             value={item.query}
-                            onValueChange={() => { }}
+                            onValueChange={() => {}}
                             highlight={(code) => highlight(code, languages.sql)}
                             padding={10}
                             style={{
@@ -45,6 +43,8 @@ export default function ExampleQueriesTab({ query_hash }: { query_hash: string }
                 },
             ]}
             dataSource={data.example_queries}
-        /> ) : NoDataSpinner
+        />
+    ) : (
+        NoDataSpinner
     )
 }

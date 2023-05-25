@@ -23,32 +23,31 @@ export default function NormalizedQueryTab({ query_hash }: { query_hash: string 
     }, [])
 
     let index = 0
-    return (
-        data ? (
-            <div onClick={() => copyToClipboard(data.query)}
-            >
-                <Editor
-                    value={format(
-                        data.query.replace(/(\?)/g, () => {
-                            index = index + 1
-                            return '$' + index
-                        })
-                    )}
-                    onValueChange={() => { }}
-                    highlight={(code) => highlight(code, languages.sql)}
-                    padding={10}
-                    style={{
-                        fontFamily: '"Fira code", "Fira Mono", monospace',
-                        fontSize: 16,
-                        border: '1px solid rgb(216, 216, 216)',
-                        borderRadius: 4,
-                        boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)',
-                        marginBottom: 5,
-                    }}
-                    disabled
-                    className='code-editor'
-                />
-            </div>
-        ) : NoDataSpinner
+    return data ? (
+        <div onClick={() => copyToClipboard(data.query)}>
+            <Editor
+                value={format(
+                    data.query.replace(/(\?)/g, () => {
+                        index = index + 1
+                        return '$' + index
+                    })
+                )}
+                onValueChange={() => {}}
+                highlight={(code) => highlight(code, languages.sql)}
+                padding={10}
+                style={{
+                    fontFamily: '"Fira code", "Fira Mono", monospace',
+                    fontSize: 16,
+                    border: '1px solid rgb(216, 216, 216)',
+                    borderRadius: 4,
+                    boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)',
+                    marginBottom: 5,
+                }}
+                disabled
+                className="code-editor"
+            />
+        </div>
+    ) : (
+        NoDataSpinner
     )
 }

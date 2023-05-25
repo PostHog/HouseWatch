@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { Table, Button, notification, Typography, Input, Card, ConfigProvider } from 'antd'
-import { usePollingEffect } from "../../utils/usePollingEffect"
+import { usePollingEffect } from '../../utils/usePollingEffect'
 import React, { useEffect, useState } from 'react'
 import { Bar, Column } from '@ant-design/charts'
 import { highlight, languages } from 'prismjs/components/prism-core'
@@ -61,16 +61,20 @@ export default function QueryEditor() {
                 }}
                 rows={10}
             />
-            <Button type="primary" style={{ width: '100%', boxShadow: 'none' }} onClick={() =>  query(sql)}>
+            <Button type="primary" style={{ width: '100%', boxShadow: 'none' }} onClick={() => query(sql)}>
                 Run
             </Button>
             <br />
             <br />
 
-            <ConfigProvider renderEmpty={
-                () => <p style={{ color: '#c40000', fontFamily: 'monospace' }}>{error}</p>}
-            >
-                <Table columns={columns} dataSource={data} loading={!error && data.length < 1} expandable scroll={{ x: 400 }} />
+            <ConfigProvider renderEmpty={() => <p style={{ color: '#c40000', fontFamily: 'monospace' }}>{error}</p>}>
+                <Table
+                    columns={columns}
+                    dataSource={data}
+                    loading={!error && data.length < 1}
+                    expandable
+                    scroll={{ x: 400 }}
+                />
             </ConfigProvider>
         </>
     )

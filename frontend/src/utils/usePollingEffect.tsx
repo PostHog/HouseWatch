@@ -5,7 +5,7 @@ export function usePollingEffect(
     dependencies = [],
     {
         interval = 3000, // 3 seconds,
-        onCleanUp = () => { },
+        onCleanUp = () => {},
     } = {}
 ) {
     const timeoutIdRef = useRef<number | null>(null)

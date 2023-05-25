@@ -8,7 +8,6 @@ interface NodeData {
     free_space: number
 }
 
-
 export function DiskUsage(): JSX.Element {
     const [clusterOverviewData, setClusterOverviewData] = useState<NodeData[]>([])
 
@@ -36,7 +35,7 @@ export function DiskUsage(): JSX.Element {
                     <Spin />
                 ) : (
                     <>
-                        {rows.map((row, i)=> (
+                        {rows.map((row, i) => (
                             <Row key={`disk-usage-row-${i}`} gutter={8} style={{ marginBottom: 8 }}>
                                 <Col span={12}>
                                     <Card>
@@ -52,10 +51,9 @@ export function DiskUsage(): JSX.Element {
                                                     value: row[0].free_space,
                                                 },
                                             ]}
-
                                             appendPadding={10}
-                                            angleField='value'
-                                            colorField='type'
+                                            angleField="value"
+                                            colorField="type"
                                             radius={0.9}
                                             label={{
                                                 type: 'inner',
@@ -72,9 +70,9 @@ export function DiskUsage(): JSX.Element {
                                                 },
                                             ]}
                                             style={{
-                                                display: 'block'
+                                                display: 'block',
                                             }}
-                                            color={["#FFB816", "#175FFF"]}
+                                            color={['#FFB816', '#175FFF']}
                                             tooltip={{
                                                 formatter: (v) => {
                                                     return {
@@ -101,10 +99,9 @@ export function DiskUsage(): JSX.Element {
                                                         value: row[1].free_space,
                                                     },
                                                 ]}
-
                                                 appendPadding={10}
-                                                angleField='value'
-                                                colorField='type'
+                                                angleField="value"
+                                                colorField="type"
                                                 radius={0.9}
                                                 label={{
                                                     type: 'inner',
@@ -121,9 +118,9 @@ export function DiskUsage(): JSX.Element {
                                                     },
                                                 ]}
                                                 style={{
-                                                    display: 'block'
+                                                    display: 'block',
                                                 }}
-                                                color={["#FFB816", "#175FFF"]}
+                                                color={['#FFB816', '#175FFF']}
                                                 tooltip={{
                                                     formatter: (v) => {
                                                         return {
@@ -133,10 +130,8 @@ export function DiskUsage(): JSX.Element {
                                                     },
                                                 }}
                                             />
-
                                         </Card>
                                     ) : null}
-
                                 </Col>
                             </Row>
                         ))}

@@ -93,11 +93,38 @@ export default function Logs() {
             <br />
             <br />
             <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }}>
-                <Column xField="hour" yField="total" color="#ffb200" style={{ height: 150 }} data={logsFrequency} loading={loadingLogsFrequency} />
+                <Column
+                    xField="hour"
+                    yField="total"
+                    color="#ffb200"
+                    style={{ height: 150 }}
+                    data={logsFrequency}
+                    loading={loadingLogsFrequency}
+                />
             </Card>
             <br />
-            <ConfigProvider renderEmpty={
-                () => <Empty description={error === 'text_log table does not exist' ?  <>Your ClickHouse instance does not have the <code>text_log</code> table. See <a href="https://clickhouse.com/docs/en/operations/system-tables/text_log" target="_blank" rel="noreferrer noopener">these docs</a> on how to configure it.</> : ''}/>}
+            <ConfigProvider
+                renderEmpty={() => (
+                    <Empty
+                        description={
+                            error === 'text_log table does not exist' ? (
+                                <>
+                                    Your ClickHouse instance does not have the <code>text_log</code> table. See{' '}
+                                    <a
+                                        href="https://clickhouse.com/docs/en/operations/system-tables/text_log"
+                                        target="_blank"
+                                        rel="noreferrer noopener"
+                                    >
+                                        these docs
+                                    </a>{' '}
+                                    on how to configure it.
+                                </>
+                            ) : (
+                                ''
+                            )
+                        }
+                    />
+                )}
             >
                 <Table columns={columns} dataSource={logs} loading={loadingLogs} />
             </ConfigProvider>

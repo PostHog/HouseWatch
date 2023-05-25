@@ -1,5 +1,5 @@
 import { Table, Button, notification, Typography } from 'antd'
-import { usePollingEffect } from "../../utils/usePollingEffect"
+import { usePollingEffect } from '../../utils/usePollingEffect'
 import React, { useState } from 'react'
 import { ColumnType } from 'antd/es/table'
 
@@ -39,7 +39,6 @@ function KillQueryButton({ queryId }: any) {
                 message: 'Killing query failed',
             })
         }
-
     }
     return (
         <>
@@ -53,8 +52,6 @@ function KillQueryButton({ queryId }: any) {
         </>
     )
 }
-
-
 
 export default function RunningQueries() {
     const [runningQueries, setRunningQueries] = useState([])

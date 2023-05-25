@@ -43,7 +43,9 @@ export default function Overview() {
     }, [])
 
     const now = new Date()
-    const dayOfTheYear = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24))
+    const dayOfTheYear = Math.floor(
+        (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24)
+    )
 
     return (
         <div>
@@ -97,7 +99,6 @@ export default function Overview() {
                             style={{ padding: 20, height: 300 }}
                             color="#ffb200"
                             loading={queryGraphs.memory_usage.length < 1}
-
                         />
                     </Card>
                 </Col>
@@ -125,7 +126,6 @@ export default function Overview() {
                             style={{ padding: 20, height: 300 }}
                             color="#ffb200"
                             loading={queryGraphs.cpu.length < 1}
-
                         />
                     </Card>
                 </Col>

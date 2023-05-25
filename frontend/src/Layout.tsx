@@ -32,7 +32,6 @@ const { Header, Content, Footer, Sider } = Layout
 
 type MenuItem = Required<MenuProps>['items'][number]
 
-
 const items: MenuItem[] = [
     { key: '', icon: <HomeOutlined />, label: 'Overview' },
     { key: 'query_performance', label: 'Query performance', icon: <ClockCircleOutlined /> },
@@ -44,7 +43,6 @@ const items: MenuItem[] = [
     { key: 'query_editor', label: 'Query editor', icon: <FormOutlined /> },
     { key: 'operations', label: 'Operations', icon: <CodeOutlined /> },
 ]
-
 
 export default function AppLayout(): JSX.Element {
     const [hostname, setHostname] = useState('')

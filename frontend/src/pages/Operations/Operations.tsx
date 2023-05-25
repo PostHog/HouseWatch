@@ -56,13 +56,15 @@ export function OperationControls({
     return (
         <div style={{ width: 100 }}>
             {[0, 4, 6].includes(status) ? (
-                <Button className='run-async-migration-btn' style={{ color: 'white', background: '#1677ff' }} onClick={() => triggerOperation(id)}>
+                <Button
+                    className="run-async-migration-btn"
+                    style={{ color: 'white', background: '#1677ff' }}
+                    onClick={() => triggerOperation(id)}
+                >
                     Run
                 </Button>
             ) : status === 3 ? (
-                <Button danger>
-                    Rollback
-                </Button>
+                <Button danger>Rollback</Button>
             ) : (
                 <Progress percent={progress} />
             )}
@@ -97,52 +99,48 @@ export function OperationsList(): JSX.Element {
         }
     }, [])
 
-
-
     const columns: ColumnType<AsyncMigrationData>[] = [
         {
             title: 'Name',
-            render: (_, migration) => migration.name
+            render: (_, migration) => migration.name,
         },
         {
             title: 'Description',
-            render: (_, migration) => migration.description
+            render: (_, migration) => migration.description,
         },
         {
             title: 'Status',
-            render: (_, migration) => <span style={{ color: OPERATION_STATUS_TO_FONT_COLOR[migration.status]}}>{OPERATION_STATUS_TO_HUMAN[migration.status]}</span>,
+            render: (_, migration) => (
+                <span style={{ color: OPERATION_STATUS_TO_FONT_COLOR[migration.status] }}>
+                    {OPERATION_STATUS_TO_HUMAN[migration.status]}
+                </span>
+            ),
             sorter: (a, b) => statusSortOrder.indexOf(a.status) - statusSortOrder.indexOf(b.status),
             defaultSortOrder: 'ascend',
-        }
-        ,
+        },
         {
             title: 'Started at',
-            render: (_, migration) => migration.started_at ? migration.started_at.split('.')[0] : ''
-        }
+            render: (_, migration) => (migration.started_at ? migration.started_at.split('.')[0] : ''),
+        },
 
-        ,
         {
             title: 'Finished at',
-            render: (_, migration) => migration.finished_at ? migration.finished_at.split('.')[0] : ''
-        }
-        ,
+            render: (_, migration) => (migration.finished_at ? migration.finished_at.split('.')[0] : ''),
+        },
         {
             title: '',
-            render: (_, migration) =>
+            render: (_, migration) => (
                 <OperationControls
                     status={migration.status}
                     progress={migration.progress}
                     id={migration.id}
                     triggerOperation={triggerOperation}
                 />
-        }
+            ),
+        },
     ]
 
-
-
-    return (
-        <Table columns={columns} dataSource={operations} />
-    )
+    return <Table columns={columns} dataSource={operations} />
 }
 
 export function CreateNewOperation(): JSX.Element {
@@ -176,7 +174,6 @@ export function CreateNewOperation(): JSX.Element {
             operationData[key] = value
         }
 
-        
         const res = await fetch('http://localhost:8000/api/async_migrations', {
             method: 'POST',
             body: JSON.stringify(operationData),
@@ -187,9 +184,10 @@ export function CreateNewOperation(): JSX.Element {
         if (String(res.status)[0] === 2) {
             history.go(0)
         } else {
-            notification.error({ message: 'Error creating operation! Check if you do not have an operation with the same name already.' })
+            notification.error({
+                message: 'Error creating operation! Check if you do not have an operation with the same name already.',
+            })
         }
-
     }
 
     return (
@@ -219,7 +217,10 @@ export function CreateNewOperation(): JSX.Element {
                         <Editor
                             id={`create-migration-form-operation-${i + 1}`}
                             name={`operation-${i + 1}`}
-                            value={code[`operation-${i + 1}`] || `CREATE TABLE test_table ( foo String ) Engine=MergeTree()`}
+                            value={
+                                code[`operation-${i + 1}`] ||
+                                `CREATE TABLE test_table ( foo String ) Engine=MergeTree()`
+                            }
                             onValueChange={(value) => setCode({ ...code, [`operation-${i + 1}`]: value })}
                             highlight={(code) => highlight(code, languages.sql)}
                             padding={10}
@@ -231,7 +232,7 @@ export function CreateNewOperation(): JSX.Element {
                                 border: '1px solid #d9d9d9',
                                 borderRadius: 4,
                                 background: 'white',
-                                boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)'
+                                boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)',
                             }}
                             rows={5}
                         />
@@ -252,7 +253,7 @@ export function CreateNewOperation(): JSX.Element {
                                 border: '1px solid #d9d9d9',
                                 borderRadius: 4,
                                 background: 'white',
-                                boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)'
+                                boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)',
                             }}
                             rows={5}
                         />
@@ -262,10 +263,7 @@ export function CreateNewOperation(): JSX.Element {
                 ))}
                 {operationOperationsCount > 1 ? (
                     <>
-                        <Button
-                            onClick={() => setOperationOperationsCount(operationOperationsCount - 1)}
-                            danger
-                        >
+                        <Button onClick={() => setOperationOperationsCount(operationOperationsCount - 1)} danger>
                             -
                         </Button>{' '}
                     </>
@@ -287,26 +285,32 @@ export function CreateNewOperation(): JSX.Element {
 }
 
 export function Operations(): JSX.Element {
-
     return (
         <div style={{ display: 'block', margin: 'auto' }}>
             <h1 style={{ textAlign: 'left' }}>Operations (Alpha)</h1>
-            <p>Create long-running operations to run in the background in your ClickHouse cluster. Useful for large data migrations, specify SQL commands to run in order with corresponding rollbacks, such that if the operation fails, you rollback to a safe state.</p>
-            <p><b>Please exercise caution!</b> This funtionality is still in Alpha.</p>
-            <Tabs items={[
-                {
-                    key: 'list',
-                    label: `Operations`,
-                    children: <OperationsList />,
-                },
-                {
-                    key: 'create',
-                    label: `Create new operation`,
-                    children: <CreateNewOperation />,
-                },
-            ]}
-                defaultActiveKey='list' />
-
+            <p>
+                Create long-running operations to run in the background in your ClickHouse cluster. Useful for large
+                data migrations, specify SQL commands to run in order with corresponding rollbacks, such that if the
+                operation fails, you rollback to a safe state.
+            </p>
+            <p>
+                <b>Please exercise caution!</b> This funtionality is still in Alpha.
+            </p>
+            <Tabs
+                items={[
+                    {
+                        key: 'list',
+                        label: `Operations`,
+                        children: <OperationsList />,
+                    },
+                    {
+                        key: 'create',
+                        label: `Create new operation`,
+                        children: <CreateNewOperation />,
+                    },
+                ]}
+                defaultActiveKey="list"
+            />
 
             <br />
         </div>

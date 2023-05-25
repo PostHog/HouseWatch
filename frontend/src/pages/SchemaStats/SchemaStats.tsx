@@ -28,7 +28,7 @@ export default function Schema() {
             enabled: true,
             breadCrumb: {
                 rootText: 'Start over',
-                position: 'top-left'
+                position: 'top-left',
             },
         },
         tooltip: {
@@ -36,9 +36,7 @@ export default function Schema() {
                 const root = v.path[v.path.length - 1]
                 return {
                     name: v.name,
-                    value: `${(v.value / 1000000).toFixed(2)}mb (${((v.value / root.value) * 100).toFixed(
-                        2
-                    )}%)`,
+                    value: `${(v.value / 1000000).toFixed(2)}mb (${((v.value / root.value) * 100).toFixed(2)}%)`,
                 }
             },
         },
@@ -59,7 +57,7 @@ export default function Schema() {
             filteredResUrls.map((_url: string) => fetch(_url).then((res2) => res2.json()))
         )
 
-        const configDataChildren = filteredRes.map((table: { name: string, total_bytes: number}) => ({
+        const configDataChildren = filteredRes.map((table: { name: string; total_bytes: number }) => ({
             value: table.total_bytes,
             ...table,
         }))
@@ -83,31 +81,28 @@ export default function Schema() {
         loadData()
     }, [])
 
-
-
-
     return (
         <div>
             <h1 style={{ textAlign: 'left' }}>Schema stats</h1>
             <h2>Largest tables</h2>
-            <p>Click on the rectangles to get further information about parts and columns for the table. Note that this only covers data stored on the connected node, not the whole cluster.</p>
+            <p>
+                Click on the rectangles to get further information about parts and columns for the table. Note that this
+                only covers data stored on the connected node, not the whole cluster.
+            </p>
             <div style={{ marginBottom: 50 }}>
-                {config.data.children.length < 1 ?
-                    <Spin /> : (
-                        <Treemap
-                            {...config}
-                            onEvent={(node, event) => {
-                                if (event.type === 'element:click') {
-                                    history.push(`/schema/${event.data.data.name}`)
-                                }
-                            }}
-                            rectStyle={{ cursor: 'pointer ' }}
-
-                        />
-                    )
-                }
-
-
+                {config.data.children.length < 1 ? (
+                    <Spin />
+                ) : (
+                    <Treemap
+                        {...config}
+                        onEvent={(node, event) => {
+                            if (event.type === 'element:click') {
+                                history.push(`/schema/${event.data.data.name}`)
+                            }
+                        }}
+                        rectStyle={{ cursor: 'pointer ' }}
+                    />
+                )}
             </div>
             <div>
                 <h2 style={{ textAlign: 'left' }}>All tables</h2>

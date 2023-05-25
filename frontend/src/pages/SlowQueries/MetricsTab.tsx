@@ -6,7 +6,9 @@ import { InfoCircleOutlined } from '@ant-design/icons'
 import { NoDataSpinner, QueryDetailData } from './QueryDetail'
 
 export default function MetricsTab({ query_hash }: { query_hash: string }) {
-    const [data, setData] = useState<Omit<QueryDetailData, 'explain' | 'normalized_query' | 'example_queries'> | null>(null)
+    const [data, setData] = useState<Omit<QueryDetailData, 'explain' | 'normalized_query' | 'example_queries'> | null>(
+        null
+    )
 
     const loadData = async () => {
         const res = await fetch(`http://localhost:8000/api/analyze/${query_hash}/query_metrics`)
@@ -18,8 +20,7 @@ export default function MetricsTab({ query_hash }: { query_hash: string }) {
         loadData()
     }, [])
 
-    return (
-        data ? (
+    return data ? (
         <>
             <br />
             <Row gutter={8} style={{ paddingBottom: 8 }}>
@@ -98,6 +99,8 @@ export default function MetricsTab({ query_hash }: { query_hash: string }) {
                     </Card>
                 </Col>
             </Row>
-        </> ) : NoDataSpinner
+        </>
+    ) : (
+        NoDataSpinner
     )
 }

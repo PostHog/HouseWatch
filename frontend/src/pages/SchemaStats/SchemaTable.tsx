@@ -1,13 +1,12 @@
 // @ts-nocheck
 import * as React from 'react'
-import { usePollingEffect } from "../../utils/usePollingEffect"
+import { usePollingEffect } from '../../utils/usePollingEffect'
 import { Treemap } from '@ant-design/charts'
 import { Table, Tabs, TabsProps } from 'antd'
 
 import { useHistory } from 'react-router-dom'
 
 function TableTreeMap({ schema, dataIndex }) {
-
     const config = {
         data: {
             name: 'root',
@@ -43,14 +42,10 @@ function TableTreeMap({ schema, dataIndex }) {
 
     return (
         <div>
-            <Treemap
-                {...config}
-            />
+            <Treemap {...config} />
         </div>
     )
 }
-
-
 
 export function ColumnsData({ table }: { table: string }): JSX.Element {
     const [schema, setSchema] = React.useState([])
@@ -78,7 +73,6 @@ export function ColumnsData({ table }: { table: string }): JSX.Element {
         { dataIndex: 'compressed_readable', title: 'Compressed' },
         { dataIndex: 'uncompressed', title: 'Uncompressed' },
     ]
-
 
     return (
         <>
@@ -130,7 +124,6 @@ export default function CollapsibleTable({ match }) {
     const [tab, setTab] = React.useState('columns')
     const history = useHistory()
 
-
     const items: TabsProps['items'] = [
         {
             key: 'columns',
@@ -144,12 +137,11 @@ export default function CollapsibleTable({ match }) {
         },
     ]
 
-
     return (
         <div>
             <a onClick={() => history.push(`/schema/`)}>← Return to tables list</a>
             <h1>Table: {match.params.table}</h1>
-            <Tabs defaultActiveKey='columns' items={items} />
+            <Tabs defaultActiveKey="columns" items={items} />
         </div>
     )
 }

@@ -37,18 +37,21 @@ export default function CollapsibleTable() {
         setSlowQueries(slowQueriesData)
     }
 
-
     useEffect(() => {
         loadData()
     }, [])
-
 
     return (
         <div>
             <h1 style={{ textAlign: 'left' }}>Errors</h1>
             <br />
             <div>
-                <Table columns={slowQueriesColumns} dataSource={slowQueries} size="small" loading={slowQueries.length < 1} />
+                <Table
+                    columns={slowQueriesColumns}
+                    dataSource={slowQueries}
+                    size="small"
+                    loading={slowQueries.length < 1}
+                />
             </div>
         </div>
     )

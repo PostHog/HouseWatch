@@ -71,8 +71,6 @@ export default function CollapsibleTable() {
         },
     ]
 
-
-
     const loadData = async () => {
         setSlowQueries([])
         setLoadingSlowQueries(true)
@@ -106,7 +104,7 @@ export default function CollapsibleTable() {
                     rowClassName={() => 'cursor-pointer'}
                     dataSource={slowQueries}
                     loading={loadingSlowQueries}
-                    size="small"                    
+                    size="small"
                 />
             </div>
         </div>
