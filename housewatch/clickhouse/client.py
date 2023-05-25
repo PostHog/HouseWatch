@@ -10,9 +10,9 @@ def str_to_bool(s: str) -> bool:
     return str(s).lower() in ("y", "yes", "t", "true", "on", "1")
 
 ch_host = os.getenv("CLICKHOUSE_HOST", "localhost")
-ch_verify = os.getenv("CLICKHOUSE_VERIFY", True)
+ch_verify = os.getenv("CLICKHOUSE_VERIFY", "true").lower() not in ("false", "0")
 ch_ca = os.getenv("CLICKHOUSE_CA", None)
-ch_secure = os.getenv("CLICKHOUSE_SECURE", True)
+ch_secure = os.getenv("CLICKHOUSE_SECURE", "true").lower() not in ("false", "0")
 
 pool = ChPool(
     host=ch_host,
@@ -36,7 +36,7 @@ def run_query(
 ):
     final_query = query % (params or {}) if substitute_params else query
     query_hash = ""
-    
+
     if use_cache:
         query_hash = hashlib.sha256(final_query.encode("utf-8")).hexdigest()
         cached_result = cache.get(query_hash)

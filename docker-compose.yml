@@ -1,6 +1,14 @@
 version: '3'
 
 services:
+    web:
+        build:
+            context: frontend/
+            dockerfile: Dockerfile.dev
+        command: ["npm", "run", "start"]
+        ports:
+            - "3000:3000"
+
     app:
         build: .
         environment:
@@ -23,10 +31,6 @@ services:
             - .:/code
         ports:
             - '8000:8000'
-    web:
-        build: ./frontend
-        ports:
-            - "3000:3000"
 
     redis:
         image: redis:6.2.7-alpine

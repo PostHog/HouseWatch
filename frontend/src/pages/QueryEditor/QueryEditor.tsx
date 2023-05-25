@@ -68,8 +68,7 @@ export default function QueryEditor() {
         setRunningQueryId(queryId)
         try {
             setData([])
-            setError('')
-            const res = await fetch('http://localhost:8000/api/analyze/query', {
+            const res = await fetch('/api/analyze/query', {
                 method: 'POST',
                 body: JSON.stringify({ sql, query_id: queryId }),
                 headers: {

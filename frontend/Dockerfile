@@ -1,13 +1,7 @@
-FROM node:16.20.0
+FROM alpine:latest
 
 WORKDIR /frontend
 
-COPY . .
+COPY build/ build/
 
-RUN npm install
-RUN npm run build
-RUN npm install -g serve
-
-EXPOSE 3000
-
-CMD ["serve", "-s", "build"]
+CMD ["echo", "Serve the files from /frontend/build, don't run this container directly"]
