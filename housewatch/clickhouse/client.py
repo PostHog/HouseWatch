@@ -2,6 +2,10 @@ from typing import Dict, Optional
 from clickhouse_pool import ChPool
 import os
 from housewatch.clickhouse.queries.sql import EXISTING_TABLES_SQL
+from django.core.cache import cache
+import hashlib
+import json
+
 
 ch_host = os.getenv("CLICKHOUSE_HOST", "localhost")
 ch_verify = os.getenv("CLICKHOUSE_VERIFY", True)
@@ -21,7 +25,13 @@ pool = ChPool(
 )
 
 
-def run_query(query: str, params: Dict[str, str | int] = {}, settings: Dict[str, str | int] = {}, query_id: Optional[str] = None):
+def run_query(query: str, params: Dict[str, str | int] = {}, settings: Dict[str, str | int] = {}, query_id: Optional[str] = None, use_cache: bool = True):
+    query_hash = ''
+    if use_cache:
+        query_hash = hashlib.sha256(query.encode('utf-8')).hexdigest()
+        cached_result = cache.get(query_hash)
+        if cached_result:
+            return json.loads(cached_result)
     with pool.get_client() as client:
         result = client.execute(query % (params or {}), settings=settings, with_column_types=True, query_id=query_id)
         response = []
@@ -31,6 +41,8 @@ def run_query(query: str, params: Dict[str, str | int] = {}, settings: Dict[str,
                 item[key[0]] = res[index]
 
             response.append(item)
+        if use_cache:
+            cache.set(query_hash, json.dumps(response, default=str), timeout=60 * 5)
         return response
 
 

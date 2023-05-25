@@ -214,18 +214,14 @@ else:
     REDIS_URL = get_from_env("REDIS_URL")
 
 
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": REDIS_URL,
-#         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
-#         "KEY_PREFIX": "posthog",
-#     }
-# }
-
-# if TEST:
-#     CACHES["default"] = {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}
-CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "KEY_PREFIX": "housewatch",
+    }
+}
 
 
 # Only listen to the default queue "celery", unless overridden via the CLI
