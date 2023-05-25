@@ -156,6 +156,7 @@ A public list of things we intend to do with HouseWatch in the near future.
 - [ ] Configurable time ranges
 - [ ] Whole cluster schema stats
 - [ ] Saved queries
+- [ ] More operation controls: view, delete, edit, re-run
 
 
 <b>Developer experience</b>
