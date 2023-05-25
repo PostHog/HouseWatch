@@ -25,10 +25,16 @@ pool = ChPool(
 )
 
 
-def run_query(query: str, params: Dict[str, str | int] = {}, settings: Dict[str, str | int] = {}, query_id: Optional[str] = None, use_cache: bool = True):
-    query_hash = ''
+def run_query(
+    query: str,
+    params: Dict[str, str | int] = {},
+    settings: Dict[str, str | int] = {},
+    query_id: Optional[str] = None,
+    use_cache: bool = True,  # defaulting to True for now for simplicity, but ideally we should default this to False
+):
+    query_hash = ""
     if use_cache:
-        query_hash = hashlib.sha256(query.encode('utf-8')).hexdigest()
+        query_hash = hashlib.sha256(query.encode("utf-8")).hexdigest()
         cached_result = cache.get(query_hash)
         if cached_result:
             return json.loads(cached_result)
@@ -46,4 +52,4 @@ def run_query(query: str, params: Dict[str, str | int] = {}, settings: Dict[str,
         return response
 
 
-existing_system_tables = [row["name"] for row in run_query(EXISTING_TABLES_SQL)]
+existing_system_tables = [row["name"] for row in run_query(EXISTING_TABLES_SQL, use_cache=False)]

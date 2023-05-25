@@ -125,7 +125,7 @@ class AnalyzeViewset(GenericViewSet):
             query_result = run_query(request.data["sql"], query_id=query_id)
         except Exception as e:
             return Response(status=418, data={"error": str(e)})
-        return Response({ "result": query_result })
+        return Response({"result": query_result})
 
     @action(detail=False, methods=["GET"])
     def hostname(self, request: Request):
@@ -165,13 +165,13 @@ class AnalyzeViewset(GenericViewSet):
 
     @action(detail=False, methods=["GET"])
     def running_queries(self, request: Request):
-        query_result = run_query(RUNNING_QUERIES_SQL)
+        query_result = run_query(RUNNING_QUERIES_SQL, use_cache=False)
 
         return Response(query_result)
 
     @action(detail=True, methods=["POST"])
     def kill_query(self, request: Request, pk: str):
-        query_result = run_query(KILL_QUERY_SQL, {"query_id": request.data["query_id"]})
+        query_result = run_query(KILL_QUERY_SQL, {"query_id": request.data["query_id"]}, use_cache=False)
         return Response(query_result)
 
     @action(detail=False, methods=["GET"])

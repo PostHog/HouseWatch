@@ -25,7 +25,7 @@ def execute_op(sql: str, args=None, *, query_id: str, timeout_seconds: int = 600
     settings = settings if settings else {"max_execution_time": timeout_seconds, "log_comment": query_id}
 
     try:
-        run_query(sql, args, settings=settings)
+        run_query(sql, args, settings=settings, use_cache=False)
     except Exception as e:
         raise Exception(f"Failed to execute ClickHouse op: sql={sql},\nquery_id={query_id},\nexception={str(e)}")
 
