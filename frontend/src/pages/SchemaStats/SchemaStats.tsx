@@ -48,38 +48,38 @@ export default function Schema() {
         try {
             const res = await fetch('http://localhost:8000/api/analyze/tables')
             const resJson = await res.json()
+
+            const filteredRes = resJson.filter((r: { total_bytes: number }) => r.total_bytes > 0)
+            const filteredResUrls = filteredRes
+                .map((fr: { name: string }) => `http://localhost:8000/api/analyze/${fr.name}/schema`)
+                .slice(0, 1)
+
+            const nestedRes = await Promise.all(
+                filteredResUrls.map((_url: string) => fetch(_url).then((res2) => res2.json()))
+            )
+
+            const configDataChildren = filteredRes.map((table: { name: string; total_bytes: number }) => ({
+                value: table.total_bytes,
+                ...table,
+            }))
+            const configDataChildrenWithDrilldown = configDataChildren.map((child) => {
+                if (nestedRes[0][0].table == child.name) {
+                    const nestedChildren = nestedRes[0].map((nR) => ({
+                        name: nR.column,
+                        category: nR.table,
+                        value: nR.compressed,
+                    }))
+                    return { ...child, children: nestedChildren }
+                }
+                return child
+            })
+            const newConfigData = { ...config.data, children: configDataChildrenWithDrilldown }
+            setConfig({ ...config, data: newConfigData })
+            setSchema(filteredRes)
         } catch {
             notification.error({ message: 'Failed to load data' })
             return
         }
-        
-        const filteredRes = resJson.filter((r: { total_bytes: number }) => r.total_bytes > 0)
-        const filteredResUrls = filteredRes
-            .map((fr: { name: string }) => `http://localhost:8000/api/analyze/${fr.name}/schema`)
-            .slice(0, 1)
-
-        const nestedRes = await Promise.all(
-            filteredResUrls.map((_url: string) => fetch(_url).then((res2) => res2.json()))
-        )
-
-        const configDataChildren = filteredRes.map((table: { name: string; total_bytes: number }) => ({
-            value: table.total_bytes,
-            ...table,
-        }))
-        const configDataChildrenWithDrilldown = configDataChildren.map((child) => {
-            if (nestedRes[0][0].table == child.name) {
-                const nestedChildren = nestedRes[0].map((nR) => ({
-                    name: nR.column,
-                    category: nR.table,
-                    value: nR.compressed,
-                }))
-                return { ...child, children: nestedChildren }
-            }
-            return child
-        })
-        const newConfigData = { ...config.data, children: configDataChildrenWithDrilldown }
-        setConfig({ ...config, data: newConfigData })
-        setSchema(filteredRes)
     }
 
     useEffect(() => {
