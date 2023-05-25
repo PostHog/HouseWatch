@@ -30,6 +30,8 @@ CLICKHOUSE_PASSWORD=xxxxxxxxxxx \
 docker compose -f docker-compose.yml up
 ```
 
+After running the above, the UI will be running on [http://localhost:3000](http://localhost:3000). For production installs, you might want to setup something like [Caddy](https://caddyserver.com/) or [NGINX](https://nginx.org/en/) with a [Let's Encrypt](https://letsencrypt.org/) TLS certificate.
+
 <details>
 
 <summary>Read more</summary>
