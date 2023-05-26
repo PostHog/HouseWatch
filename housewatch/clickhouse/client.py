@@ -31,6 +31,7 @@ def run_query(
     settings: Dict[str, str | int] = {},
     query_id: Optional[str] = None,
     use_cache: bool = True,  # defaulting to True for now for simplicity, but ideally we should default this to False
+    substitute_params: bool = True
 ):
     query_hash = ""
     if use_cache:
@@ -39,7 +40,8 @@ def run_query(
         if cached_result:
             return json.loads(cached_result)
     with pool.get_client() as client:
-        result = client.execute(query % (params or {}), settings=settings, with_column_types=True, query_id=query_id)
+        final_query = query % (params or {}) if substitute_params else query
+        result = client.execute(final_query, settings=settings, with_column_types=True, query_id=query_id)
         response = []
         for res in result[0]:
             item = {}

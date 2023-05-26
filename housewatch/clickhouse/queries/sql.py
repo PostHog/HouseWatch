@@ -240,3 +240,21 @@ SELECT hour, sum(total) AS total FROM (
 GROUP BY hour
 ORDER BY hour
 """
+
+BENCHMARKING_SQL = f"""
+SELECT
+    if(log_comment = '%(query1_tag)s', 'Control', 'Test') AS query_version,
+    sumIf(query_duration_ms, is_initial_query) AS duration_ms, 
+    sumIf(memory_usage, is_initial_query) AS memory_usage, 
+    sumIf(ProfileEvents['OSCPUVirtualTimeMicroseconds'], is_initial_query) AS cpu,
+    sumIf(read_bytes, is_initial_query) AS read_bytes,
+    sumIf(read_rows, NOT is_initial_query) AS read_bytes_from_other_shard,
+    sumIf(ProfileEvents['NetworkReceiveBytes'], is_initial_query) AS network_receive_bytes
+FROM {QUERY_LOG_SYSTEM_TABLE}
+WHERE 
+    type = 2 
+    AND event_time > now() - INTERVAL 10 MINUTE 
+    AND (log_comment = '%(query1_tag)s' OR log_comment = '%(query2_tag)s')
+GROUP BY query_version
+ORDER BY query_version
+"""

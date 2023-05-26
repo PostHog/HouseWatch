@@ -21,7 +21,11 @@ from housewatch.clickhouse.queries.sql import (
     LOGS_SQL,
     LOGS_FREQUENCY_SQL,
     EXPLAIN_QUERY,
+    BENCHMARKING_SQL
 )
+from uuid import uuid4
+import json
+from time import sleep
 
 DEFAULT_DAYS = 7
 
@@ -122,7 +126,7 @@ class AnalyzeViewset(GenericViewSet):
     def query(self, request: Request):
         query_id = request.data["query_id"] if "query_id" in request.data else None
         try:
-            query_result = run_query(request.data["sql"], query_id=query_id)
+            query_result = run_query(request.data["sql"], query_id=query_id, substitute_params=False)
         except Exception as e:
             return Response(status=418, data={"error": str(e)})
         return Response({"result": query_result})
@@ -184,3 +188,25 @@ class AnalyzeViewset(GenericViewSet):
             full_result.append(node_result)
 
         return Response(full_result)
+
+
+    @action(detail=False, methods=["POST"])
+    def benchmark(self, request: Request):
+        query1_tag = f"benchmarking_q1_{str(uuid4())}"
+        query2_tag = f"benchmarking_q2_{str(uuid4())}"
+        try:
+            query1_result = run_query(request.data["query1"], settings={"log_comment": query1_tag }, use_cache=False)
+            query2_result = run_query(request.data["query2"], settings={"log_comment": query2_tag }, use_cache=False)
+            is_result_equal = json.dumps(query1_result, default=str) == json.dumps(query2_result, default=str)
+            
+            # make sure the query log populates
+            run_query("SYSTEM FLUSH LOGS")
+            benchmarking_result = []
+            i = 0
+            while len(benchmarking_result) == 0 and i < 10:
+                benchmarking_result = run_query(BENCHMARKING_SQL, params={ "query1_tag": query1_tag, "query2_tag": query2_tag }, use_cache=False)
+                i += 1
+                sleep(0.5)
+            return Response({ "is_result_equal": is_result_equal, "benchmarking_result": benchmarking_result })
+        except Exception as e:
+            return Response(status=418, data={"error": str(e)})

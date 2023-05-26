@@ -2,6 +2,7 @@ import React from 'react'
 import SavedQueries from './SavedQueries'
 import QueryEditor from './QueryEditor'
 import { Tabs } from 'antd'
+import QueryBenchmarking from './Benchmark'
 
 export default function QueryEditorPage() {
     return (
@@ -20,6 +21,11 @@ export default function QueryEditorPage() {
                         label: `Saved queries`,
                         children: <SavedQueries />,
                     },
+                    {
+                        key: 'benchmark',
+                        label: `Query benchmarking`,
+                        children: <QueryBenchmarking />,   
+                    }
                 ]}
                 defaultActiveKey="run"
             />
