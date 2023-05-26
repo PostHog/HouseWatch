@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="./banner-light.png" height=125>
+  <img src="./banner-light.png">
 </p>
 
 
 <p align="center">
-  <img src="./overview.png" height=400>
+  <img src="./overview.png">
 </p>
 
 
@@ -98,35 +98,35 @@ Contributions are certainly welcome! However, if you'd like to build a new featu
 <h2 align="center">Logs</h3>
 
 <p align="center">
-<img src="./logs.png" align="center" height=400>
+<img src="./logs.png" align="center">
 </p>
 
 <br />
 <h2 align="center">Query editor</h3>
 
 <p align="center">
-<img src="./query-editor.png" height=400>
+<img src="./query-editor.png">
 </p>
 
 <br />
 <h2 align="center">Disk usage</h3>
 
 <p align="center">
-<img src="./disk-usage.png" height=400>
+<img src="./disk-usage.png">
 </p>
 
 <br />
 <h2 align="center">Errors</h3>
 
 <p align="center">
-<img src="./errors.png" height=400>
+<img src="./errors.png">
 </p>
 
 <br />
 <h2 align="center">Operations</h3>
 
 <p align="center">
-<img src="./operations.png" height=400>
+<img src="./operations.png">
 </p>
 
 
