@@ -63,7 +63,7 @@ export default function AppLayout(): JSX.Element {
     return (
         <ConfigProvider theme={{ token: { colorPrimary: '#ffb200', colorPrimaryBg: 'black' } }}>
             <Layout style={{ minHeight: '100vh' }}>
-                <Sider>
+            <Sider className='sidebar'>
                     <div className="clickable" onClick={() => history.push('')}>
                         <h1
                             style={{ fontSize: 20, color: '#ffb200', textAlign: 'center', fontFamily: 'Hind Siliguri' }}

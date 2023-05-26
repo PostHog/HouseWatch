@@ -3,6 +3,11 @@
     src: url('fonts/HindSiliguri-Medium.ttf');
 }
 
+html {
+    overflow: hidden;
+    height: 100%;
+}
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
@@ -13,7 +18,8 @@ body {
     font-size: 0.875rem;
     line-height: 1.57;
     font-weight: 400;
-    overflow-x: hidden;
+    overflow: auto;
+    height: 100%;
 }
 
 .ant-menu-item-selected {
@@ -75,4 +81,8 @@ input,
 textarea,
 button {
     box-shadow: none !important;
+}
+
+.sidebar .ant-layout-sider-children {
+    position: fixed;
 }
