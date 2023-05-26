@@ -248,7 +248,7 @@ SELECT
     sumIf(memory_usage, is_initial_query) AS memory_usage, 
     sumIf(ProfileEvents['OSCPUVirtualTimeMicroseconds'], is_initial_query) AS cpu,
     sumIf(read_bytes, is_initial_query) AS read_bytes,
-    sumIf(read_rows, NOT is_initial_query) AS read_bytes_from_other_shard,
+    sumIf(read_rows, NOT is_initial_query) AS read_bytes_from_other_shards,
     sumIf(ProfileEvents['NetworkReceiveBytes'], is_initial_query) AS network_receive_bytes
 FROM {QUERY_LOG_SYSTEM_TABLE}
 WHERE 

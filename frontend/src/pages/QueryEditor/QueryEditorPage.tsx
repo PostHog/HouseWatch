@@ -24,8 +24,8 @@ export default function QueryEditorPage() {
                     {
                         key: 'benchmark',
                         label: `Query benchmarking`,
-                        children: <QueryBenchmarking />,   
-                    }
+                        children: <QueryBenchmarking />,
+                    },
                 ]}
                 defaultActiveKey="run"
             />
