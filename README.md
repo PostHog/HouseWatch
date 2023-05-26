@@ -95,6 +95,14 @@ Contributions are certainly welcome! However, if you'd like to build a new featu
 </div>
 
 <br />
+<h2 align="center">Query benchmarking</h3>
+
+<div style="display: flex">
+  <img src="./benchmark1.png" width="48%">
+  <img src="./benchmark2.png" width="48%">
+</div>
+
+<br />
 <h2 align="center">Logs</h3>
 
 <p align="center">
