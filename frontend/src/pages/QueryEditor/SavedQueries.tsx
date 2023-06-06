@@ -10,6 +10,7 @@ import { ColumnType } from 'antd/es/table'
 import QueryEditor from './QueryEditor'
 import SavedQuery from './SavedQuery'
 import { ReloadOutlined } from '@ant-design/icons'
+import { useHistory } from 'react-router-dom'
 
 export interface SavedQueryData {
     id: number
@@ -17,14 +18,18 @@ export interface SavedQueryData {
     query: string
 }
 
-export default function SavedQueries() {
+export default function SavedQueries({ match }: { match: { params: { id: string } } }) {
     const [savedQueries, setSavedQueries] = useState([])
     const [activeQuery, setActiveQuery] = useState<SavedQueryData | null>(null)
+    const history = useHistory()
 
     const loadData = async () => {
         const res = await fetch('http://localhost:8000/api/saved_queries')
         const resJson = await res.json()
         setSavedQueries(resJson.results)
+        if (match && match.params && match.params.id) {
+            setActiveQuery(resJson.results.find((q: SavedQueryData) => q.id === Number(match.params.id)) || null)
+        }
     }
 
     useEffect(() => {
@@ -32,12 +37,17 @@ export default function SavedQueries() {
     }, [])
 
     const columns: ColumnType<{ name: string; id: number; query: string }>[] = [
-        { title: 'ID', dataIndex: 'id' },
         {
             title: 'Name',
             dataIndex: 'name',
             render: (_, item) => (
-                <span style={{ color: '#1677ff', cursor: 'pointer' }} onClick={() => setActiveQuery(item)}>
+                <span
+                    style={{ color: '#1677ff', cursor: 'pointer' }}
+                    onClick={() => {
+                        setActiveQuery(item)
+                        history.push(`/query_editor/saved_queries/${item.id}`)
+                    }}
+                >
                     {item.name}
                 </span>
             ),
@@ -49,7 +59,13 @@ export default function SavedQueries() {
         <>
             {activeQuery ? (
                 <>
-                    <a onClick={() => setActiveQuery(null)} style={{ float: 'right' }}>
+                    <a
+                        onClick={() => {
+                            setActiveQuery(null)
+                            history.push(`/query_editor/saved_queries`)
+                        }}
+                        style={{ float: 'right' }}
+                    >
                         ← Return to saved queries list
                     </a>
                     <SavedQuery {...activeQuery} />

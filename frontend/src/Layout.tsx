@@ -7,7 +7,7 @@ import QueryDetail from './pages/SlowQueries/QueryDetail'
 import SchemaTable from './pages/SchemaStats/SchemaTable'
 import Overview from './pages/Overview/Overview'
 import Errors from './pages/Errors/Errors'
-import { BrowserRouter as Router, Switch, Route, Link, useHistory } from 'react-router-dom'
+import { Switch, Route, useHistory } from 'react-router-dom'
 
 import { Operations } from './pages/Operations/Operations'
 import RunningQueries from './pages/RunningQueries/RunningQueries'
@@ -63,7 +63,7 @@ export default function AppLayout(): JSX.Element {
     return (
         <ConfigProvider theme={{ token: { colorPrimary: '#ffb200', colorPrimaryBg: 'black' } }}>
             <Layout style={{ minHeight: '100vh' }}>
-            <Sider className='sidebar'>
+                <Sider className="sidebar">
                     <div className="clickable" onClick={() => history.push('')}>
                         <h1
                             style={{ fontSize: 20, color: '#ffb200', textAlign: 'center', fontFamily: 'Hind Siliguri' }}
@@ -108,6 +108,8 @@ export default function AppLayout(): JSX.Element {
                             <Route exact path="/logs" component={Logs}></Route>
                             <Route exact path="/errors" component={Errors}></Route>
                             <Route exact path="/query_editor" component={QueryEditorPage}></Route>
+                            <Route exact path="/query_editor/:tab" component={QueryEditorPage}></Route>
+                            <Route exact path="/query_editor/:tab/:id" component={QueryEditorPage}></Route>
                         </Switch>
                     </Content>
                     <Footer style={{ textAlign: 'center' }}>

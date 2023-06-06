@@ -154,7 +154,6 @@ A public list of things we intend to do with HouseWatch in the near future.
 - [ ] System issues tab
 - [ ] EXPLAIN visualizer
 - [ ] Multiple instance support
-- [ ] Cache queries
 - [ ] Stats on page cache hit percentage
 - [ ] Make operations resilient to Celery going down (as we do in PostHog with async migrations)
 - [ ] Read-only mode
