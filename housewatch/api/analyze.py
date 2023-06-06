@@ -126,7 +126,7 @@ class AnalyzeViewset(GenericViewSet):
     def query(self, request: Request):
         query_id = request.data["query_id"] if "query_id" in request.data else None
         try:
-            query_result = run_query(request.data["sql"], query_id=query_id, substitute_params=False)
+            query_result = run_query(request.data["sql"], query_id=query_id, use_cache=False, substitute_params=False)
         except Exception as e:
             return Response(status=418, data={"error": str(e)})
         return Response({"result": query_result})

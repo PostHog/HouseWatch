@@ -33,14 +33,15 @@ def run_query(
     use_cache: bool = True,  # defaulting to True for now for simplicity, but ideally we should default this to False
     substitute_params: bool = True,
 ):
+    final_query = query % (params or {}) if substitute_params else query
     query_hash = ""
+    
     if use_cache:
-        query_hash = hashlib.sha256(query.encode("utf-8")).hexdigest()
+        query_hash = hashlib.sha256(final_query.encode("utf-8")).hexdigest()
         cached_result = cache.get(query_hash)
         if cached_result:
             return json.loads(cached_result)
     with pool.get_client() as client:
-        final_query = query % (params or {}) if substitute_params else query
         result = client.execute(final_query, settings=settings, with_column_types=True, query_id=query_id)
         response = []
         for res in result[0]:
