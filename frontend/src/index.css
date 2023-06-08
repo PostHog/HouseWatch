@@ -79,10 +79,16 @@ code {
 
 input,
 textarea,
-button {
+button,
+select,
+.ant-select-selector {
     box-shadow: none !important;
 }
 
 .sidebar .ant-layout-sider-children {
     position: fixed;
+}
+
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+    background-color: initial !important;
 }

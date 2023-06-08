@@ -28,6 +28,9 @@ from uuid import uuid4
 import json
 from time import sleep
 import os
+import openai
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 DEFAULT_DAYS = 7
 
@@ -237,3 +240,16 @@ class AnalyzeViewset(GenericViewSet):
         query_result = run_query(AVAILABLE_TABLES_SQL, use_cache=False)
 
         return Response(query_result)
+    
+    @action(detail=False, methods=["POST"])
+    def natural_language_query():
+        completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "user", "content": "Hello!"}
+            ]
+        )
+
+        sql = json.loads(completion.choices[0].message)['sql']
+        query_result = run_query(sql, use_cache=False, substitute_params=False)
+        return Response({ "result": query_result, "sql": sql })

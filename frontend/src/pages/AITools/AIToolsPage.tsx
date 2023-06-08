@@ -30,8 +30,6 @@ export default function AIToolsPage({ match }: { match: { params: { tab: string;
                 <p style={{ marginTop: 50 }}>{error}</p>
             ) : (
                 <>
-                    <h1 style={{ textAlign: 'left' }}>Query editor</h1>
-
                     <Tabs
                         items={[
                             {

@@ -264,3 +264,9 @@ SELECT database, table
 FROM system.tables 
 WHERE database != 'system' AND database NOT ILIKE 'information_schema'
 """
+
+TABLE_SCHEMAS_SQL = """
+SELECT database, table, create_table_query
+FROM system.tables
+WHERE 1=1 %(conditions)s
+"""
