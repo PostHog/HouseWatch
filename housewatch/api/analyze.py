@@ -26,6 +26,7 @@ from housewatch.clickhouse.queries.sql import (
 from uuid import uuid4
 import json
 from time import sleep
+import os
 
 DEFAULT_DAYS = 7
 
@@ -222,3 +223,10 @@ class AnalyzeViewset(GenericViewSet):
             return Response({"is_result_equal": is_result_equal, "benchmarking_result": benchmarking_result})
         except Exception as e:
             return Response(status=418, data={"error": str(e), "error_location": error_location})
+
+    @action(detail=False, methods=["GET"])
+    def ai_tools_available(self, request: Request):
+        openai_api_key = os.getenv("OPENAI_API_KEY") 
+        if not openai_api_key:
+            return Response(status=400, data={ "error": "OPENAI_API_KEY not set. To use the AI toolset you must pass in an OpenAI API key via the OPENAI_API_KEY environment variable." })
+        return Response()
