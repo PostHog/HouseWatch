@@ -230,7 +230,7 @@ class AnalyzeViewset(GenericViewSet):
         openai_api_key = os.getenv("OPENAI_API_KEY") 
         if not openai_api_key:
             return Response(status=400, data={ "error": "OPENAI_API_KEY not set. To use the AI toolset you must pass in an OpenAI API key via the OPENAI_API_KEY environment variable." })
-        return Response()
+        return Response({ "status": "ok" })
     
     @action(detail=False, methods=["GET"])
     def tables(self, request: Request):

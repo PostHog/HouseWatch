@@ -5,10 +5,17 @@ import QueryEditor from '../QueryEditor/QueryEditor';
 import SavedQueries from '../QueryEditor/SavedQueries';
 import { WarningFilled } from '@ant-design/icons';
 
-export default function AIToolsPage({ match }: { match: { params: { tab: string; id: string } } }) {
+export interface TableData {
+    table: string
+    database: string
+
+}
+
+// { match }: { match: { params: { tab: string; id: string } } }
+
+export default function NaturalLanguageQueryEditor() {
     const history = useHistory()
-    const [error, setError] = useState<string | null>(null)
-    const [tables, setTables] = useState([])
+    const [tables, setTables] = useState<TableData[] | null>(null)
 
 
 
@@ -25,9 +32,6 @@ export default function AIToolsPage({ match }: { match: { params: { tab: string;
     const selectOptions = (tables || []).map(t => ({ value: [t.database, t.table].join(">>>>>"), label: [t.database, t.table].join(".") }))
 
 
-
-
-
     return (
         <>
             <Select
@@ -38,6 +42,7 @@ export default function AIToolsPage({ match }: { match: { params: { tab: string;
                 onChange={(value) => {
                     console.log(value)
                 }}
+                mode='multiple'
             />
         </>
     )

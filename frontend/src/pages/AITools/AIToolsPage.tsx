@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom'
 import QueryEditor from '../QueryEditor/QueryEditor';
 import SavedQueries from '../QueryEditor/SavedQueries';
 import { WarningFilled } from '@ant-design/icons';
+import NaturalLanguageQueryEditor from './NaturalLanguageQueryEditor';
 
 export default function AIToolsPage({ match }: { match: { params: { tab: string; id: string } } }) {
     const history = useHistory()
@@ -34,9 +35,9 @@ export default function AIToolsPage({ match }: { match: { params: { tab: string;
                     <Tabs
                         items={[
                             {
-                                key: 'run',
-                                label: `Run query`,
-                                children: <QueryEditor />,
+                                key: 'natural_language',
+                                label: `Natural language query editor`,
+                                children: <NaturalLanguageQueryEditor />,
                             },
                             {
                                 key: 'saved_queries',
@@ -44,7 +45,7 @@ export default function AIToolsPage({ match }: { match: { params: { tab: string;
                                 children: <SavedQueries match={match} />,
                             },
                         ]}
-                        defaultActiveKey='run'
+                        defaultActiveKey='natural_language'
                         onChange={(tab) => history.push(`/query_editor/${tab}`)}
                     />
                 </>
