@@ -6,6 +6,8 @@ from django.core.cache import cache
 import hashlib
 import json
 
+def str_to_bool(s: str) -> bool:
+    return str(s).lower() in ("y", "yes", "t", "true", "on", "1")
 
 ch_host = os.getenv("CLICKHOUSE_HOST", "localhost")
 ch_verify = os.getenv("CLICKHOUSE_VERIFY", True)
@@ -17,13 +19,12 @@ pool = ChPool(
     database=os.getenv("CLICKHOUSE_DATABASE", "default"),
     user=os.getenv("CLICKHOUSE_USER", "default"),
     password=os.getenv("CLICKHOUSE_PASSWORD", ""),
-    secure=ch_secure if ch_secure != "" else True,
+    secure=str_to_bool(ch_secure) if ch_secure != "" else True,
     ca_certs=ch_ca if ch_ca != "" else None,
     verify=ch_verify if ch_verify != "" else True,
     settings={"max_result_rows": "2000"},
     send_receive_timeout=30,
 )
-
 
 def run_query(
     query: str,
