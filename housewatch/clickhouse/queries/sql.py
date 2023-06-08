@@ -258,3 +258,9 @@ WHERE
 GROUP BY query_version
 ORDER BY query_version
 """
+
+AVAILABLE_TABLES_SQL = """
+SELECT database, table
+FROM system.tables 
+WHERE database != 'system' AND database NOT ILIKE 'information_schema'
+"""

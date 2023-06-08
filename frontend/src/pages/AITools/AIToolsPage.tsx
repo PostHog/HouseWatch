@@ -9,8 +9,6 @@ export default function AIToolsPage({ match }: { match: { params: { tab: string;
     const history = useHistory()
     const [error, setError] = useState<string | null>(null)
 
-
-
     const loadData = async () => {
         const res = await fetch('http://localhost:8000/api/analyze/ai_tools_available')
         const resJson = await res.json()

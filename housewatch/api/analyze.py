@@ -22,6 +22,7 @@ from housewatch.clickhouse.queries.sql import (
     LOGS_FREQUENCY_SQL,
     EXPLAIN_QUERY,
     BENCHMARKING_SQL,
+    AVAILABLE_TABLES_SQL
 )
 from uuid import uuid4
 import json
@@ -230,3 +231,9 @@ class AnalyzeViewset(GenericViewSet):
         if not openai_api_key:
             return Response(status=400, data={ "error": "OPENAI_API_KEY not set. To use the AI toolset you must pass in an OpenAI API key via the OPENAI_API_KEY environment variable." })
         return Response()
+    
+    @action(detail=False, methods=["GET"])
+    def tables(self, request: Request):
+        query_result = run_query(AVAILABLE_TABLES_SQL, use_cache=False)
+
+        return Response(query_result)
