@@ -22,10 +22,18 @@ from housewatch.clickhouse.queries.sql import (
     LOGS_FREQUENCY_SQL,
     EXPLAIN_QUERY,
     BENCHMARKING_SQL,
+    AVAILABLE_TABLES_SQL,
+    TABLE_SCHEMAS_SQL
 )
 from uuid import uuid4
 import json
 from time import sleep
+import os
+import openai
+from housewatch.ai.templates import NATURAL_LANGUAGE_QUERY_SYSTEM_PROMPT, NATURAL_LANGUAGE_QUERY_USER_PROMPT, TABLE_PROMPT
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
 
 DEFAULT_DAYS = 7
 
@@ -222,3 +230,56 @@ class AnalyzeViewset(GenericViewSet):
             return Response({"is_result_equal": is_result_equal, "benchmarking_result": benchmarking_result})
         except Exception as e:
             return Response(status=418, data={"error": str(e), "error_location": error_location})
+
+    @action(detail=False, methods=["GET"])
+    def ai_tools_available(self, request: Request):
+        openai_api_key = os.getenv("OPENAI_API_KEY") 
+        if not openai_api_key:
+            return Response(status=400, data={ "error": "OPENAI_API_KEY not set. To use the AI toolset you must pass in an OpenAI API key via the OPENAI_API_KEY environment variable." })
+        return Response({ "status": "ok" })
+    
+    @action(detail=False, methods=["GET"])
+    def tables(self, request: Request):
+        query_result = run_query(AVAILABLE_TABLES_SQL, use_cache=False)
+
+        return Response(query_result)
+    
+    @action(detail=False, methods=["POST"])
+    def natural_language_query(self, request: Request):
+        
+        table_schema_sql_conditions = []
+        for full_table_name in request.data["tables_to_query"]:
+            database, table = full_table_name.split(">>>>>")
+            condition = f"(database = '{database}' AND table = '{table}')"
+            table_schema_sql_conditions.append(condition)
+            
+        table_schemas = run_query(TABLE_SCHEMAS_SQL, { "conditions": " OR ".join(table_schema_sql_conditions)})
+        
+        user_prompt_tables = ""
+        for row in table_schemas:
+            user_prompt_tables += TABLE_PROMPT.format(database=row['database'], table=row['table'], create_table_query=row['create_table_query'])
+                
+        final_user_prompt = NATURAL_LANGUAGE_QUERY_USER_PROMPT % { "tables_to_query": user_prompt_tables, "query": request.data['query'] }
+                
+        completion = openai.ChatCompletion.create(
+            model=OPENAI_MODEL,
+            messages=[
+                {"role": "system", "content": NATURAL_LANGUAGE_QUERY_SYSTEM_PROMPT},
+                {"role": "user", "content": final_user_prompt}
+            ]
+        )
+                
+        response_json = json.loads(completion.choices[0].message['content'])
+        sql = response_json['sql']
+        error = response_json['error']
+        if error:
+            return Response(status=418, data={ "error": error, "sql": sql })
+        
+        settings = { "readonly": 1 } if request.data.get('readonly', False) else {}
+        
+        try:
+            query_result = run_query(sql, use_cache=False, substitute_params=False, settings=settings)
+            return Response({ "result": query_result, "sql": sql, "error": None })
+        except Exception as e:
+            return Response(status=418, data={"error": str(e), "sql": sql})
+            

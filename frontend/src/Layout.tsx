@@ -23,10 +23,12 @@ import {
     GithubFilled,
     BarsOutlined,
     FormOutlined,
+    ToolOutlined,
 } from '@ant-design/icons'
 import { ConfigProvider, MenuProps } from 'antd'
 import { Layout, Menu } from 'antd'
 import QueryEditorPage from './pages/QueryEditor/QueryEditorPage'
+import AIToolsPage from './pages/AITools/AIToolsPage'
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -42,6 +44,7 @@ const items: MenuItem[] = [
     { key: 'errors', label: 'Errors', icon: <WarningOutlined /> },
     { key: 'query_editor', label: 'Query editor', icon: <FormOutlined /> },
     { key: 'operations', label: 'Operations', icon: <CodeOutlined /> },
+    { key: 'ai_tools', label: 'AI Tools', icon: <ToolOutlined /> },
 ]
 
 export default function AppLayout(): JSX.Element {
@@ -110,6 +113,7 @@ export default function AppLayout(): JSX.Element {
                             <Route exact path="/query_editor" component={QueryEditorPage}></Route>
                             <Route exact path="/query_editor/:tab" component={QueryEditorPage}></Route>
                             <Route exact path="/query_editor/:tab/:id" component={QueryEditorPage}></Route>
+                            <Route exact path="/ai_tools" component={AIToolsPage}></Route>
                         </Switch>
                     </Content>
                     <Footer style={{ textAlign: 'center' }}>
