@@ -25,7 +25,8 @@ Your responses must ALWAYS be plain JSON with the following structure:
 
 ```json
 {
-	"sql": "<generated ClickHouse SQL for prompt>"
+	"sql": "<generated ClickHouse SQL for prompt>",
+	"error": "<an error message if you cannot generate the SQL, defaults to null>"
 }
 ```
 
@@ -51,7 +52,8 @@ Example response:
 
 ```json
 {
-	"sql": "SELECT users.uid, user_metadata.metadata FROM users JOIN user_metadata ON users.uid = user_metadata.uid WHERE created_at > now() - INTERVAL 1 HOUR"
+	"sql": "SELECT users.uid, user_metadata.metadata FROM users JOIN user_metadata ON users.uid = user_metadata.uid WHERE created_at > now() - INTERVAL 1 HOUR",
+	"error": null
 }
 ```
 
@@ -70,4 +72,10 @@ NATURAL_LANGUAGE_QUERY_USER_PROMPT = """
 
 %(query)s
 
+"""
+
+TABLE_PROMPT = """
+# {database}.{table}
+
+{create_table_query}
 """

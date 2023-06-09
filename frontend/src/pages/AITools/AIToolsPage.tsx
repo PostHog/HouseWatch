@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { Tabs } from 'antd'
 import { useHistory } from 'react-router-dom'
-import QueryEditor from '../QueryEditor/QueryEditor';
-import SavedQueries from '../QueryEditor/SavedQueries';
-import { WarningFilled } from '@ant-design/icons';
-import NaturalLanguageQueryEditor from './NaturalLanguageQueryEditor';
+import NaturalLanguageQueryEditor from './NaturalLanguageQueryEditor'
 
-export default function AIToolsPage({ match }: { match: { params: { tab: string; id: string } } }) {
+export default function AIToolsPage() {
     const history = useHistory()
     const [error, setError] = useState<string | null>(null)
 
@@ -22,7 +19,6 @@ export default function AIToolsPage({ match }: { match: { params: { tab: string;
         loadData()
     }, [])
 
-
     return (
         <>
             <h1>AI Tools (Alpha)</h1>
@@ -37,13 +33,8 @@ export default function AIToolsPage({ match }: { match: { params: { tab: string;
                                 label: `Natural language query editor`,
                                 children: <NaturalLanguageQueryEditor />,
                             },
-                            {
-                                key: 'saved_queries',
-                                label: `Saved queries`,
-                                children: <SavedQueries match={match} />,
-                            },
                         ]}
-                        defaultActiveKey='natural_language'
+                        defaultActiveKey="natural_language"
                         onChange={(tab) => history.push(`/query_editor/${tab}`)}
                     />
                 </>

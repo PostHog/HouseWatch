@@ -23,7 +23,7 @@ import {
     GithubFilled,
     BarsOutlined,
     FormOutlined,
-    RobotOutlined,
+    ToolOutlined,
 } from '@ant-design/icons'
 import { ConfigProvider, MenuProps } from 'antd'
 import { Layout, Menu } from 'antd'
@@ -44,7 +44,7 @@ const items: MenuItem[] = [
     { key: 'errors', label: 'Errors', icon: <WarningOutlined /> },
     { key: 'query_editor', label: 'Query editor', icon: <FormOutlined /> },
     { key: 'operations', label: 'Operations', icon: <CodeOutlined /> },
-    { key: 'ai_tools', label: 'AI Tools', icon: <RobotOutlined /> },
+    { key: 'ai_tools', label: 'AI Tools', icon: <ToolOutlined /> },
 ]
 
 export default function AppLayout(): JSX.Element {
