@@ -249,8 +249,11 @@ class AnalyzeViewset(GenericViewSet):
         
         table_schema_sql_conditions = []
         for full_table_name in request.data["tables_to_query"]:
-            database, table = full_table_name.split(">>>>>")
-            condition = f"(database = '{database}' AND table = '{table}')"
+            if full_table_name == "All system tables":
+                condition = "(database = 'system')"
+            else:
+                database, table = full_table_name.split(">>>>>")
+                condition = f"(database = '{database}' AND table = '{table}')"
             table_schema_sql_conditions.append(condition)
             
         table_schemas = run_query(TABLE_SCHEMAS_SQL, { "conditions": " OR ".join(table_schema_sql_conditions)})

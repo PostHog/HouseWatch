@@ -60,10 +60,12 @@ export default function NaturalLanguageQueryEditor() {
         loadTableData()
     }, [])
 
-    const selectOptions = (tables || []).map((t) => ({
+    const tableOptions = (tables || []).map((t) => ({
         value: [t.database, t.table].join('>>>>>'),
         label: [t.database, t.table].join('.'),
     }))
+
+    const selectOptions = [ { value: 'All system tables', label: 'All system tables' }, ...tableOptions ]
 
     return (
         <>
