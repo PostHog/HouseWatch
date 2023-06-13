@@ -261,14 +261,17 @@ class AnalyzeViewset(GenericViewSet):
                 
         final_user_prompt = NATURAL_LANGUAGE_QUERY_USER_PROMPT % { "tables_to_query": user_prompt_tables, "query": request.data['query'] }
                 
-        completion = openai.ChatCompletion.create(
-            model=OPENAI_MODEL,
-            messages=[
-                {"role": "system", "content": NATURAL_LANGUAGE_QUERY_SYSTEM_PROMPT},
-                {"role": "user", "content": final_user_prompt}
-            ]
-        )
-                
+        try:
+            completion = openai.ChatCompletion.create(
+                model=OPENAI_MODEL,
+                messages=[
+                    {"role": "system", "content": NATURAL_LANGUAGE_QUERY_SYSTEM_PROMPT},
+                    {"role": "user", "content": final_user_prompt}
+                ]
+            )
+        except Exception as e:
+            return Response(status=418, data={"error": str(e), "sql": None})   
+                             
         response_json = json.loads(completion.choices[0].message['content'])
         sql = response_json['sql']
         error = response_json['error']
