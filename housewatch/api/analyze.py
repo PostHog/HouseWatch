@@ -37,6 +37,12 @@ OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
 
 DEFAULT_DAYS = 7
 
+TIME_RANGE_TO_CLICKHOUSE_INTERVAL = {
+    "-1w": "INTERVAL 1 WEEK",
+    "-2w": "INTERVAL 2 WEEK",
+    "-1m": "INTERVAL 1 MONTH",
+    "-3m": "INTERVAL 3 MONTH",
+}
 
 class AnalyzeViewset(GenericViewSet):
     def list(self, request: Request) -> Response:
@@ -44,7 +50,8 @@ class AnalyzeViewset(GenericViewSet):
 
     @action(detail=False, methods=["GET"])
     def slow_queries(self, request: Request):
-        params = {"limit": 100, "date_from": "now() - INTERVAL 1 WEEK"}
+        ch_interval = TIME_RANGE_TO_CLICKHOUSE_INTERVAL[request.GET.get('time_range', '-1w')]
+        params = {"limit": 100, "date_from": f"now() - {ch_interval}"}
         query_result = run_query(SLOW_QUERIES_SQL, params)
         return Response(query_result)
 

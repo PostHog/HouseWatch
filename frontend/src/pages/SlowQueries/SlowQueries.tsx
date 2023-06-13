@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Table, Typography, notification } from 'antd'
+import { Select, Table, Typography, notification } from 'antd'
 import { useHistory } from 'react-router-dom'
 import { ColumnType } from 'antd/es/table'
 const { Paragraph } = Typography
@@ -18,6 +18,7 @@ interface SlowQueryData {
 export default function CollapsibleTable() {
     const [loadingSlowQueries, setLoadingSlowQueries] = useState(false)
     const [slowQueries, setSlowQueries] = useState<SlowQueryData[]>([])
+    const [timeRange, setTimeRange] = useState('-1w')
 
     const history = useHistory()
     const slowQueriesColumns: ColumnType<SlowQueryData>[] = [
@@ -71,11 +72,11 @@ export default function CollapsibleTable() {
         },
     ]
 
-    const loadData = async () => {
+    const loadData = async (timeRange = '-1w') => {
         setSlowQueries([])
         setLoadingSlowQueries(true)
         try {
-            const res = await fetch('http://localhost:8000/api/analyze/slow_queries')
+            const res = await fetch(`http://localhost:8000/api/analyze/slow_queries?time_range=${timeRange}`)
             const resJson = await res.json()
             const slowQueriesData = resJson.map((error: SlowQueryData, idx: number) => ({ key: idx, ...error }))
             setSlowQueries(slowQueriesData)
@@ -93,8 +94,24 @@ export default function CollapsibleTable() {
         <div>
             <h1 style={{ textAlign: 'left' }}>Query performance</h1>
             <p>Click on queries to display more details.</p>
-            <br />
             <div>
+                <Select
+                    placeholder="system.query_log"
+                    optionFilterProp="children"
+                    options={[
+                        { label: 'Last week', value: '-1w' }, 
+                        { label: 'Last two weeks', value: '-2w' }, 
+                        { label: 'Last month', value: '-1m' },
+                        { label: 'Last three months', value: '-3m' }
+                    ]}
+                    style={{ width: 200, float: 'right', marginBottom: 4 }}
+                    onChange={(value) => {
+                        setTimeRange(value)
+                        loadData(value)
+                    }}
+                    showSearch={false}
+                    value={timeRange}
+                />
                 <Table
                     columns={slowQueriesColumns}
                     onRow={(query, _) => {
