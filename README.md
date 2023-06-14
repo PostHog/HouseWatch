@@ -48,6 +48,8 @@ The following are the supported environment variables for configuring your House
 - `CLICKHOUSE_SECURE`: Optional - see [clickhouse-driver docs](https://clickhouse-driver.readthedocs.io/en/latest/index.html) for more information
 - `CLICKHOUSE_VERIFY`: Optional - see [clickhouse-driver docs](https://clickhouse-driver.readthedocs.io/en/latest/index.html) for more information
 - `CLICKHOUSE_CA`: Optional - see [clickhouse-driver docs](https://clickhouse-driver.readthedocs.io/en/latest/index.html) for more information
+- `OPENAI_API_KEY`: Optional - enables the experimental "AI Tools" page, which currently features a natural language query editor
+- `OPENAI_MODEL`: Optional - a valid OpenAI model (e.g. `gpt-3.5-turbo`, `gpt-4`) that you have access to with the key above to be used for the AI features 
 
 </details>
 
