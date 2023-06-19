@@ -9,6 +9,7 @@ import 'prismjs/themes/prism.css'
 import { Button, Input, Progress, Table, Tabs, notification } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { ColumnType } from 'antd/es/table'
+import { isoTimestampToHumanReadable } from '../../utils/dateUtils'
 
 const OPERATION_STATUS_TO_HUMAN = {
     0: 'Not started',
@@ -120,12 +121,11 @@ export function OperationsList(): JSX.Element {
         },
         {
             title: 'Started at',
-            render: (_, migration) => (migration.started_at ? migration.started_at.split('.')[0] : ''),
+            render: (_, migration) => migration.started_at ? isoTimestampToHumanReadable(migration.started_at) : '',
         },
-
         {
             title: 'Finished at',
-            render: (_, migration) => (migration.finished_at ? migration.finished_at.split('.')[0] : ''),
+            render: (_, migration) => migration.finished_at ? isoTimestampToHumanReadable(migration.finished_at) : '',
         },
         {
             title: '',

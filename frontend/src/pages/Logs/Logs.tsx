@@ -1,6 +1,6 @@
-import { Table, Button, notification, Typography, Input, Card, ConfigProvider, Empty } from 'antd'
+import { Table, Typography, Input, Card, ConfigProvider, Empty } from 'antd'
 import React, { useEffect, useState } from 'react'
-import { Bar, Column } from '@ant-design/charts'
+import { Column } from '@ant-design/charts'
 
 const { Paragraph } = Typography
 
@@ -23,7 +23,6 @@ export default function Logs() {
             dataIndex: 'message',
             key: 'message',
             render: (_: any, item: any) => {
-                let index = 0
                 return (
                     <Paragraph
                         style={{ maxWidth: '100%', fontFamily: 'monospace' }}

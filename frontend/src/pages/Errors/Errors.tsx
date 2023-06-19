@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Table, notification } from 'antd'
 import { ColumnsType } from 'antd/es/table'
+import { isoTimestampToHumanReadable } from '../../utils/dateUtils'
 
 interface ErrorData {
     name: string
@@ -25,7 +26,7 @@ export default function CollapsibleTable() {
         {
             title: 'Most recent occurence',
             dataIndex: 'max_last_error_time',
-            render: (_, item) => <>{item.max_last_error_time}</>,
+            render: (_, item) => isoTimestampToHumanReadable(item.max_last_error_time)
         },
     ]
 

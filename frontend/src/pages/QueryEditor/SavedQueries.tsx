@@ -1,16 +1,10 @@
-import { Table, Button, ConfigProvider, Spin, Row, Col, Tooltip } from 'antd'
+import { Table, Button, Row, Col, Tooltip } from 'antd'
 import React, { useEffect, useState } from 'react'
-// @ts-ignore
-import { highlight, languages } from 'prismjs/components/prism-core'
-import 'prismjs/components/prism-sql'
-import 'prismjs/themes/prism.css'
-import Editor from 'react-simple-code-editor'
-import { v4 as uuidv4 } from 'uuid'
 import { ColumnType } from 'antd/es/table'
-import QueryEditor from './QueryEditor'
 import SavedQuery from './SavedQuery'
 import { ReloadOutlined } from '@ant-design/icons'
 import { useHistory } from 'react-router-dom'
+import { isoTimestampToHumanReadable } from '../../utils/dateUtils'
 
 export interface SavedQueryData {
     id: number
@@ -36,7 +30,7 @@ export default function SavedQueries({ match }: { match: { params: { id: string 
         loadData()
     }, [])
 
-    const columns: ColumnType<{ name: string; id: number; query: string }>[] = [
+    const columns: ColumnType<{ name: string; id: number; query: string, created_at: string }>[] = [
         {
             title: 'Name',
             dataIndex: 'name',
@@ -52,7 +46,10 @@ export default function SavedQueries({ match }: { match: { params: { id: string 
                 </span>
             ),
         },
-        { title: 'Created at', dataIndex: 'created_at' },
+        {
+            title: 'Created at',
+            render: (_, item) => item.created_at ? isoTimestampToHumanReadable(item.created_at) : '',
+        },
     ]
 
     return (
