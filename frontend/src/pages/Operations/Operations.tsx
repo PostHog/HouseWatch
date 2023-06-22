@@ -294,7 +294,7 @@ export function Operations(): JSX.Element {
                 operation fails, you rollback to a safe state.
             </p>
             <p>
-                <b>Please exercise caution!</b> This funtionality is still in Alpha.
+                <b>Please exercise caution!</b> This functionality is still in Alpha.
             </p>
             <Tabs
                 items={[
