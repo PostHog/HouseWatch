@@ -16,9 +16,10 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Any, Callable, Optional
 
-import dj_database_url
 from django.core.exceptions import ImproperlyConfigured
 from kombu import Exchange, Queue
+
+from housewatch.utils import str_to_bool
 
 # TODO: Figure out why things dont work on cloud without debug
 DEBUG = os.getenv("DEBUG", "false").lower() in ["true", "1"]
@@ -243,3 +244,16 @@ if TEST:
 
 
 POSTHOG_PROJECT_API_KEY = get_from_env("POSTHOG_PROJECT_API_KEY", "123456789")
+
+
+# ClickHouse
+
+CLICKHOUSE_HOST = get_from_env("CLICKHOUSE_HOST", "localhost")
+CLICKHOUSE_VERIFY = str_to_bool(get_from_env("CLICKHOUSE_VERIFY", "True"))
+CLICKHOUSE_CA = get_from_env("CLICKHOUSE_CA", "")
+CLICKHOUSE_SECURE = str_to_bool(get_from_env("CLICKHOUSE_SECURE", "True"))
+CLICKHOUSE_DATABASE = get_from_env("CLICKHOUSE_DATABASE", "default")
+CLICKHOUSE_USER = get_from_env("CLICKHOUSE_USER", "default")
+CLICKHOUSE_PASSWORD = get_from_env("CLICKHOUSE_PASSWORD", "default")
+
+

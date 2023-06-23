@@ -1,30 +1,32 @@
 from typing import Dict, Optional
 from clickhouse_pool import ChPool
-import os
 from housewatch.clickhouse.queries.sql import EXISTING_TABLES_SQL
 from django.core.cache import cache
+from django.settings import (
+    CLICKHOUSE_HOST,
+    CLICKHOUSE_VERIFY,
+    CLICKHOUSE_CA,
+    CLICKHOUSE_SECURE,
+    CLICKHOUSE_DATABASE,
+    CLICKHOUSE_USER,
+    CLICKHOUSE_PASSWORD,
+)
 import hashlib
 import json
 
-def str_to_bool(s: str) -> bool:
-    return str(s).lower() in ("y", "yes", "t", "true", "on", "1")
-
-ch_host = os.getenv("CLICKHOUSE_HOST", "localhost")
-ch_verify = os.getenv("CLICKHOUSE_VERIFY", True)
-ch_ca = os.getenv("CLICKHOUSE_CA", None)
-ch_secure = os.getenv("CLICKHOUSE_SECURE", True)
 
 pool = ChPool(
-    host=ch_host,
-    database=os.getenv("CLICKHOUSE_DATABASE", "default"),
-    user=os.getenv("CLICKHOUSE_USER", "default"),
-    password=os.getenv("CLICKHOUSE_PASSWORD", ""),
-    secure=str_to_bool(ch_secure) if ch_secure != "" else True,
-    ca_certs=ch_ca if ch_ca != "" else None,
-    verify=ch_verify if ch_verify != "" else True,
+    host=CLICKHOUSE_HOST,
+    database=CLICKHOUSE_DATABASE,
+    user=CLICKHOUSE_USER,
+    password=CLICKHOUSE_PASSWORD,
+    secure=CLICKHOUSE_SECURE,
+    ca_certs=CLICKHOUSE_CA,
+    verify=CLICKHOUSE_VERIFY,
     settings={"max_result_rows": "2000"},
     send_receive_timeout=30,
 )
+
 
 def run_query(
     query: str,
@@ -36,7 +38,7 @@ def run_query(
 ):
     final_query = query % (params or {}) if substitute_params else query
     query_hash = ""
-    
+
     if use_cache:
         query_hash = hashlib.sha256(final_query.encode("utf-8")).hexdigest()
         cached_result = cache.get(query_hash)
