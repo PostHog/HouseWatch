@@ -2,27 +2,19 @@ from typing import Dict, Optional
 from clickhouse_pool import ChPool
 from housewatch.clickhouse.queries.sql import EXISTING_TABLES_SQL
 from django.core.cache import cache
-from django.settings import (
-    CLICKHOUSE_HOST,
-    CLICKHOUSE_VERIFY,
-    CLICKHOUSE_CA,
-    CLICKHOUSE_SECURE,
-    CLICKHOUSE_DATABASE,
-    CLICKHOUSE_USER,
-    CLICKHOUSE_PASSWORD,
-)
+from django.conf import settings
 import hashlib
 import json
 
 
 pool = ChPool(
-    host=CLICKHOUSE_HOST,
-    database=CLICKHOUSE_DATABASE,
-    user=CLICKHOUSE_USER,
-    password=CLICKHOUSE_PASSWORD,
-    secure=CLICKHOUSE_SECURE,
-    ca_certs=CLICKHOUSE_CA,
-    verify=CLICKHOUSE_VERIFY,
+    host=settings.CLICKHOUSE_HOST,
+    database=settings.CLICKHOUSE_DATABASE,
+    user=settings.CLICKHOUSE_USER,
+    password=settings.CLICKHOUSE_PASSWORD,
+    secure=settings.CLICKHOUSE_SECURE,
+    ca_certs=settings.CLICKHOUSE_CA,
+    verify=settings.CLICKHOUSE_VERIFY,
     settings={"max_result_rows": "2000"},
     send_receive_timeout=30,
 )
