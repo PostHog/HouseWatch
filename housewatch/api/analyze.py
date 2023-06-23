@@ -2,7 +2,10 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from housewatch.clickhouse.client import run_query, ch_host, existing_system_tables
+
+from django.conf import settings
+
+from housewatch.clickhouse.client import run_query, existing_system_tables
 from housewatch.clickhouse.queries.sql import (
     SLOW_QUERIES_SQL,
     SCHEMA_SQL,
@@ -148,7 +151,7 @@ class AnalyzeViewset(GenericViewSet):
 
     @action(detail=False, methods=["GET"])
     def hostname(self, request: Request):
-        return Response({"hostname": ch_host})
+        return Response({"hostname": settings.CLICKHOUSE_HOST})
 
     @action(detail=True, methods=["GET"])
     def schema(self, request: Request, pk: str):

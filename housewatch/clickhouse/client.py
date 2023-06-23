@@ -11,12 +11,12 @@ pool = ChPool(
     host=settings.CLICKHOUSE_HOST,
     database=settings.CLICKHOUSE_DATABASE,
     user=settings.CLICKHOUSE_USER,
-    password=settings.CLICKHOUSE_PASSWORD,
     secure=settings.CLICKHOUSE_SECURE,
     ca_certs=settings.CLICKHOUSE_CA,
     verify=settings.CLICKHOUSE_VERIFY,
     settings={"max_result_rows": "2000"},
     send_receive_timeout=30,
+    password=settings.CLICKHOUSE_PASSWORD,
 )
 
 

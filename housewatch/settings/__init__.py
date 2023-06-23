@@ -254,6 +254,6 @@ CLICKHOUSE_CA = get_from_env("CLICKHOUSE_CA", "")
 CLICKHOUSE_SECURE = str_to_bool(get_from_env("CLICKHOUSE_SECURE", "True"))
 CLICKHOUSE_DATABASE = get_from_env("CLICKHOUSE_DATABASE", "defaul")
 CLICKHOUSE_USER = get_from_env("CLICKHOUSE_USER", "default")
-CLICKHOUSE_PASSWORD = get_from_env("CLICKHOUSE_PASSWORD", "default")
+CLICKHOUSE_PASSWORD = get_from_env("CLICKHOUSE_PASSWORD", "")
 
 
