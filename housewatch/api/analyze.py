@@ -210,15 +210,18 @@ class AnalyzeViewset(GenericViewSet):
         query2_tag = f"benchmarking_q2_{str(uuid4())}"
 
         error_location = None
+        # we use min_bytes_to_use_direct_io to try to not use the page cache
+        # docs: https://clickhouse.com/docs/en/operations/settings/settings#settings-min-bytes-to-use-direct-io
+        # it's unclear how well this works so this needs digging (see https://github.com/ClickHouse/ClickHouse/issues/36301)
         try:
             error_location = "Control"
             query1_result = run_query(
-                request.data["query1"], settings={"log_comment": query1_tag}, use_cache=False, substitute_params=False
+                request.data["query1"], settings={"log_comment": query1_tag, "min_bytes_to_use_direct_io": 1 }, use_cache=False, substitute_params=False
             )
 
             error_location = "Test"
             query2_result = run_query(
-                request.data["query2"], settings={"log_comment": query2_tag}, use_cache=False, substitute_params=False
+                request.data["query2"], settings={"log_comment": query2_tag, "min_bytes_to_use_direct_io": 1 }, use_cache=False, substitute_params=False
             )
 
             error_location = "benchmark"

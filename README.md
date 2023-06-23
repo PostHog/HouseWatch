@@ -69,6 +69,7 @@ HouseWatch is in its early days and we have a lot more features in mind that we'
 
 One potential approach is to connect HouseWatch to ClickHouse using a read-only user. In this case, the cluster management features will not work (e.g. operations, query editor), but the analysis toolset will function normally.
 
+HouseWatch was created and is maintained by [PostHog](https://posthog.com) and [yakkomajuri](https://github.com/yakkomajuri).
 
 ## ℹ️ Contributing
 
