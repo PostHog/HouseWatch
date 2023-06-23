@@ -3,16 +3,16 @@ version: '3'
 services:
     app:
         build: .
-        environment:
+        environment: &django_env
             REDIS_URL: redis://redis:6379
-            CLICKHOUSE_HOST: $CLICKHOUSE_HOST
-            CLICKHOUSE_DATABASE: $CLICKHOUSE_DATABASE
-            CLICKHOUSE_USER: $CLICKHOUSE_USER
-            CLICKHOUSE_PASSWORD: $CLICKHOUSE_PASSWORD
-            CLICKHOUSE_CLUSTER: $CLICKHOUSE_CLUSTER
-            CLICKHOUSE_SECURE: $CLICKHOUSE_SECURE
-            CLICKHOUSE_VERIFY: $CLICKHOUSE_VERIFY
-            CLICKHOUSE_CA: $CLICKHOUSE_CA
+            CLICKHOUSE_HOST: clickhouse 
+            CLICKHOUSE_DATABASE: default 
+            CLICKHOUSE_USER: default 
+            CLICKHOUSE_PASSWORD: "" 
+            CLICKHOUSE_CLUSTER: default 
+            CLICKHOUSE_SECURE: false 
+            CLICKHOUSE_VERIFY: false 
+            CLICKHOUSE_CA: "" 
         command:
             - bash
             - -c
@@ -38,15 +38,7 @@ services:
     worker:
         build: .
         environment:
-            REDIS_URL: redis://redis:6379
-            CLICKHOUSE_HOST: $CLICKHOUSE_HOST
-            CLICKHOUSE_DATABASE: $CLICKHOUSE_DATABASE
-            CLICKHOUSE_USER: $CLICKHOUSE_USER
-            CLICKHOUSE_PASSWORD: $CLICKHOUSE_PASSWORD
-            CLICKHOUSE_CLUSTER: $CLICKHOUSE_CLUSTER
-            CLICKHOUSE_SECURE: $CLICKHOUSE_SECURE
-            CLICKHOUSE_VERIFY: $CLICKHOUSE_VERIFY
-            CLICKHOUSE_CA: $CLICKHOUSE_CA
+            <<: *django_env
         command:
             - ./bin/celery
         volumes:
