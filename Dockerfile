@@ -14,4 +14,3 @@ COPY housewatch housewatch/
 COPY bin bin/
 
 RUN DEBUG=1 python manage.py collectstatic --noinput
-

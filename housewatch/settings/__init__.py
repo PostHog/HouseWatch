@@ -15,6 +15,7 @@ import sys
 from datetime import timedelta
 from pathlib import Path
 from typing import Any, Callable, Optional
+import dj_database_url
 
 from django.core.exceptions import ImproperlyConfigured
 from kombu import Exchange, Queue
@@ -255,5 +256,3 @@ CLICKHOUSE_SECURE = str_to_bool(get_from_env("CLICKHOUSE_SECURE", "True"))
 CLICKHOUSE_DATABASE = get_from_env("CLICKHOUSE_DATABASE", "defaul")
 CLICKHOUSE_USER = get_from_env("CLICKHOUSE_USER", "default")
 CLICKHOUSE_PASSWORD = get_from_env("CLICKHOUSE_PASSWORD", "")
-
-
