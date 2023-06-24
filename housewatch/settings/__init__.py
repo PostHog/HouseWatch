@@ -135,12 +135,7 @@ DATABASE_URL = get_from_env("DATABASE_URL", "")
 if DATABASE_URL:
     DATABASES = {"default": dj_database_url.config(default=DATABASE_URL, conn_max_age=600)}
 else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "housewatch.sqlite3"),
-        }
-    }
+    raise ImproperlyConfigured("DATABASE_URL environment variable not set!")
 
 
 # Password validation
