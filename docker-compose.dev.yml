@@ -4,13 +4,14 @@ services:
   app:
     build: .
     environment: &django_env
+      DEBUG: 1
       REDIS_URL: redis://redis:6379
       DATABASE_URL: postgres://housewatch:housewatch@db:5432/housewatch
       CLICKHOUSE_HOST: clickhouse
       CLICKHOUSE_DATABASE: default
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: ""
-      CLICKHOUSE_CLUSTER: default
+      CLICKHOUSE_CLUSTER: parallel_replicas
       CLICKHOUSE_SECURE: false
       CLICKHOUSE_VERIFY: false
       CLICKHOUSE_CA: ""
@@ -36,6 +37,7 @@ services:
       POSTGRES_USER: housewatch
       POSTGRES_DB: housewatch
       POSTGRES_PASSWORD: housewatch
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U housewatch"]
       interval: 5s
