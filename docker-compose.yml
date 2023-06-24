@@ -59,6 +59,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      SITE_ADDRESS: $SITE_ADDRESS
     volumes:
       - ./docker/Caddyfile:/etc/caddy/Caddyfile
     depends_on:

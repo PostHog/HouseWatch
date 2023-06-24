@@ -73,6 +73,8 @@ services:
     image: caddy:2.6.1
     ports:
       - "8888:8888"
+    environment:
+      SITE_ADDRESS: ":8888"
     volumes:
       - ./docker/Caddyfile:/etc/caddy/Caddyfile
     depends_on:

@@ -23,6 +23,7 @@
 To deploy HouseWatch, clone this repo and then run the following, substituting the environment variables for the relevant values of one of your ClickHouse instances:
 
 ```bash
+SITE_ADDRESS=<SITE_ADDRESS> \
 CLICKHOUSE_HOST=localhost \
 CLICKHOUSE_CLUSTER=mycluster \
 CLICKHOUSE_USER=default \
@@ -30,7 +31,9 @@ CLICKHOUSE_PASSWORD=xxxxxxxxxxx \
 docker compose -f docker-compose.yml up
 ```
 
-After running the above, the UI will be running on [http://localhost:3000](http://localhost:3000). For production installs, you might want to setup something like [Caddy](https://caddyserver.com/) or [NGINX](https://nginx.org/en/) with a [Let's Encrypt](https://letsencrypt.org/) TLS certificate.
+`SITE_ADDRESS` here is the address that the UI will be running on. It can be a domain name or simply a port like `:80`.
+
+After running the above, the UI will be running on the address you specified. This will be something like http://localhost if you used `:80` for your `SITE_ADDRESS` above. I would think twice about exposing this to the internet, as it is not currently secured in any way.
 
 <details>
 
