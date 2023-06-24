@@ -68,3 +68,13 @@ services:
   zookeeper:
     image: zookeeper:3.7.0
     restart: on-failure
+
+  caddy:
+    image: caddy:2.6.1
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - web
+      - app

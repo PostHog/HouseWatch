@@ -52,3 +52,15 @@ services:
       POSTGRES_USER: housewatch
       POSTGRES_DB: housewatch
       POSTGRES_PASSWORD: housewatch
+
+  caddy:
+    image: caddy:2.6.1
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - web
+      - app

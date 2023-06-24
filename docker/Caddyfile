@@ -1,0 +1,10 @@
+{
+    debug
+}
+
+:8081 {
+    reverse_proxy web:3000
+    reverse_proxy /api/* app:8000
+    reverse_proxy /logout app:8000
+    reverse_proxy /admin/ app:8000
+}
