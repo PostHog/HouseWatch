@@ -1,7 +1,6 @@
 import os
 
 from celery import Celery
-from celery.schedules import crontab
 from django_structlog.celery.steps import DjangoStructLogInitStep
 
 # set the default Django settings module for the 'celery' program.

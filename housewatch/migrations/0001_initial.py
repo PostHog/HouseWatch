@@ -8,19 +8,18 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Instance',
+            name="Instance",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('username', models.CharField(max_length=200)),
-                ('password', models.CharField(max_length=200)),
-                ('host', models.CharField(max_length=200)),
-                ('port', models.IntegerField()),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
+                ("username", models.CharField(max_length=200)),
+                ("password", models.CharField(max_length=200)),
+                ("host", models.CharField(max_length=200)),
+                ("port", models.IntegerField()),
             ],
         ),
     ]

@@ -99,8 +99,8 @@ export default function CollapsibleTable() {
                     placeholder="system.query_log"
                     optionFilterProp="children"
                     options={[
-                        { label: 'Last week', value: '-1w' }, 
-                        { label: 'Last two weeks', value: '-2w' }, 
+                        { label: 'Last week', value: '-1w' },
+                        { label: 'Last two weeks', value: '-2w' },
                         { label: 'Last month', value: '-1m' },
                         { label: 'Last three months', value: '-3m' }
                     ]}

@@ -6,17 +6,17 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('housewatch', '0005_asyncmigration_finished_at'),
+        ("housewatch", "0005_asyncmigration_finished_at"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SavedQuery',
+            name="SavedQuery",
             fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=200)),
-                ('query', models.CharField(max_length=2000)),
-                ('created_at', models.DateTimeField(auto_now=True)),
+                ("id", models.BigAutoField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=200)),
+                ("query", models.CharField(max_length=2000)),
+                ("created_at", models.DateTimeField(auto_now=True)),
             ],
         ),
     ]

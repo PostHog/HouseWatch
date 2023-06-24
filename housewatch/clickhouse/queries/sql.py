@@ -20,7 +20,7 @@ SELECT
     (sum(read_bytes)/(sum(sum(read_bytes)) over ()))*100 AS percentage_iops,
     (sum(query_duration_ms)/(sum(sum(query_duration_ms)) over ()))*100 AS percentage_runtime,
     toString(normalized_query_hash) AS normalized_query_hash
-FROM {QUERY_LOG_SYSTEM_TABLE} 
+FROM {QUERY_LOG_SYSTEM_TABLE}
 WHERE is_initial_query AND event_time > %(date_from)s AND type = 2
 GROUP BY normalized_query_hash, normalizeQuery(query)
 ORDER BY sum(read_bytes) DESC
@@ -33,7 +33,7 @@ SELECT toStartOfDay(event_time) AS day, %(math_func)s(%(load_metric)s) AS %(colu
 FROM {QUERY_LOG_SYSTEM_TABLE}
 WHERE
     event_time >= toDateTime(%(date_from)s)
-    AND event_time <= toDateTime(%(date_to)s) 
+    AND event_time <= toDateTime(%(date_to)s)
 GROUP BY day
 ORDER BY day
 """
@@ -75,7 +75,7 @@ PARTS_SQL = """
 SELECT name AS part, data_compressed_bytes AS compressed, formatReadableSize(data_compressed_bytes) AS compressed_readable, formatReadableSize(data_uncompressed_bytes) AS uncompressed
 FROM system.parts
 WHERE table = '%(table)s'
-ORDER BY data_compressed_bytes DESC 
+ORDER BY data_compressed_bytes DESC
 LIMIT 100
 """
 
@@ -176,7 +176,7 @@ ORDER BY day_start ASC
 """
 
 RUNNING_QUERIES_SQL = """
-SELECT query, elapsed, read_rows, total_rows_approx, formatReadableSize(memory_usage) AS memory_usage, query_id 
+SELECT query, elapsed, read_rows, total_rows_approx, formatReadableSize(memory_usage) AS memory_usage, query_id
 FROM system.processes
 WHERE Settings['log_comment'] != 'running_queries_lookup'
 ORDER BY elapsed DESC
@@ -188,10 +188,10 @@ KILL QUERY WHERE query_id = '%(query_id)s'
 """
 
 NODE_STORAGE_SQL = f"""
-SELECT 
-    hostName() node, 
-    sum(total_space) space_used, 
-    sum(free_space) free_space, 
+SELECT
+    hostName() node,
+    sum(total_space) space_used,
+    sum(free_space) free_space,
     (space_used + free_space) total_space_available,
     formatReadableSize(total_space_available) readable_total_space_available,
     formatReadableSize(space_used) readable_space_used,
@@ -205,7 +205,7 @@ ORDER BY node
 NODE_DATA_TRANSFER_ACROSS_SHARDS_SQL = f"""
 SELECT hostName() node, sum(read_bytes) total_bytes_transferred, formatReadableSize(total_bytes_transferred) AS readable_bytes_transferred
 FROM {QUERY_LOG_SYSTEM_TABLE}
-WHERE is_initial_query != 0 AND type = 2 
+WHERE is_initial_query != 0 AND type = 2
 GROUP BY node
 ORDER BY node
 """
@@ -244,16 +244,16 @@ ORDER BY hour
 BENCHMARKING_SQL = f"""
 SELECT
     if(log_comment = '%(query1_tag)s', 'Control', 'Test') AS query_version,
-    sumIf(query_duration_ms, is_initial_query) AS duration_ms, 
-    sumIf(memory_usage, is_initial_query) AS memory_usage, 
+    sumIf(query_duration_ms, is_initial_query) AS duration_ms,
+    sumIf(memory_usage, is_initial_query) AS memory_usage,
     sumIf(ProfileEvents['OSCPUVirtualTimeMicroseconds'], is_initial_query) AS cpu,
     sumIf(read_bytes, is_initial_query) AS read_bytes,
     sumIf(read_rows, NOT is_initial_query) AS read_bytes_from_other_shards,
     sumIf(ProfileEvents['NetworkReceiveBytes'], is_initial_query) AS network_receive_bytes
 FROM {QUERY_LOG_SYSTEM_TABLE}
-WHERE 
-    type = 2 
-    AND event_time > now() - INTERVAL 10 MINUTE 
+WHERE
+    type = 2
+    AND event_time > now() - INTERVAL 10 MINUTE
     AND (log_comment = '%(query1_tag)s' OR log_comment = '%(query2_tag)s')
 GROUP BY query_version
 ORDER BY query_version
@@ -261,7 +261,7 @@ ORDER BY query_version
 
 AVAILABLE_TABLES_SQL = """
 SELECT database, table
-FROM system.tables 
+FROM system.tables
 WHERE database NOT ILIKE 'information_schema'
 """
 

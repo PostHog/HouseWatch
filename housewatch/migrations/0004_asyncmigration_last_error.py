@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('housewatch', '0003_asyncmigration_operations_and_more'),
+        ("housewatch", "0003_asyncmigration_operations_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='asyncmigration',
-            name='last_error',
-            field=models.CharField(blank=True, default='', max_length=800, null=True),
+            model_name="asyncmigration",
+            name="last_error",
+            field=models.CharField(blank=True, default="", max_length=800, null=True),
         ),
     ]

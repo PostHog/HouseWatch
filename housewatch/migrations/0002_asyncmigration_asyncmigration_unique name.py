@@ -6,26 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('housewatch', '0001_initial'),
+        ("housewatch", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AsyncMigration',
+            name="AsyncMigration",
             fields=[
-                ('id', models.BigAutoField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=50)),
-                ('description', models.CharField(blank=True, max_length=400, null=True)),
-                ('progress', models.PositiveSmallIntegerField(default=0)),
-                ('status', models.PositiveSmallIntegerField(default=0)),
-                ('current_operation_index', models.PositiveSmallIntegerField(default=0)),
-                ('current_query_id', models.CharField(default='', max_length=100)),
-                ('task_id', models.CharField(blank=True, default='', max_length=100, null=True)),
-                ('started_at', models.DateTimeField(blank=True, null=True)),
+                ("id", models.BigAutoField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=50)),
+                ("description", models.CharField(blank=True, max_length=400, null=True)),
+                ("progress", models.PositiveSmallIntegerField(default=0)),
+                ("status", models.PositiveSmallIntegerField(default=0)),
+                ("current_operation_index", models.PositiveSmallIntegerField(default=0)),
+                ("current_query_id", models.CharField(default="", max_length=100)),
+                ("task_id", models.CharField(blank=True, default="", max_length=100, null=True)),
+                ("started_at", models.DateTimeField(blank=True, null=True)),
             ],
         ),
         migrations.AddConstraint(
-            model_name='asyncmigration',
-            constraint=models.UniqueConstraint(fields=('name',), name='unique name'),
+            model_name="asyncmigration",
+            constraint=models.UniqueConstraint(fields=("name",), name="unique name"),
         ),
     ]
