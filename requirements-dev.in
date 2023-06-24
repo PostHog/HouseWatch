@@ -1,0 +1,2 @@
+pip-tools==6.13.0
+pre-commit==3.3.3
