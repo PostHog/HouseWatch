@@ -37,13 +37,6 @@ jobs:
           sed -i 's/^version: \(.*\)$/version: \1-${{ github.sha }}/g' charts/housewatch/Chart.yaml
           helm dependency update charts/housewatch/
 
-      - name: get deployer token
-        id: deployer
-        uses: getsentry/action-github-app-token@v2
-        with:
-          app_id: ${{ secrets.DEPLOYER_APP_ID }}
-          private_key: ${{ secrets.DEPLOYER_APP_PRIVATE_KEY }}
-
       - name: Configure Git
         run: |
           git config user.name "PostHog Deployer"
