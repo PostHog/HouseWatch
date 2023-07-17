@@ -14,6 +14,10 @@ jobs:
     name: Release chart to repo
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -37,16 +41,16 @@ jobs:
           sed -i 's/^version: \(.*\)$/version: \1-${{ github.sha }}/g' charts/housewatch/Chart.yaml
           helm dependency update charts/housewatch/
 
-      - name: Configure Git
+      - name: Helm login
         run: |
-          git config user.name "PostHog Deployer"
-          git config user.email "127202802+posthog-deployer[bot]@users.noreply.github.com"
+          echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io -u $ --password-stdin
 
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.4.1
-        if: github.repository == 'PostHog/HouseWatch'
-        env:
-          CR_TOKEN: "${{ steps.deployer.outputs.token }}"
-          CR_SKIP_EXISTING: "true"
-        with:
-          charts_repo_url: "https://posthog.github.io/housewatch/"
+      - name: Helm package
+        run: |
+          helm package charts/housewatch
+
+      - name: Helm push
+        if: ${{ github.event_name == 'push' }}
+        run: |
+          helm push housewatch-*.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
+
