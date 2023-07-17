@@ -50,7 +50,6 @@ jobs:
           helm package charts/housewatch
 
       - name: Helm push
-        if: ${{ github.event_name == 'push' }}
         run: |
           helm push housewatch-*.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
 
