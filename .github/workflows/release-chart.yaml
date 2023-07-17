@@ -42,5 +42,6 @@ jobs:
 
       - name: Helm push
         run: |
+          echo helm push housewatch-*.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
           helm push housewatch-*.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
 
