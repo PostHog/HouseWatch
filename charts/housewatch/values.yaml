@@ -1,7 +1,7 @@
 image:
   repository: ghcr.io/posthog/housewatch/api
   frontendRepository: ghcr.io/posthog/housewatch/frontend
-  tag: sha-4cbdf5e
+  tag: main
 
 nginx:
   image:

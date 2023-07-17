@@ -45,7 +45,10 @@ spec:
           - name: CLICKHOUSE_USER
             value: "{{ .Values.clickhouse.user }}"
           - name: CLICKHOUSE_PASSWORD
-            value: "{{ .Values.clickhouse.password }}"
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .Values.clickhouse.secretName }}"
+                key: "{{ .Values.clickhouse.secretPasswordKey }}"
           - name: CLICKHOUSE_CLUSTER
             value: {{ .Values.clickhouse.cluster }}
           - name: CLICKHOUSE_SECURE
