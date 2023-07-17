@@ -76,7 +76,7 @@ export default function CollapsibleTable() {
         setSlowQueries([])
         setLoadingSlowQueries(true)
         try {
-            const res = await fetch(`http://localhost:8000/api/analyze/slow_queries?time_range=${timeRange}`)
+            const res = await fetch(`/api/analyze/slow_queries?time_range=${timeRange}`)
             const resJson = await res.json()
             const slowQueriesData = resJson.map((error: SlowQueryData, idx: number) => ({ key: idx, ...error }))
             setSlowQueries(slowQueriesData)
@@ -99,8 +99,8 @@ export default function CollapsibleTable() {
                     placeholder="system.query_log"
                     optionFilterProp="children"
                     options={[
-                        { label: 'Last week', value: '-1w' }, 
-                        { label: 'Last two weeks', value: '-2w' }, 
+                        { label: 'Last week', value: '-1w' },
+                        { label: 'Last two weeks', value: '-2w' },
                         { label: 'Last month', value: '-1m' },
                         { label: 'Last three months', value: '-3m' }
                     ]}

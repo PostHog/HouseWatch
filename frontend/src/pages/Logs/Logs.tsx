@@ -38,7 +38,7 @@ export default function Logs() {
         },
     ]
 
-    const url = 'http://localhost:8000/api/analyze/logs'
+    const url = '/api/analyze/logs'
 
     const fetchLogs = async (messageIlike = '') => {
         setLoadingLogs(true)
@@ -60,7 +60,7 @@ export default function Logs() {
 
     const fetchLogsFrequency = async (messageIlike = '') => {
         setLoadingLogsFrequency(true)
-        const res = await fetch('http://localhost:8000/api/analyze/logs_frequency', {
+        const res = await fetch('/api/analyze/logs_frequency', {
             method: 'POST',
             body: JSON.stringify({ message_ilike: messageIlike }),
             headers: {

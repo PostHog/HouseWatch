@@ -21,7 +21,7 @@ function KillQueryButton({ queryId }: any) {
     const killQuery = async () => {
         setIsLoading(true)
         try {
-            const res = await fetch(`http://localhost:8000/api/analyze/${queryId}/kill_query`, {
+            const res = await fetch(`/api/analyze/${queryId}/kill_query`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -97,7 +97,7 @@ export default function RunningQueries() {
         async () => {
             setRunningQueries([])
             setLoadingRunningQueries(true)
-            const res = await fetch('http://localhost:8000/api/analyze/running_queries')
+            const res = await fetch('/api/analyze/running_queries')
             const resJson = await res.json()
             setRunningQueries(resJson)
             setLoadingRunningQueries(false)

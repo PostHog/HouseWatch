@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "housewatch.fullname" . }}
+  labels:
+    {{- include "housewatch.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "housewatch.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/service: web
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "housewatch.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/service: web
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: web
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command: ["bash", "-c"]
+          args:
+          - |
+              python manage.py migrate
+              python manage.py runserver 0.0.0.0:8000
+          ports:
+            - name: api
+              containerPort: 8000
+              protocol: TCP
+          env:
+          - name: REDIS_URL
+            value: redis://{{ include "housewatch.fullname" . }}-redis:6379
+          - name: CLICKHOUSE_HOST
+            value: "{{ .Values.clickhouse.host }}"
+          - name: CLICKHOUSE_DATABASE
+            value: "{{ .Values.clickhouse.database }}"
+          - name: CLICKHOUSE_USER
+            value: "{{ .Values.clickhouse.user }}"
+          - name: CLICKHOUSE_PASSWORD
+            value: "{{ .Values.clickhouse.password }}"
+          - name: CLICKHOUSE_CLUSTER
+            value: {{ .Values.clickhouse.cluster }}
+          - name: CLICKHOUSE_SECURE
+            value: "{{ .Values.clickhouse.secure }}"
+          - name: CLICKHOUSE_VERIFY
+            value: "{{ .Values.clickhouse.verify }}"
+          - name: CLICKHOUSE_CA
+            value: "{{ .Values.clickhouse.ca }}"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: api
+          readinessProbe:
+            httpGet:
+              path: /
+              port: api
+          resources:
+            {{- toYaml .Values.web.resources | nindent 12 }}

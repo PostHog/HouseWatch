@@ -32,7 +32,7 @@ export default function CollapsibleTable() {
 
     const loadData = async () => {
         try {
-            const res = await fetch('http://localhost:8000/api/analyze/errors')
+            const res = await fetch('/api/analyze/errors')
             const resJson = await res.json()
 
             const slowQueriesData = resJson.map((error: ErrorData, idx: number) => ({ key: idx, ...error }))

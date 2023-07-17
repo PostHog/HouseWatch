@@ -51,7 +51,7 @@ export default function AppLayout(): JSX.Element {
     const [hostname, setHostname] = useState('')
 
     const fetchHostname = async () => {
-        const response = await fetch(`http://localhost:8000/api/analyze/hostname`)
+        const response = await fetch(`/api/analyze/hostname`)
         const responseJson = await response.json()
         setHostname(responseJson.hostname)
     }

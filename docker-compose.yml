@@ -1,6 +1,14 @@
 version: '3'
 
 services:
+    web:
+        build:
+            context: frontend/
+            dockerfile: Dockerfile.dev
+        command: ["npm", "run", "start"]
+        ports:
+            - "3000:3000"
+
     app:
         build: .
         environment:
@@ -21,12 +29,12 @@ services:
                 python manage.py runserver 0.0.0.0:8000
         volumes:
             - .:/code
+<<<<<<< HEAD
         ports:
             - '8000:8000'
-    web:
-        build: ./frontend
-        ports:
-            - "3000:3000"
+=======
+        network_mode: "service:web"
+>>>>>>> 0921a8c (Add helm chart)
 
     redis:
         image: redis:6.2.7-alpine
