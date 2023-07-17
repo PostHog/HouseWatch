@@ -8,6 +8,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - charts/**
+      - .github/workflows/release-chart.yaml
 
 jobs:
   release:
@@ -28,6 +31,7 @@ jobs:
           version: v3.12.2
 
       - name: Add -<sha> to version in charts/housewatch/Chart.yaml and update Chart.lock
+        if: github.ref != 'refs/heads/main'
         run: |
           sed -i 's/^version: \(.*\)$/version: \1-${{ github.sha }}/g' charts/housewatch/Chart.yaml
           helm dependency update charts/housewatch/
@@ -42,6 +46,5 @@ jobs:
 
       - name: Helm push
         run: |
-          echo helm push housewatch-*.tgz oci://ghcr.io/posthog/housewatch/charts
           helm push housewatch-*.tgz oci://ghcr.io/posthog/housewatch/charts
 
