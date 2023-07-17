@@ -21,15 +21,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: get deployer token
-        id: deployer
-        uses: getsentry/action-github-app-token@v2
-        with:
-          app_id: ${{ secrets.DEPLOYER_APP_ID }}
-          private_key: ${{ secrets.DEPLOYER_APP_PRIVATE_KEY }}
 
       - name: Install Helm
         uses: azure/setup-helm@v1
