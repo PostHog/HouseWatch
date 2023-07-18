@@ -18,7 +18,7 @@ export default function SavedQueries({ match }: { match: { params: { id: string 
     const history = useHistory()
 
     const loadData = async () => {
-        const res = await fetch('http://localhost:8000/api/saved_queries')
+        const res = await fetch('/api/saved_queries')
         const resJson = await res.json()
         setSavedQueries(resJson.results)
         if (match && match.params && match.params.id) {

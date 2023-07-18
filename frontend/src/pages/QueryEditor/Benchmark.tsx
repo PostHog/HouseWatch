@@ -47,7 +47,7 @@ export default function QueryBenchmarking() {
         try {
             setData(null)
             setError(null)
-            const res = await fetch('http://localhost:8000/api/analyze/benchmark', {
+            const res = await fetch('/api/analyze/benchmark', {
                 method: 'POST',
                 body: JSON.stringify({ query1, query2 }),
                 headers: {
