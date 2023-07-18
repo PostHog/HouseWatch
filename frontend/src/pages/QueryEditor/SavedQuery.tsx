@@ -17,7 +17,7 @@ export default function SavedQuery({ id, query, name }: SavedQueryData) {
         try {
             setData([])
             setError('')
-            const res = await fetch('http://localhost:8000/api/analyze/query', {
+            const res = await fetch('/api/analyze/query', {
                 method: 'POST',
                 body: JSON.stringify({ sql: query }),
                 headers: {
