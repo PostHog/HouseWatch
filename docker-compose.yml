@@ -29,12 +29,7 @@ services:
                 python manage.py runserver 0.0.0.0:8000
         volumes:
             - .:/code
-<<<<<<< HEAD
-        ports:
-            - '8000:8000'
-=======
         network_mode: "service:web"
->>>>>>> 0921a8c (Add helm chart)
 
     redis:
         image: redis:6.2.7-alpine
