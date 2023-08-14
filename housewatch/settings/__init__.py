@@ -134,7 +134,7 @@ DATABASE_URL = get_from_env("DATABASE_URL", "")
 
 if DATABASE_URL:
     DATABASES = {"default": dj_database_url.config(default=DATABASE_URL, conn_max_age=600)}
-else:
+elif not DEBUG:
     raise ImproperlyConfigured("DATABASE_URL environment variable not set!")
 
 
