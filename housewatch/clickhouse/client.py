@@ -1,3 +1,4 @@
+import os
 from typing import Dict, Optional
 from clickhouse_pool import ChPool
 from housewatch.clickhouse.queries.sql import EXISTING_TABLES_SQL

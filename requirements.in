@@ -33,7 +33,7 @@ kombu==5.2.4
 multidict==6.0.4
 openai==0.27.8
 prompt-toolkit==3.0.38
-psycopg2-binary==2.9.3
+psycopg2-binary==2.9.7
 pyrsistent==0.19.3
 pytz==2023.2
 pytz-deprecation-shim==0.1.0.post0
