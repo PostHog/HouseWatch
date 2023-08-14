@@ -1,11 +1,17 @@
 from typing import Dict, Optional
 from clickhouse_pool import ChPool
 from housewatch.clickhouse.queries.sql import EXISTING_TABLES_SQL
+from housewatch.utils import str_to_bool
 from django.core.cache import cache
 from django.conf import settings
 import hashlib
 import json
 
+
+ch_host = os.getenv("CLICKHOUSE_HOST", "localhost")
+ch_verify = os.getenv("CLICKHOUSE_VERIFY", "true").lower() not in ("false", "0")
+ch_ca = os.getenv("CLICKHOUSE_CA", None)
+ch_secure = os.getenv("CLICKHOUSE_SECURE", "true").lower() not in ("false", "0")
 
 pool = ChPool(
     host=settings.CLICKHOUSE_HOST,

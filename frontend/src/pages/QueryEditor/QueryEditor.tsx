@@ -46,7 +46,7 @@ export default function QueryEditor() {
 
     const saveQuery = async (queryName: string) => {
         try {
-            const res = await fetch('http://localhost:8000/api/saved_queries', {
+            const res = await fetch('/api/saved_queries', {
                 method: 'POST',
                 body: JSON.stringify({ name: queryName, query: sql }),
                 headers: {
@@ -68,8 +68,7 @@ export default function QueryEditor() {
         setRunningQueryId(queryId)
         try {
             setData([])
-            setError('')
-            const res = await fetch('http://localhost:8000/api/analyze/query', {
+            const res = await fetch('/api/analyze/query', {
                 method: 'POST',
                 body: JSON.stringify({ sql, query_id: queryId }),
                 headers: {

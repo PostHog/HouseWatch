@@ -77,7 +77,7 @@ export function OperationsList(): JSX.Element {
     const [operations, setOperations] = useState([])
 
     const fetchAndUpdateOperationsIfNeeded = async () => {
-        const response = await fetch('http://localhost:8000/api/async_migrations')
+        const response = await fetch('/api/async_migrations')
         const responseJson = await response.json()
         const results = responseJson.results
         if (JSON.stringify(results) !== JSON.stringify(operations)) {
@@ -86,7 +86,7 @@ export function OperationsList(): JSX.Element {
     }
 
     const triggerOperation = async (id) => {
-        await fetch(`http://localhost:8000/api/async_migrations/${id}/trigger`, { method: 'POST' })
+        await fetch(`/api/async_migrations/${id}/trigger`, { method: 'POST' })
         await fetchAndUpdateOperationsIfNeeded()
     }
 
@@ -174,7 +174,7 @@ export function CreateNewOperation(): JSX.Element {
             operationData[key] = value
         }
 
-        const res = await fetch('http://localhost:8000/api/async_migrations', {
+        const res = await fetch('/api/async_migrations', {
             method: 'POST',
             body: JSON.stringify(operationData),
             headers: {
@@ -294,7 +294,7 @@ export function Operations(): JSX.Element {
                 operation fails, you rollback to a safe state.
             </p>
             <p>
-                <b>Please exercise caution!</b> This funtionality is still in Alpha.
+                <b>Please exercise caution!</b> This functionality is still in Alpha.
             </p>
             <Tabs
                 items={[

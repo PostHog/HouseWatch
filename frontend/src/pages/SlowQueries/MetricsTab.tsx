@@ -12,7 +12,7 @@ export default function MetricsTab({ query_hash }: { query_hash: string }) {
 
     const loadData = async () => {
         try {
-            const res = await fetch(`http://localhost:8000/api/analyze/${query_hash}/query_metrics`)
+            const res = await fetch(`/api/analyze/${query_hash}/query_metrics`)
             const resJson = await res.json()
             setData(resJson)
         } catch {

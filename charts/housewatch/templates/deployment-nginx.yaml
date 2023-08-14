@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "housewatch.fullname" . }}-nginx
+  labels:
+    {{- include "housewatch.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "housewatch.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/service: nginx
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "housewatch.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/service: nginx
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      - name: frontend
+        emptyDir: {}
+      - name: nginx-config
+        configMap:
+          name: {{ include "housewatch.fullname" . }}-nginx
+      initContainers:
+      - name: frontend-copy
+        image: "{{ .Values.image.frontendRepository }}:{{ .Values.image.tag }}"
+        command: [sh, -cex]
+        args:
+        - cp -r /frontend/build/* /http/
+        volumeMounts:
+        - mountPath: /http
+          name: frontend
+      containers:
+        - name: nginx
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          ports:
+          - name: http
+            containerPort: 80
+            protocol: TCP
+          volumeMounts:
+          - mountPath: /http
+            name: frontend
+          - mountPath: /etc/nginx/nginx.conf
+            name: nginx-config
+            subPath: nginx.conf
+          resources:
+            {{- toYaml .Values.nginx.resources | nindent 12 }}

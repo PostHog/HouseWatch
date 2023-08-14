@@ -8,7 +8,7 @@ export default function AIToolsPage() {
     const [error, setError] = useState<string | null>(null)
 
     const loadData = async () => {
-        const res = await fetch('http://localhost:8000/api/analyze/ai_tools_available')
+        const res = await fetch('/api/analyze/ai_tools_available')
         const resJson = await res.json()
         if ('error' in resJson) {
             setError(resJson['error'])

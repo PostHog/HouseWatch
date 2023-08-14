@@ -161,7 +161,7 @@ cython_debug/
 
 
 env/
-charts
+__pycache__/
 node_modules
 housewatch.sqlite3
 .DS_Store

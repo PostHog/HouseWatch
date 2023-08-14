@@ -45,12 +45,12 @@ export default function Schema() {
 
     const loadData = async () => {
         try {
-            const res = await fetch('http://localhost:8000/api/analyze/tables')
+            const res = await fetch('/api/analyze/tables')
             const resJson = await res.json()
 
             const filteredRes = resJson.filter((r: { total_bytes: number }) => r.total_bytes > 0)
             const filteredResUrls = filteredRes
-                .map((fr: { name: string }) => `http://localhost:8000/api/analyze/${fr.name}/schema`)
+                .map((fr: { name: string }) => `/api/analyze/${fr.name}/schema`)
                 .slice(0, 1)
 
             const nestedRes = await Promise.all(

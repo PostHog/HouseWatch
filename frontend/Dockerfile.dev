@@ -1,9 +1,10 @@
-FROM alpine:latest
+FROM node:20
 
 WORKDIR /frontend
 
-COPY build/ build/
+COPY . .
 
+ENV NODE_OPTIONS --openssl-legacy-provider
 RUN npm install
 RUN npm run build
 RUN npm install -g serve

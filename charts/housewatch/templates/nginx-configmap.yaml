@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "housewatch.fullname" . }}-nginx
+data:
+  nginx.conf: |
+    events {
+      worker_connections 1024;
+    }
+    http {
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
+
+      sendfile on;
+      keepalive_timeout 65;
+
+      server {
+        listen 80;
+
+        location / {
+            root /http;
+            try_files $uri $uri/ /index.html =404;
+        }
+
+        location /api {
+            proxy_pass http://{{ include "housewatch.fullname" . }}-api:8000;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+        }
+      }
+    }
