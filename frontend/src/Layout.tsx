@@ -7,6 +7,7 @@ import QueryDetail from './pages/SlowQueries/QueryDetail'
 import SchemaTable from './pages/SchemaStats/SchemaTable'
 import Overview from './pages/Overview/Overview'
 import Clusters from './pages/Clusters/Clusters'
+import Backups from './pages/Backups/Backups'
 import Errors from './pages/Errors/Errors'
 import { Switch, Route, useHistory } from 'react-router-dom'
 
@@ -26,6 +27,7 @@ import {
     BarsOutlined,
     FormOutlined,
     ToolOutlined,
+    SaveOutlined,
 } from '@ant-design/icons'
 import { ConfigProvider, MenuProps } from 'antd'
 import { Layout, Menu } from 'antd'
@@ -39,6 +41,7 @@ type MenuItem = Required<MenuProps>['items'][number]
 const items: MenuItem[] = [
     { key: '', icon: <HomeOutlined />, label: 'Overview' },
     { key: 'clusters', label: 'Clusters', icon: <CloudServerOutlined /> },
+    { key: 'backups', label: 'Backups', icon: <SaveOutlined /> },
     { key: 'query_performance', label: 'Query performance', icon: <ClockCircleOutlined /> },
     { key: 'running_queries', label: 'Running queries', icon: <DashboardOutlined /> },
     { key: 'schema', label: 'Schema stats', icon: <HddOutlined /> },
@@ -102,6 +105,7 @@ export default function AppLayout(): JSX.Element {
                         <Switch>
                             <Route exact path="/" component={Overview}></Route>
                             <Route exact path="/clusters" component={Clusters}></Route>
+                            <Route exact path="/backups" component={Backups}></Route>
                             <Route exact path="/disk_usage">
                                 <DiskUsage />
                             </Route>
