@@ -268,7 +268,6 @@ class AnalyzeViewset(GenericViewSet):
 
     @action(detail=False, methods=["POST"])
     def natural_language_query(self, request: Request):
-
         table_schema_sql_conditions = []
         for full_table_name in request.data["tables_to_query"]:
             database, table = full_table_name.split(">>>>>")
