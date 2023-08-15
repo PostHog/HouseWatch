@@ -22,7 +22,7 @@ export interface BenchmarkingData {
 const DEFAULT_QUERY1 = `SELECT number FROM system.errors errors
 JOIN (
     SELECT * FROM system.numbers LIMIT 1000
-) numbers 
+) numbers
 ON numbers.number = toUInt64(errors.code)
 SETTINGS join_algorithm = 'default'
 `
@@ -30,7 +30,7 @@ SETTINGS join_algorithm = 'default'
 const DEFAULT_QUERY2 = `SELECT number FROM system.errors errors
 JOIN (
     SELECT * FROM system.numbers LIMIT 1000
-) numbers 
+) numbers
 ON numbers.number = toUInt64(errors.code)
 SETTINGS join_algorithm = 'parallel_hash'
 `

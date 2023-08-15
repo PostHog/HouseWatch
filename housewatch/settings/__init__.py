@@ -15,10 +15,12 @@ import sys
 from datetime import timedelta
 from pathlib import Path
 from typing import Any, Callable, Optional
-
 import dj_database_url
+
 from django.core.exceptions import ImproperlyConfigured
 from kombu import Exchange, Queue
+
+from housewatch.utils import str_to_bool
 
 # TODO: Figure out why things dont work on cloud without debug
 DEBUG = os.getenv("DEBUG", "false").lower() in ["true", "1"]
@@ -132,13 +134,8 @@ DATABASE_URL = get_from_env("DATABASE_URL", "")
 
 if DATABASE_URL:
     DATABASES = {"default": dj_database_url.config(default=DATABASE_URL, conn_max_age=600)}
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "housewatch.sqlite3"),
-        }
-    }
+elif not DEBUG:
+    raise ImproperlyConfigured("DATABASE_URL environment variable not set!")
 
 
 # Password validation
@@ -243,3 +240,14 @@ if TEST:
 
 
 POSTHOG_PROJECT_API_KEY = get_from_env("POSTHOG_PROJECT_API_KEY", "123456789")
+
+
+# ClickHouse
+
+CLICKHOUSE_HOST = get_from_env("CLICKHOUSE_HOST", "localhost")
+CLICKHOUSE_VERIFY = str_to_bool(get_from_env("CLICKHOUSE_VERIFY", "True"))
+CLICKHOUSE_CA = get_from_env("CLICKHOUSE_CA", "")
+CLICKHOUSE_SECURE = str_to_bool(get_from_env("CLICKHOUSE_SECURE", "True"))
+CLICKHOUSE_DATABASE = get_from_env("CLICKHOUSE_DATABASE", "defaul")
+CLICKHOUSE_USER = get_from_env("CLICKHOUSE_USER", "default")
+CLICKHOUSE_PASSWORD = get_from_env("CLICKHOUSE_PASSWORD", "")

@@ -1,9 +1,7 @@
-import asyncio
 from datetime import datetime
-from typing import Callable, Optional
+from typing import Optional
 
 import structlog
-from django.conf import settings
 from django.db import transaction
 from django.utils.timezone import now
 from housewatch.models.async_migration import AsyncMigration, MigrationStatus
@@ -27,7 +25,7 @@ def execute_op(sql: str, args=None, *, query_id: str, timeout_seconds: int = 600
     try:
         run_query(sql, args, settings=settings, use_cache=False)
     except Exception as e:
-        raise Exception(f"Failed to execute ClickHouse op: sql={sql},\nquery_id={query_id},\nexception={str(e)}")
+        raise Exception(f"Failed to execute ClickHouse op: sql={sql},\nquery_id={query_id},\nexception={str(e)}") from e
 
 
 def mark_async_migration_as_running(migration: AsyncMigration) -> bool:

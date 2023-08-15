@@ -1,61 +1,67 @@
-version: '3'
+version: "3"
 
 services:
-    web:
-        build:
-            context: frontend/
-            dockerfile: Dockerfile.dev
-        command: ["npm", "run", "start"]
-        ports:
-            - "3000:3000"
+  app:
+    build: .
+    environment: &django_env
+      DATABASE_URL: postgres://housewatch:housewatch@db:5432/housewatch
+      REDIS_URL: redis://redis:6379
+      CLICKHOUSE_HOST: $CLICKHOUSE_HOST
+      CLICKHOUSE_DATABASE: $CLICKHOUSE_DATABASE
+      CLICKHOUSE_USER: $CLICKHOUSE_USER
+      CLICKHOUSE_PASSWORD: $CLICKHOUSE_PASSWORD
+      CLICKHOUSE_CLUSTER: $CLICKHOUSE_CLUSTER
+      CLICKHOUSE_SECURE: $CLICKHOUSE_SECURE
+      CLICKHOUSE_VERIFY: $CLICKHOUSE_VERIFY
+      CLICKHOUSE_CA: $CLICKHOUSE_CA
+    command:
+      - bash
+      - -c
+      - |
+        python manage.py migrate
+        python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+  web:
+    build: ./frontend
+    ports:
+      - "3000:3000"
 
-    app:
-        build: .
-        environment:
-            REDIS_URL: redis://redis:6379
-            CLICKHOUSE_HOST: $CLICKHOUSE_HOST
-            CLICKHOUSE_DATABASE: $CLICKHOUSE_DATABASE
-            CLICKHOUSE_USER: $CLICKHOUSE_USER
-            CLICKHOUSE_PASSWORD: $CLICKHOUSE_PASSWORD
-            CLICKHOUSE_CLUSTER: $CLICKHOUSE_CLUSTER
-            CLICKHOUSE_SECURE: $CLICKHOUSE_SECURE
-            CLICKHOUSE_VERIFY: $CLICKHOUSE_VERIFY
-            CLICKHOUSE_CA: $CLICKHOUSE_CA
-        command:
-            - bash
-            - -c
-            - |
-                python manage.py migrate
-                python manage.py runserver 0.0.0.0:8000
-        volumes:
-            - .:/code
-<<<<<<< HEAD
-        ports:
-            - '8000:8000'
-=======
-        network_mode: "service:web"
->>>>>>> 0921a8c (Add helm chart)
+  worker:
+    build: .
+    environment:
+      <<: *django_env
+    command:
+      - ./bin/celery
+    volumes:
+      - .:/code
+  redis:
+    image: redis:6.2.7-alpine
+    restart: on-failure
+    ports:
+      - "6388:6379"
+    command: redis-server --maxmemory-policy allkeys-lru --maxmemory 200mb
 
-    redis:
-        image: redis:6.2.7-alpine
-        restart: on-failure
-        ports:
-            - '6388:6379'
-        command: redis-server --maxmemory-policy allkeys-lru --maxmemory 200mb
+  db:
+    image: postgres:14-alpine
+    restart: on-failure
+    environment:
+      POSTGRES_USER: housewatch
+      POSTGRES_DB: housewatch
+      POSTGRES_PASSWORD: housewatch
 
-    worker:
-        build: .
-        environment:
-            REDIS_URL: redis://redis:6379
-            CLICKHOUSE_HOST: $CLICKHOUSE_HOST
-            CLICKHOUSE_DATABASE: $CLICKHOUSE_DATABASE
-            CLICKHOUSE_USER: $CLICKHOUSE_USER
-            CLICKHOUSE_PASSWORD: $CLICKHOUSE_PASSWORD
-            CLICKHOUSE_CLUSTER: $CLICKHOUSE_CLUSTER
-            CLICKHOUSE_SECURE: $CLICKHOUSE_SECURE
-            CLICKHOUSE_VERIFY: $CLICKHOUSE_VERIFY
-            CLICKHOUSE_CA: $CLICKHOUSE_CA
-        command:
-            - ./bin/celery
-        volumes:
-           - .:/code
+  caddy:
+    image: caddy:2.6.1
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_ADDRESS: $SITE_ADDRESS
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - web
+      - app

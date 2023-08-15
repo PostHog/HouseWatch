@@ -23,6 +23,7 @@
 To deploy HouseWatch, clone this repo and then run the following, substituting the environment variables for the relevant values of one of your ClickHouse instances:
 
 ```bash
+SITE_ADDRESS=<SITE_ADDRESS> \
 CLICKHOUSE_HOST=localhost \
 CLICKHOUSE_CLUSTER=mycluster \
 CLICKHOUSE_USER=default \
@@ -30,7 +31,9 @@ CLICKHOUSE_PASSWORD=xxxxxxxxxxx \
 docker compose -f docker-compose.yml up
 ```
 
-After running the above, the UI will be running on [http://localhost:3000](http://localhost:3000). For production installs, you might want to setup something like [Caddy](https://caddyserver.com/) or [NGINX](https://nginx.org/en/) with a [Let's Encrypt](https://letsencrypt.org/) TLS certificate.
+`SITE_ADDRESS` here is the address that the UI will be running on. It can be a domain name or simply a port like `:80`.
+
+After running the above, the UI will be running on the address you specified. This will be something like http://localhost if you used `:80` for your `SITE_ADDRESS` above. I would think twice about exposing this to the internet, as it is not currently secured in any way.
 
 <details>
 
@@ -49,13 +52,13 @@ The following are the supported environment variables for configuring your House
 - `CLICKHOUSE_VERIFY`: Optional - see [clickhouse-driver docs](https://clickhouse-driver.readthedocs.io/en/latest/index.html) for more information
 - `CLICKHOUSE_CA`: Optional - see [clickhouse-driver docs](https://clickhouse-driver.readthedocs.io/en/latest/index.html) for more information
 - `OPENAI_API_KEY`: Optional - enables the experimental "AI Tools" page, which currently features a natural language query editor
-- `OPENAI_MODEL`: Optional - a valid OpenAI model (e.g. `gpt-3.5-turbo`, `gpt-4`) that you have access to with the key above to be used for the AI features 
+- `OPENAI_MODEL`: Optional - a valid OpenAI model (e.g. `gpt-3.5-turbo`, `gpt-4`) that you have access to with the key above to be used for the AI features
 
 </details>
 
 ## 💡 Motivation
 
-At PostHog we manage a few large ClickHouse clusters and found ourselves in need of a tool to monitor and manage these more easily. 
+At PostHog we manage a few large ClickHouse clusters and found ourselves in need of a tool to monitor and manage these more easily.
 
 ClickHouse is fantastic at introspection, providing a lot of metadata about the system in its system tables so that it can be easily queried. However, knowing exactly how to query and parse the available information can be a difficult task. Over the years at PostHog, we've developed great intuition for how to debug ClickHouse issues using ClickHouse, and HouseWatch is the compilation of this knowledge into a tool.
 
@@ -65,7 +68,7 @@ As a result, we felt it was appropriate to have these tools live in one place. U
 
 ## 🏗️ Status of the project
 
-HouseWatch is in its early days and we have a lot more features in mind that we'd like to build into it going forward. The code could also use some cleaning up :) As of right now, it is considered Beta software and you should exercise caution when using it in production. 
+HouseWatch is in its early days and we have a lot more features in mind that we'd like to build into it going forward. The code could also use some cleaning up :) As of right now, it is considered Beta software and you should exercise caution when using it in production.
 
 One potential approach is to connect HouseWatch to ClickHouse using a read-only user. In this case, the cluster management features will not work (e.g. operations, query editor), but the analysis toolset will function normally.
 
@@ -175,7 +178,7 @@ A public list of things we intend to do with HouseWatch in the near future.
 
 <b>Cleanup</b>
 
-- [ ] Extract README images out of repo 
+- [ ] Extract README images out of repo
 - [ ] Make banner subtitle work on dark mode
 - [ ] Fetch data independently on the query analyzer
 - [ ] Breakpoint for logs search

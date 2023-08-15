@@ -1,0 +1,4 @@
+black==23.3.0
+ruff==0.0.275
+pip-tools==6.13.0
+pre-commit==3.3.3
