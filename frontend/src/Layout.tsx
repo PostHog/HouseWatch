@@ -6,6 +6,7 @@ import Schema from './pages/SchemaStats/SchemaStats'
 import QueryDetail from './pages/SlowQueries/QueryDetail'
 import SchemaTable from './pages/SchemaStats/SchemaTable'
 import Overview from './pages/Overview/Overview'
+import Clusters from './pages/Clusters/Clusters'
 import Errors from './pages/Errors/Errors'
 import { Switch, Route, useHistory } from 'react-router-dom'
 
@@ -14,6 +15,7 @@ import RunningQueries from './pages/RunningQueries/RunningQueries'
 import Logs from './pages/Logs/Logs'
 import {
     ApartmentOutlined,
+    CloudServerOutlined,
     CodeOutlined,
     DashboardOutlined,
     HddOutlined,
@@ -36,6 +38,7 @@ type MenuItem = Required<MenuProps>['items'][number]
 
 const items: MenuItem[] = [
     { key: '', icon: <HomeOutlined />, label: 'Overview' },
+    { key: 'clusters', label: 'Clusters', icon: <CloudServerOutlined /> },
     { key: 'query_performance', label: 'Query performance', icon: <ClockCircleOutlined /> },
     { key: 'running_queries', label: 'Running queries', icon: <DashboardOutlined /> },
     { key: 'schema', label: 'Schema stats', icon: <HddOutlined /> },
@@ -98,6 +101,7 @@ export default function AppLayout(): JSX.Element {
                     <Content style={{ margin: 'auto', display: 'block', width: '85%', marginTop: 20 }}>
                         <Switch>
                             <Route exact path="/" component={Overview}></Route>
+                            <Route exact path="/clusters" component={Clusters}></Route>
                             <Route exact path="/disk_usage">
                                 <DiskUsage />
                             </Route>
