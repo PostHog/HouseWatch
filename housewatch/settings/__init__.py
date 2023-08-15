@@ -207,8 +207,10 @@ EVENT_USAGE_CACHING_TTL = get_from_env("EVENT_USAGE_CACHING_TTL", 12 * 60 * 60, 
 
 if TEST or DEBUG:
     REDIS_URL = get_from_env("REDIS_URL", "redis://localhost:6379")
+    RABBITMQ_URL = get_from_env("RABBITMQ_URL", "amqp://localhost:5672")
 else:
     REDIS_URL = get_from_env("REDIS_URL")
+    RABBITMQ_URL = get_from_env("RABBITMQ_URL")
 
 
 CACHES = {
@@ -225,7 +227,7 @@ CACHES = {
 CELERY_QUEUES = (Queue("celery", Exchange("celery"), "celery"),)
 CELERY_DEFAULT_QUEUE = "celery"
 CELERY_IMPORTS = []  # type: ignore
-CELERY_BROKER_URL = REDIS_URL  # celery connects to redis
+CELERY_BROKER_URL = RABBITMQ_URL  # celery connects to rabbitmq
 CELERY_BEAT_MAX_LOOP_INTERVAL = 30  # sleep max 30sec before checking for new periodic events
 CELERY_RESULT_BACKEND = REDIS_URL  # stores results for lookup when processing
 CELERY_IGNORE_RESULT = True  # only applies to delay(), must do @shared_task(ignore_result=True) for apply_async
