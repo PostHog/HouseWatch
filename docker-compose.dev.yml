@@ -6,6 +6,7 @@ services:
     environment: &django_env
       DEBUG: 1
       REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://posthog:posthog@rabbitmq:5672
       DATABASE_URL: postgres://housewatch:housewatch@db:5432/housewatch
       CLICKHOUSE_HOST: clickhouse
       CLICKHOUSE_DATABASE: default
@@ -29,6 +30,7 @@ services:
       - clickhouse
       - db
       - redis
+      - rabbitmq
 
   web:
     build:
@@ -72,6 +74,7 @@ services:
       - clickhouse
       - db
       - redis
+      - rabbitmq
 
   clickhouse:
     image: ${CLICKHOUSE_SERVER_IMAGE:-clickhouse/clickhouse-server:23.4.2.11}
@@ -94,3 +97,12 @@ services:
     depends_on:
       - web
       - app
+
+  rabbitmq:
+    image: rabbitmq:3.12.2-management-alpine
+    ports:
+      - "15672:15672" # Web management UI
+      - "5672:5672" # Default RabbitMQ broker port
+    environment:
+      RABBITMQ_DEFAULT_USER: posthog
+      RABBITMQ_DEFAULT_PASS: posthog
