@@ -133,7 +133,7 @@ export default function Backups() {
             <Button onClick={showModal}>Create Backup</Button>
             <br />
             <Modal
-                title="Title"
+                title="Create Backup"
                 open={open}
                 onOk={handleSubmit}
                 confirmLoading={confirmLoading}
