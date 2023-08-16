@@ -253,3 +253,9 @@ CLICKHOUSE_SECURE = str_to_bool(get_from_env("CLICKHOUSE_SECURE", "True"))
 CLICKHOUSE_DATABASE = get_from_env("CLICKHOUSE_DATABASE", "defaul")
 CLICKHOUSE_USER = get_from_env("CLICKHOUSE_USER", "default")
 CLICKHOUSE_PASSWORD = get_from_env("CLICKHOUSE_PASSWORD", "")
+
+
+# AWS settings for Backups
+AWS_ACCESS_KEY_ID = get_from_env("AWS_ACCESS_KEY_ID", "")
+AWS_SECRET_ACCESS_KEY = get_from_env("AWS_SECRET_ACCESS_KEY", "")
+AWS_DEFAULT_REGION = get_from_env("AWS_DEFAULT_REGION", "us-east-1")
