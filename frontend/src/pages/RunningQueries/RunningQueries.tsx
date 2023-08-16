@@ -36,7 +36,7 @@ function KillQueryButton({ queryId }: any) {
         } catch (err) {
             setIsLoading(false)
             notification.error({
-                message: 'Creating backup failed',
+                message: 'Killing query failed',
             })
         }
     }

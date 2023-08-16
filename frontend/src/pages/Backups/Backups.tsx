@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { usePollingEffect } from '../../utils/usePollingEffect'
 import { ColumnType } from 'antd/es/table'
 import { Table, Button, Form, Input, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
 
@@ -118,6 +119,14 @@ export default function Backups() {
         { title: 'Size', dataIndex: 'total_size' },
     ]
 
+    usePollingEffect(
+        async () => {
+            loadData()
+        },
+        [],
+        { interval: 5000 }
+    )
+
     return (
         <div>
             <h1 style={{ textAlign: 'left' }}>Backups</h1>
@@ -142,6 +151,7 @@ export default function Backups() {
                     <Form.Item<FieldType>
                         label="Database"
                         name="database"
+                        initialValue="default"
                         rules={[{ required: true, message: 'Please select a database to back up from' }]}
                     >
                         <Input />
@@ -150,6 +160,7 @@ export default function Backups() {
                     <Form.Item<FieldType>
                         label="Table"
                         name="table"
+                        initialValue="test_backup"
                         rules={[{ required: true, message: 'Please select a table to back up' }]}
                     >
                         <Input />
@@ -158,6 +169,7 @@ export default function Backups() {
                     <Form.Item<FieldType>
                         label="S3 Bucket"
                         name="bucket"
+                        initialValue="posthog-clickhouse"
                         rules={[{ required: true, message: 'What S3 bucket to backup into' }]}
                     >
                         <Input />
@@ -166,6 +178,7 @@ export default function Backups() {
                     <Form.Item<FieldType>
                         label="S3 Path"
                         name="path"
+                        initialValue="testing/test_backup/7"
                         rules={[{ required: true, message: 'What is the path in the bucket to backup to' }]}
                     >
                         <Input />

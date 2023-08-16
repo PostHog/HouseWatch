@@ -6,20 +6,20 @@ from django.conf import settings
 
 def get_backups(cluster=None):
     if cluster:
-        QUERY = """SELECT * FROM clusterAllReplicas(%(cluster)s, system.backups)"""
+        QUERY = """SELECT * FROM clusterAllReplicas(%(cluster)s, system.backups) ORDER BY start_time DESC"""
     else:
-        QUERY = """SELECT * FROM system.backups"""
-    res = run_query(QUERY, {"cluster": cluster})
+        QUERY = """SELECT * FROM system.backups ORDER BY start_time DESC"""
+    res = run_query(QUERY, {"cluster": cluster}, use_cache=False)
     return res
 
 
 def get_backup(backup, cluster=None):
     if cluster:
         QUERY = """Select * FROM clusterAllReplicas(%(cluster)s, system.backups) WHERE id = '%(uuid)s' """
-        return run_query(QUERY, {"cluster": cluster, "uuid": backup})
+        return run_query(QUERY, {"cluster": cluster, "uuid": backup}, use_cache=False)
     else:
         QUERY = """Select * FROM system.backups WHERE id = '%(uuid)s' """
-        return run_query(QUERY, {"uuid": backup})
+        return run_query(QUERY, {"uuid": backup}, use_cache=False)
 
 
 def create_table_backup(database, table, bucket, path, aws_key=None, aws_secret=None):
@@ -39,6 +39,7 @@ def create_table_backup(database, table, bucket, path, aws_key=None, aws_secret=
             "aws_key": aws_key,
             "aws_secret": aws_secret,
         },
+        use_cache=False,
     )
 
 
@@ -58,6 +59,7 @@ def create_database_backup(database, bucket, path, aws_key=None, aws_secret=None
             "aws_key": aws_key,
             "aws_secret": aws_secret,
         },
+        use_cache=False,
     )
 
 
