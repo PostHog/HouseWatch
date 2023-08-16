@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ColumnType } from 'antd/es/table'
-import { Table, Button, Col, Row, Tooltip, notification } from 'antd'
+import { Table, Button, Tag, Col, Row, Tooltip, notification } from 'antd'
 
 interface BackupRow {
     id: string
@@ -47,22 +47,38 @@ export default function Backups() {
     const columns: ColumnType<BackupRow>[] = [
         { title: 'UUID', dataIndex: 'id' },
         { title: 'Name', dataIndex: 'name' },
-        { title: 'Status', dataIndex: 'status' },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            render: (_, { status }) => {
+                var color = 'black'
+                switch (status) {
+                    case 'CREATING_BACKUP' || 'RESTORING':
+                        color = 'black'
+                        break
+                    case 'BACKUP_CREATED' || 'RESTORED':
+                        color = 'green'
+                        break
+                    case 'BACKUP_FAILED' || 'RESTORE_FAILED':
+                        color = 'volcano'
+                        break
+                }
+                return (
+                    <Tag color={color} key={status}>
+                        {status.toUpperCase()}
+                    </Tag>
+                )
+            },
+        },
         { title: 'Error', dataIndex: 'error' },
         { title: 'Start', dataIndex: 'start_time' },
         { title: 'End', dataIndex: 'end_time' },
         { title: 'Size', dataIndex: 'total_size' },
-        { title: 'Entries', dataIndex: 'num_entries' },
-        { title: 'Uncompressed Size', dataIndex: 'uncompressed_size' },
-        { title: 'Compressed Size', dataIndex: 'compressed_size' },
-        { title: 'Files Read', dataIndex: 'files_read' },
-        { title: 'Bytes Read', dataIndex: 'bytes_read' },
     ]
 
     return (
         <div>
             <h1 style={{ textAlign: 'left' }}>Backups</h1>
-            <br />
             <Button
                 onClick={() => {
                     console.log('hi')
