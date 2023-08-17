@@ -14,6 +14,7 @@ click-plugins==1.1.1
 click-repl==0.2.0
 clickhouse-driver==0.2.5
 clickhouse-pool==0.5.3
+cryptography>=0.9
 dj-database-url==1.0.0
 Django==4.1.1
 django-cors-headers==3.13.0

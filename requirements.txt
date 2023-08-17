@@ -41,6 +41,8 @@ certifi==2022.12.7
     #   -r requirements.in
     #   requests
     #   sentry-sdk
+cffi==1.15.1
+    # via cryptography
 charset-normalizer==3.1.0
     # via
     #   -r requirements.in
@@ -70,6 +72,8 @@ clickhouse-driver==0.2.5
     #   -r requirements.in
     #   clickhouse-pool
 clickhouse-pool==0.5.3
+    # via -r requirements.in
+cryptography==41.0.3
     # via -r requirements.in
 dj-database-url==1.0.0
     # via -r requirements.in
@@ -141,6 +145,8 @@ prompt-toolkit==3.0.38
     #   click-repl
 psycopg2-binary==2.9.7
     # via -r requirements.in
+pycparser==2.21
+    # via cffi
 pyrsistent==0.19.3
     # via
     #   -r requirements.in

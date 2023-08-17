@@ -84,6 +84,8 @@ services:
     restart: on-failure
     depends_on:
       - zookeeper
+    ports:
+      - "9000:9000"
 
   zookeeper:
     image: zookeeper:3.7.0
