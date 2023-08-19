@@ -73,6 +73,8 @@ clickhouse-driver==0.2.5
     #   clickhouse-pool
 clickhouse-pool==0.5.3
     # via -r requirements.in
+croniter==1.4.1
+    # via -r requirements.in
 cryptography==41.0.3
     # via -r requirements.in
 dj-database-url==1.0.0
@@ -151,6 +153,8 @@ pyrsistent==0.19.3
     # via
     #   -r requirements.in
     #   jsonschema
+python-dateutil==2.8.2
+    # via croniter
 pytz==2023.2
     # via
     #   -r requirements.in
@@ -179,6 +183,7 @@ six==1.16.0
     # via
     #   -r requirements.in
     #   click-repl
+    #   python-dateutil
 sqlparse==0.4.3
     # via
     #   -r requirements.in
