@@ -1,7 +1,13 @@
 import os
+from datetime import datetime
 
+import structlog
+from croniter import croniter
 from celery import Celery
 from django_structlog.celery.steps import DjangoStructLogInitStep
+from django.utils import timezone
+
+logger = structlog.get_logger(__name__)
 
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "housewatch.settings")
@@ -22,11 +28,29 @@ app.steps["worker"].add(DjangoStructLogInitStep)
 
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender: Celery, **kwargs):
-    pass
-    # Send all customer usage report to PostHog
-    # sender.add_periodic_task(
-    #     crontab(hour=4, minute=0), simple.s(), name="send customer usage report"
-    # )
+    sender.add_periodic_task(60.0, schedule_backups.s(), name="schedule backups")
+
+
+@app.task(track_started=True, ignore_result=False, max_retries=0)
+def run_backup(backup_id: str):
+    from housewatch.clickhouse import backups
+
+    backups.run_backup(backup_id)
+
+
+@app.task(track_started=True, ignore_result=False, max_retries=0)
+def schedule_backups():
+    from housewatch.models.backup import ScheduledBackup
+
+    logger.info("Running scheduled backups")
+    backups = ScheduledBackup.objects.filter(enabled=True)
+    now = timezone.now()
+    for backup in backups:
+        nr = croniter(backup.schedule, backup.last_run_time).get_next(datetime)
+        if nr < now:
+            run_backup.delay(backup.id)
+            backup.last_run_time = now
+            backup.save()
 
 
 @app.task(track_started=True, ignore_result=False, max_retries=0)

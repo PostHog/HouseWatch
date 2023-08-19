@@ -1,9 +1,17 @@
+import uuid
+from croniter import croniter
 from django.db import models
+
 from housewatch.utils.encrypted_fields.fields import EncryptedCharField
 
 
 class ScheduledBackup(models.Model):
-    id: models.UUIDField = models.UUIDField(primary_key=True)
+    id: models.UUIDField = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
+    enabled: models.BooleanField = models.BooleanField(default=False)
+    last_run_time: models.DateTimeField = models.DateTimeField(null=True)
+    last_run: models.ForeignKey = models.ForeignKey("ScheduledBackupRun", on_delete=models.SET_NULL, null=True)
+
     # This will be a CRON expression for the job
     schedule: models.CharField = models.CharField(max_length=255)
     table: models.CharField = models.CharField(max_length=255, null=True)
@@ -14,12 +22,40 @@ class ScheduledBackup(models.Model):
     # raw keys will not be stored here but will obfuscated
     aws_access_key_id: models.CharField = EncryptedCharField(max_length=255, null=True)
     aws_secret_access_key: models.CharField = EncryptedCharField(max_length=255, null=True)
-    aws_region: models.CharField = EncryptedCharField(max_length=255, null=True)
-    aws_endpoint_url: models.CharField = EncryptedCharField(max_length=255, null=True)
+
+    def cron_schedule(self):
+        return self.schedule.split(" ")
+
+    def minute(self):
+        return self.schedule.split(" ")[0]
+
+    def hour(self):
+        return self.schedule.split(" ")[1]
+
+    def day_of_week(self):
+        return self.schedule.split(" ")[4]
+
+    def day_of_month(self):
+        return self.schedule.split(" ")[2]
+
+    def month_of_year(self):
+        return self.schedule.split(" ")[3]
+
+    def is_database_backup(self):
+        return self.table is None
+
+    def is_table_backup(self):
+        return self.table is not None
+
+    def save(self, *args, **kwargs):
+        if not croniter.is_valid(self.schedule):
+            raise ValueError("Invalid CRON expression")
+        super().save(*args, **kwargs)
 
 
 class ScheduledBackupRun(models.Model):
     id: models.UUIDField = models.UUIDField(primary_key=True)
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
     scheduled_backup: models.ForeignKey = models.ForeignKey(ScheduledBackup, on_delete=models.CASCADE)
     started_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
     finished_at: models.DateTimeField = models.DateTimeField(null=True)

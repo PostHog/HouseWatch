@@ -1,7 +1,13 @@
+import structlog
 from collections import defaultdict
+from datetime import datetime
 from housewatch.clickhouse.client import run_query
+from housewatch.models.backup import ScheduledBackup, ScheduledBackupRun
 
 from django.conf import settings
+from django.utils import timezone
+
+logger = structlog.get_logger(__name__)
 
 
 def get_backups(cluster=None):
@@ -61,6 +67,34 @@ def create_database_backup(database, bucket, path, aws_key=None, aws_secret=None
         },
         use_cache=False,
     )
+
+
+def run_backup(backup_id):
+    backup = ScheduledBackup.objects.get(id=backup_id)
+    now = timezone.now()
+    if backup.is_database_backup():
+        uuid = create_database_backup(
+            backup.database,
+            backup.bucket,
+            backup.path,
+            backup.aws_access_key_id,
+            backup.aws_secret_access_key,
+        )[0]["id"]
+    elif backup.is_table_backup():
+        uuid = create_table_backup(
+            backup.database,
+            backup.table,
+            backup.bucket,
+            backup.path,
+            backup.aws_access_key_id,
+            backup.aws_secret_access_key,
+        )[0]["id"]
+    br = ScheduledBackupRun.objects.create(scheduled_backup=backup, id=uuid, started_at=now)
+    br.save()
+    backup.last_run = br
+    backup.last_run_time = now
+    backup.save()
+    return uuid
 
 
 def restore_backup(backup):
