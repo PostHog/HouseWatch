@@ -12,9 +12,9 @@ logger = structlog.get_logger(__name__)
 
 def get_backups(cluster=None):
     if cluster:
-        QUERY = """SELECT * FROM clusterAllReplicas(%(cluster)s, system.backups) ORDER BY start_time DESC"""
+        QUERY = """SELECT id, name, status, error, start_time, end_time, num_files, formatReadableSize(total_size) total_size, num_entries, uncompressed_size, compressed_size, files_read, bytes_read FROM clusterAllReplicas(%(cluster)s, system.backups) ORDER BY start_time DESC"""
     else:
-        QUERY = """SELECT * FROM system.backups ORDER BY start_time DESC"""
+        QUERY = """SELECT id, name, status, error, start_time, end_time, num_files, formatReadableSize(total_size) total_size, num_entries, uncompressed_size, compressed_size, files_read, bytes_read FROM system.backups ORDER BY start_time DESC"""
     res = run_query(QUERY, {"cluster": cluster}, use_cache=False)
     return res
 
