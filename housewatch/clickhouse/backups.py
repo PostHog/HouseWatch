@@ -72,11 +72,12 @@ def create_database_backup(database, bucket, path, aws_key=None, aws_secret=None
 def run_backup(backup_id):
     backup = ScheduledBackup.objects.get(id=backup_id)
     now = timezone.now()
+    path = backup.path + "/" + now.isoformat()
     if backup.is_database_backup():
         uuid = create_database_backup(
             backup.database,
             backup.bucket,
-            backup.path,
+            path,
             backup.aws_access_key_id,
             backup.aws_secret_access_key,
         )[0]["id"]
@@ -85,7 +86,7 @@ def run_backup(backup_id):
             backup.database,
             backup.table,
             backup.bucket,
-            backup.path,
+            path,
             backup.aws_access_key_id,
             backup.aws_secret_access_key,
         )[0]["id"]

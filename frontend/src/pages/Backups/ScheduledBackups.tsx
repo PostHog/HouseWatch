@@ -81,10 +81,6 @@ export default function ScheduledBackups() {
         }
     }
 
-    const toggleEnabled = async () => {
-        console.log('hi')
-    }
-
     useEffect(() => {
         loadData()
     }, [])
@@ -93,8 +89,25 @@ export default function ScheduledBackups() {
         {
             title: 'Enabled',
             dataIndex: 'enabled',
-            render: (_, { enabled }) => {
-                return <Switch defaultChecked={enabled} onChange={toggleEnabled} />
+            render: (_, sched) => {
+                const toggleEnabled = async () => {
+                    try {
+                        const res = await fetch(`/api/scheduled_backups/${sched.id}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ enabled: !sched.enabled }),
+                        })
+                        loadData()
+                        return await res.json()
+                    } catch (error) {
+                        notification.error({
+                            message: 'Failed to toggle backup',
+                        })
+                    }
+                }
+                return <Switch defaultChecked={sched.enabled} onChange={toggleEnabled} />
             },
         },
         { title: 'Enabled', dataIndex: 'enabled' },
@@ -117,7 +130,7 @@ export default function ScheduledBackups() {
 
     return (
         <div>
-            <h1 style={{ textAlign: 'left' }}>Backups</h1>
+            <h1 style={{ textAlign: 'left' }}>Scheduled Backups</h1>
             <Button onClick={showModal}>Create Backup</Button>
             <br />
             <Modal

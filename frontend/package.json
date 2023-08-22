@@ -3,7 +3,7 @@
     "version": "1.0.0-beta",
     "dependencies": {
         "@ant-design/charts": "^1.4.2",
-        "@ant-design/icons": "^5.0.0",
+        "@ant-design/icons": "^5.2.0",
         "antd": "^5.0.0",
         "prismjs": "^1.29.0",
         "react": "^18.2.0",
