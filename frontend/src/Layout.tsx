@@ -8,6 +8,7 @@ import SchemaTable from './pages/SchemaStats/SchemaTable'
 import Overview from './pages/Overview/Overview'
 import Clusters from './pages/Clusters/Clusters'
 import Backups from './pages/Backups/Backups'
+import ScheduledBackups from './pages/Backups/ScheduledBackups'
 import Errors from './pages/Errors/Errors'
 import { Switch, Route, useHistory } from 'react-router-dom'
 
@@ -41,7 +42,15 @@ type MenuItem = Required<MenuProps>['items'][number]
 const items: MenuItem[] = [
     { key: '', icon: <HomeOutlined />, label: 'Overview' },
     { key: 'clusters', label: 'Clusters', icon: <CloudServerOutlined /> },
-    { key: 'backups', label: 'Backups', icon: <SaveOutlined /> },
+    {
+        key: 'backup',
+        label: 'Backup',
+        icon: <SaveOutlined />,
+        children: [
+            { key: 'backups', label: 'Adhoc Backups' },
+            { key: 'scheduled_backups', label: 'Scheduled Backups' },
+        ],
+    },
     { key: 'query_performance', label: 'Query performance', icon: <ClockCircleOutlined /> },
     { key: 'running_queries', label: 'Running queries', icon: <DashboardOutlined /> },
     { key: 'schema', label: 'Schema stats', icon: <HddOutlined /> },
@@ -106,6 +115,7 @@ export default function AppLayout(): JSX.Element {
                             <Route exact path="/" component={Overview}></Route>
                             <Route exact path="/clusters" component={Clusters}></Route>
                             <Route exact path="/backups" component={Backups}></Route>
+                            <Route exact path="/scheduled_backups" component={ScheduledBackups}></Route>
                             <Route exact path="/disk_usage">
                                 <DiskUsage />
                             </Route>
