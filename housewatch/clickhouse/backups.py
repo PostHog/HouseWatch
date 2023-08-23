@@ -12,9 +12,9 @@ logger = structlog.get_logger(__name__)
 
 def get_backups(cluster=None):
     if cluster:
-        QUERY = """SELECT * FROM clusterAllReplicas(%(cluster)s, system.backups) ORDER BY start_time DESC"""
+        QUERY = """SELECT id, name, status, error, start_time, end_time, num_files, formatReadableSize(total_size) total_size, num_entries, uncompressed_size, compressed_size, files_read, bytes_read FROM clusterAllReplicas(%(cluster)s, system.backups) ORDER BY start_time DESC"""
     else:
-        QUERY = """SELECT * FROM system.backups ORDER BY start_time DESC"""
+        QUERY = """SELECT id, name, status, error, start_time, end_time, num_files, formatReadableSize(total_size) total_size, num_entries, uncompressed_size, compressed_size, files_read, bytes_read FROM system.backups ORDER BY start_time DESC"""
     res = run_query(QUERY, {"cluster": cluster}, use_cache=False)
     return res
 
@@ -72,11 +72,12 @@ def create_database_backup(database, bucket, path, aws_key=None, aws_secret=None
 def run_backup(backup_id):
     backup = ScheduledBackup.objects.get(id=backup_id)
     now = timezone.now()
+    path = backup.path + "/" + now.isoformat()
     if backup.is_database_backup():
         uuid = create_database_backup(
             backup.database,
             backup.bucket,
-            backup.path,
+            path,
             backup.aws_access_key_id,
             backup.aws_secret_access_key,
         )[0]["id"]
@@ -85,7 +86,7 @@ def run_backup(backup_id):
             backup.database,
             backup.table,
             backup.bucket,
-            backup.path,
+            path,
             backup.aws_access_key_id,
             backup.aws_secret_access_key,
         )[0]["id"]
