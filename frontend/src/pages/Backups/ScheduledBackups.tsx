@@ -125,7 +125,6 @@ export default function ScheduledBackups() {
                 return <Switch defaultChecked={sched.enabled} onChange={toggleEnabled} />
             },
         },
-        { title: 'Enabled', dataIndex: 'enabled' },
         { title: 'Cluster', dataIndex: 'cluster' },
         { title: 'Schedule', dataIndex: 'schedule' },
         { title: 'Last Run Time', dataIndex: 'last_run_time' },
