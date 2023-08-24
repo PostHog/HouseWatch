@@ -165,10 +165,10 @@ export default function ScheduledBackups() {
                     initialValues={{ remember: true }}
                     autoComplete="on"
                 >
-                    <Form.Item label="Cluster">
+                    <Form.Item name="cluster" label="Cluster">
                         <Select>
                             {clusters.clusters.map(cluster => (
-                                <Select.Option value="{cluster.cluster}">{cluster.cluster}</Select.Option>
+                                <Select.Option value={cluster.cluster}>{cluster.cluster}</Select.Option>
                             ))}
                         </Select>
                     </Form.Item>
