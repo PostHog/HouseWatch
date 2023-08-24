@@ -16,6 +16,7 @@ class ScheduledBackup(models.Model):
     schedule: models.CharField = models.CharField(max_length=255)
     table: models.CharField = models.CharField(max_length=255, null=True)
     database: models.CharField = models.CharField(max_length=255)
+    cluster: models.CharField = models.CharField(max_length=255, null=True)
     bucket: models.CharField = models.CharField(max_length=255)
     path: models.CharField = models.CharField(max_length=255)
     # if set these will override the defaults from settings

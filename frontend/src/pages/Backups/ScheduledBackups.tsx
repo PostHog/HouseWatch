@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import { ColumnType } from 'antd/es/table'
-import { Switch, Table, Button, Form, Input, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
+import { Switch, Select, Table, Button, Form, Input, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
+import { Clusters } from '../Clusters/Clusters'
 
 interface ScheduleRow {
     id: string
     created_at: string
     enabled: boolean
     last_run_time: string
+    cluster: string
     schedule: string
     table: string
     database: string
@@ -21,6 +23,7 @@ interface Backups {
 }
 
 type FieldType = {
+    cluster?: string
     schedule?: string
     database?: string
     table?: string
@@ -35,6 +38,9 @@ export default function ScheduledBackups() {
     const [loadingBackups, setLoadingBackups] = useState(false)
     const [open, setOpen] = useState(false)
     const [confirmLoading, setConfirmLoading] = useState(false)
+    const [clusters, setClusters] = useState<Clusters>({
+        clusters: [],
+    })
 
     const [form] = Form.useForm() // Hook to get form API
 
@@ -79,6 +85,15 @@ export default function ScheduledBackups() {
         } catch (err) {
             notification.error({ message: 'Failed to load data' })
         }
+
+        try {
+            const res = await fetch('/api/clusters')
+            const resJson = await res.json()
+            const clusters = { clusters: resJson }
+            setClusters(clusters)
+        } catch (err) {
+            notification.error({ message: 'Failed to load data' })
+        }
     }
 
     useEffect(() => {
@@ -111,6 +126,7 @@ export default function ScheduledBackups() {
             },
         },
         { title: 'Enabled', dataIndex: 'enabled' },
+        { title: 'Cluster', dataIndex: 'cluster' },
         { title: 'Schedule', dataIndex: 'schedule' },
         { title: 'Last Run Time', dataIndex: 'last_run_time' },
         { title: 'Database', dataIndex: 'database' },
@@ -149,6 +165,13 @@ export default function ScheduledBackups() {
                     initialValues={{ remember: true }}
                     autoComplete="on"
                 >
+                    <Form.Item label="Cluster">
+                        <Select>
+                            {clusters.clusters.map(cluster => (
+                                <Select.Option value="{cluster.cluster}">{cluster.cluster}</Select.Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
                     <Form.Item<FieldType>
                         label="Schedule"
                         name="schedule"

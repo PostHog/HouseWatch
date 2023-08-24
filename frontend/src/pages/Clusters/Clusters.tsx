@@ -23,7 +23,7 @@ interface Cluster {
     nodes: ClusterNode[]
 }
 
-interface Clusters {
+export interface Clusters {
     clusters: Cluster[]
 }
 
@@ -70,7 +70,7 @@ export default function Clusters() {
             <br />
             <Row gutter={8} style={{ paddingBottom: 8 }}>
                 <ul>
-                    {clusters.clusters.map((cluster) => (
+                    {clusters.clusters.map(cluster => (
                         <>
                             <h1 key={cluster.cluster}>{cluster.cluster}</h1>
                             <Table columns={columns} dataSource={cluster.nodes} loading={loadingClusters} />
