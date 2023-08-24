@@ -46,7 +46,13 @@ def schedule_backups():
     backups = ScheduledBackup.objects.filter(enabled=True)
     now = timezone.now()
     for backup in backups:
-        nr = croniter(backup.schedule, backup.last_run_time).get_next(datetime)
+        lrt = backup.last_run_time
+        if lrt is None:
+            lrt = backup.created_at
+        nr = croniter(backup.schedule, lrt).get_next(datetime)
+        if nr.tzinfo is None:
+            nr = timezone.make_aware(nr)
+        logger.info("Checking backup", backup_id=backup.id, next_run=nr, now=now)
         if nr < now:
             run_backup.delay(backup.id)
             backup.last_run_time = now
