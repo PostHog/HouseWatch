@@ -23,7 +23,7 @@ def get_shards(cluster):
     cluster = get_cluster(cluster)
     nodes = defaultdict(list)
     for node in cluster:
-        nodes[node["shard_number"]].append(node)
+        nodes[node["shard_num"]].append(node)
     return nodes
 
 

@@ -1,7 +1,7 @@
 import structlog
 from collections import defaultdict
 from datetime import datetime
-from housewatch.clickhouse.client import run_query
+from housewatch.clickhouse.client import run_query, run_query_on_shards
 from housewatch.models.backup import ScheduledBackup, ScheduledBackupRun
 
 from django.conf import settings
@@ -28,13 +28,26 @@ def get_backup(backup, cluster=None):
         return run_query(QUERY, {"uuid": backup}, use_cache=False)
 
 
-def create_table_backup(database, table, bucket, path, aws_key=None, aws_secret=None):
+def create_table_backup(database, table, bucket, path, cluster=None, aws_key=None, aws_secret=None):
     if aws_key is None or aws_secret is None:
         aws_key = settings.AWS_ACCESS_KEY_ID
         aws_secret = settings.AWS_SECRET_ACCESS_KEY
     QUERY = """BACKUP TABLE %(database)s.%(table)s
     TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
     ASYNC"""
+    if cluster:
+        return run_query_on_shards(
+            QUERY,
+            {
+                "database": database,
+                "table": table,
+                "bucket": bucket,
+                "path": path,
+                "aws_key": aws_key,
+                "aws_secret": aws_secret,
+            },
+            cluster=cluster,
+        )
     return run_query(
         QUERY,
         {
@@ -49,13 +62,26 @@ def create_table_backup(database, table, bucket, path, aws_key=None, aws_secret=
     )
 
 
-def create_database_backup(database, bucket, path, aws_key=None, aws_secret=None):
+def create_database_backup(database, bucket, path, cluster=None, aws_key=None, aws_secret=None):
     if aws_key is None or aws_secret is None:
         aws_key = settings.AWS_ACCESS_KEY_ID
         aws_secret = settings.AWS_SECRET_ACCESS_KEY
     QUERY = """BACKUP DATABASE %(database)s 
                 TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
                 ASYNC"""
+    if cluster:
+        return run_query_on_shards(
+            QUERY,
+            {
+                "database": database,
+                "table": table,
+                "bucket": bucket,
+                "path": path,
+                "aws_key": aws_key,
+                "aws_secret": aws_secret,
+            },
+            cluster=cluster,
+        )
     return run_query(
         QUERY,
         {
@@ -78,6 +104,7 @@ def run_backup(backup_id):
             backup.database,
             backup.bucket,
             path,
+            backup.cluster,
             backup.aws_access_key_id,
             backup.aws_secret_access_key,
         )[0]["id"]
@@ -87,6 +114,7 @@ def run_backup(backup_id):
             backup.table,
             backup.bucket,
             path,
+            backup.cluster,
             backup.aws_access_key_id,
             backup.aws_secret_access_key,
         )[0]["id"]
