@@ -86,6 +86,8 @@ services:
       - zookeeper
     ports:
       - "9000:9000"
+    volumes:
+      - ./docker/clickhouse-server/config.d:/etc/clickhouse-server/config.d
 
   zookeeper:
     image: zookeeper:3.7.0

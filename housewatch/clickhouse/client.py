@@ -31,7 +31,7 @@ pool = ChPool(
 def run_query_on_shards(
     query: str,
     params: Dict[str, str | int] = {},
-    settings: Dict[str, str | int] = {},
+    query_settings: Dict[str, str | int] = {},
     query_id: Optional[str] = None,
     substitute_params: bool = True,
     cluster: Optional[str] = None,
@@ -54,7 +54,7 @@ def run_query_on_shards(
             send_receive_timeout=30,
             password=settings.CLICKHOUSE_PASSWORD,
         )
-        result = client.execute(final_query, settings=settings, with_column_types=True, query_id=query_id)
+        result = client.execute(final_query, settings=query_settings, with_column_types=True, query_id=query_id)
         response = []
         for res in result[0]:
             item = {}
