@@ -53,11 +53,11 @@ postgresql:
     username: housewatch
     password: housewatch
 
-rabbitmq_url: amqp://housewatch:housewatch@{{ include "rabbitmq.primary.fullname" .Subcharts.rabbitmq}}:5672
 rabbitmq:
   auth:
     username: housewatch
     password: housewatch
+    erlangCookie: housewatch
 
 redis:
   image:

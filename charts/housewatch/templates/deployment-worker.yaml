@@ -51,7 +51,7 @@ spec:
             value: "{{ .Values.clickhouse.ca }}"
           - name: DATABASE_URL
             value: "{{ . | tpl .Values.database_url }}"
-          - name: RABBITMQ_URL 
-            value: "{{ . | tpl .Values.rabbitmq_url}}"
+          - name: RABBITMQ_URL
+            value: "amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ .Release.Name }}-rabbitmq:5672/" 
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
