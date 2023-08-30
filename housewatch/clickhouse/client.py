@@ -10,11 +10,6 @@ import hashlib
 import json
 
 
-ch_host = os.getenv("CLICKHOUSE_HOST", "localhost")
-ch_verify = os.getenv("CLICKHOUSE_VERIFY", "true").lower() not in ("false", "0")
-ch_ca = os.getenv("CLICKHOUSE_CA", None)
-ch_secure = os.getenv("CLICKHOUSE_SECURE", "true").lower() not in ("false", "0")
-
 pool = ChPool(
     host=settings.CLICKHOUSE_HOST,
     database=settings.CLICKHOUSE_DATABASE,
