@@ -2,5 +2,9 @@ apiVersion: v2
 name: housewatch
 description: Open source tool for monitoring and managing ClickHouse clusters
 type: application
-version: 0.1.1
+version: 0.1.2
 appVersion: "0.1.1"
+dependencies:
+- name: postgresql
+  version: "12.10.0"
+  repository: "oci://registry-1.docker.io/bitnamicharts"

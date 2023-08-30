@@ -46,6 +46,13 @@ worker:
     limits:
       memory: 1500Mi
 
+database_url: postgres://housewatch:housewatch@{{ include "postgresql.primary.fullname" .Subcharts.postgresql }}:5432/housewatch
+postgresql:
+  auth:
+    database: housewatch
+    username: housewatch
+    password: housewatch
+
 redis:
   image:
     repository: redis

@@ -49,5 +49,7 @@ spec:
             value: "{{ .Values.clickhouse.verify }}"
           - name: CLICKHOUSE_CA
             value: "{{ .Values.clickhouse.ca }}"
+          - name: DATABASE_URL
+            value: "{{ . | tpl .Values.database_url }}"
           resources:
             {{- toYaml .Values.worker.resources | nindent 12 }}
