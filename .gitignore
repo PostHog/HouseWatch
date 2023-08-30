@@ -167,4 +167,4 @@ housewatch.sqlite3
 .DS_Store
 yarn.lock
 
-charts/charts/
+charts/housewatch/charts/
