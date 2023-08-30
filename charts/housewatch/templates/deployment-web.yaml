@@ -59,6 +59,8 @@ spec:
             value: "{{ .Values.clickhouse.ca }}"
           - name: DATABASE_URL
             value: "{{ . | tpl .Values.database_url }}"
+          - name: RABBITMQ_URL 
+            value: "{{ . | tpl .Values.rabbitmq_url}}"
           livenessProbe:
             httpGet:
               path: /
