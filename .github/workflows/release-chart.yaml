@@ -34,7 +34,6 @@ jobs:
         if: github.ref != 'refs/heads/main'
         run: |
           sed -i 's/^version: \(.*\)$/version: \1-${{ github.sha }}/g' charts/housewatch/Chart.yaml
-          helm dependency update charts/housewatch/
 
       - name: Helm login
         run: |
@@ -42,6 +41,7 @@ jobs:
 
       - name: Helm package
         run: |
+          helm dependency update charts/housewatch/
           helm package charts/housewatch
 
       - name: Helm push
