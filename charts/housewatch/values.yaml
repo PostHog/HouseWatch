@@ -17,7 +17,7 @@ clickhouse:
   ca: ""
 
 imagePullSecrets:
-- name: dockerconfigjson-ghcr-io
+  - name: dockerconfigjson-ghcr-io
 
 service:
   annotations: {}
@@ -50,6 +50,12 @@ database_url: postgres://housewatch:housewatch@{{ include "postgresql.primary.fu
 postgresql:
   auth:
     database: housewatch
+    username: housewatch
+    password: housewatch
+
+rabbitmq_url: amqp://housewatch:housewatch@{{ include "rabbitmq.primary.fullname" .Subcharts.rabbitmq}}:5672
+rabbitmq:
+  auth:
     username: housewatch
     password: housewatch
 
