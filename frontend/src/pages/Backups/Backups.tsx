@@ -131,7 +131,6 @@ export default function Backups() {
         <div>
             <h1 style={{ textAlign: 'left' }}>Backups</h1>
             <Button onClick={showModal}>Create Backup</Button>
-            <br />
             <Modal
                 title="Create Backup"
                 open={open}
@@ -185,12 +184,7 @@ export default function Backups() {
                     </Form.Item>
                 </Form>
             </Modal>
-            <Row gutter={8} style={{ paddingBottom: 8 }}>
-                <ul>
-                    <Table columns={columns} dataSource={backups.backups} loading={loadingBackups} />
-                </ul>
-            </Row>
-            <br />
+            <Table columns={columns} dataSource={backups.backups} loading={loadingBackups} />
         </div>
     )
 }
