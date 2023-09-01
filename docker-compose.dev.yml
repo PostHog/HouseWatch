@@ -27,8 +27,6 @@ services:
         python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
-    ports:
-      - "8000:8000"
     depends_on:
       - clickhouse
       - db
@@ -42,8 +40,6 @@ services:
     volumes:
       - ./frontend/public:/frontend/public
       - ./frontend/src:/frontend/src
-    ports:
-      - "3000:3000"
 
   db:
     image: postgres:14-alpine
@@ -61,8 +57,6 @@ services:
   redis:
     image: redis:6.2.7-alpine
     restart: on-failure
-    ports:
-      - "6388:6379"
     command: redis-server --maxmemory-policy allkeys-lru --maxmemory 200mb
 
   worker:
@@ -84,8 +78,6 @@ services:
     restart: on-failure
     depends_on:
       - zookeeper
-    ports:
-      - "9000:9000"
     volumes:
       - ./docker/clickhouse-server/config.d:/etc/clickhouse-server/config.d
 
