@@ -248,7 +248,7 @@ POSTHOG_PROJECT_API_KEY = get_from_env("POSTHOG_PROJECT_API_KEY", "123456789")
 
 CLICKHOUSE_HOST = get_from_env("CLICKHOUSE_HOST", "localhost")
 CLICKHOUSE_VERIFY = str_to_bool(get_from_env("CLICKHOUSE_VERIFY", True))
-CLICKHOUSE_CA = get_from_env("CLICKHOUSE_CA")
+CLICKHOUSE_CA = get_from_env("CLICKHOUSE_CA", optional=True)
 CLICKHOUSE_SECURE = str_to_bool(get_from_env("CLICKHOUSE_SECURE", True))
 CLICKHOUSE_DATABASE = get_from_env("CLICKHOUSE_DATABASE", "default")
 CLICKHOUSE_USER = get_from_env("CLICKHOUSE_USER", "default")
