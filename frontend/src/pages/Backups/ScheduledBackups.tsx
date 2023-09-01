@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import { ColumnType } from 'antd/es/table'
 import { Switch, Select, Table, Button, Form, Input, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
+import DeleteOutlined from '@ant-design/icons'
 import { Clusters } from '../Clusters/Clusters'
 
 interface ScheduleRow {
@@ -133,6 +134,15 @@ export default function ScheduledBackups() {
         { title: 'Bucket', dataIndex: 'bucket' },
         { title: 'Path', dataIndex: 'path' },
         { title: 'Created At', dataIndex: 'created_at' },
+        {
+            title: 'Delete',
+            dataIndex: 'id',
+            render: id => (
+                <a onClick={() => console.log(id)}>
+                    <DeleteOutlined />
+                </a>
+            ),
+        },
     ]
 
     usePollingEffect(
