@@ -67,8 +67,8 @@ export default function Clusters() {
     return (
         <div>
             <h1 style={{ textAlign: 'left' }}>Clusters</h1>
-            <br />
-            <Row gutter={8} style={{ paddingBottom: 8 }}>
+            <p>These are the clusters that are configured in the connected ClickHouse instance</p>
+            <div>
                 <ul>
                     {clusters.clusters.map(cluster => (
                         <>
@@ -77,8 +77,7 @@ export default function Clusters() {
                         </>
                     ))}
                 </ul>
-            </Row>
-            <br />
+            </div>
         </div>
     )
 }

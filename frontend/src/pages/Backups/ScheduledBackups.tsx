@@ -131,8 +131,7 @@ export default function ScheduledBackups() {
         { title: 'Last Run Time', dataIndex: 'last_run_time' },
         { title: 'Database', dataIndex: 'database' },
         { title: 'Table', dataIndex: 'table' },
-        { title: 'Bucket', dataIndex: 'bucket' },
-        { title: 'Path', dataIndex: 'path' },
+        { title: 'S3 Location', dataIndex: 'bucket', render: (_, sched) => 's3://' + sched.bucket + '/' + sched.path },
         { title: 'Created At', dataIndex: 'created_at' },
         {
             title: '',
@@ -174,7 +173,6 @@ export default function ScheduledBackups() {
         <div>
             <h1 style={{ textAlign: 'left' }}>Scheduled Backups</h1>
             <Button onClick={showModal}>Create Backup</Button>
-            <br />
             <Modal
                 title="Create Backup"
                 open={open}
@@ -244,12 +242,7 @@ export default function ScheduledBackups() {
                     </Form.Item>
                 </Form>
             </Modal>
-            <Row gutter={8} style={{ paddingBottom: 8 }}>
-                <ul>
-                    <Table columns={columns} dataSource={backups.backups} loading={loadingBackups} />
-                </ul>
-            </Row>
-            <br />
+            <Table columns={columns} dataSource={backups.backups} loading={loadingBackups} />
         </div>
     )
 }
