@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import { ColumnType } from 'antd/es/table'
 import { Switch, Select, Table, Button, Form, Input, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
+import { DeleteOutlined } from '@ant-design/icons'
 import { Clusters } from '../Clusters/Clusters'
 
 interface ScheduleRow {
@@ -133,6 +134,32 @@ export default function ScheduledBackups() {
         { title: 'Bucket', dataIndex: 'bucket' },
         { title: 'Path', dataIndex: 'path' },
         { title: 'Created At', dataIndex: 'created_at' },
+        {
+            title: '',
+            dataIndex: 'id',
+            render: id => {
+                const deleteBackup = async () => {
+                    try {
+                        const res = await fetch(`/api/scheduled_backups/${id}`, {
+                            method: 'DELETE',
+                        })
+                        loadData()
+                        return await res.text()
+                    } catch (error) {
+                        console.log(error)
+                        notification.error({
+                            message: 'Failed to delete backup',
+                        })
+                    }
+                }
+
+                return (
+                    <a id={id} onClick={deleteBackup}>
+                        <DeleteOutlined rev={undefined} />
+                    </a>
+                )
+            },
+        },
     ]
 
     usePollingEffect(
