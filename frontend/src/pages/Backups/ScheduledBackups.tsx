@@ -30,6 +30,8 @@ type FieldType = {
     table?: string
     bucket?: string
     path?: string
+    aws_access_key_id?: string
+    aws_secret_access_key?: string
 }
 
 export default function ScheduledBackups() {
@@ -237,6 +239,24 @@ export default function ScheduledBackups() {
                         name="path"
                         initialValue="testing/test_backup/7"
                         rules={[{ required: true, message: 'What is the path in the bucket to backup to' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item<FieldType>
+                        label="AWS Access Key"
+                        name="aws_access_key_id"
+                        initialValue="AKIAIOSFODNN7EXAMPLE"
+                        rules={[{ required: false, message: 'AWS Access Key ID to use for access to the S3 bucket' }]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item<FieldType>
+                        label="AWS Access Secret"
+                        name="aws_access_secret_key"
+                        initialValue="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+                        rules={[{ required: false, message: 'AWS Access Secret Key used to access S3 bucket' }]}
                     >
                         <Input />
                     </Form.Item>
