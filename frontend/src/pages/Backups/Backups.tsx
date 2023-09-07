@@ -185,20 +185,20 @@ export default function Backups() {
                         <Input />
                     </Form.Item>
                     <Form.Item<FieldType>
-                        label="AWS Access Key"
+                        label="AWS Access Key ID"
                         name="aws_access_key_id"
                         initialValue="AKIAIOSFODNN7EXAMPLE"
                         rules={[{ required: false, message: 'AWS Access Key ID to use for access to the S3 bucket' }]}
-                        >
+                    >
                         <Input />
                     </Form.Item>
 
                     <Form.Item<FieldType>
-                        label="AWS Access Secret"
-                        name="aws_access_secret_key"
+                        label="AWS Secret Access Key"
+                        name="aws_secret_access_key"
                         initialValue="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-                        rules={[{ required: false, message: 'AWS Access Secret Key used to access S3 bucket' }]}
-                        >
+                        rules={[{ required: false, message: 'AWS Secret Access Key used to access S3 bucket' }]}
+                    >
                         <Input />
                     </Form.Item>
                 </Form>
