@@ -36,6 +36,8 @@ def run_query_on_shards(
     nodes = get_node_per_shard(cluster)
     responses = []
     for shard, node in nodes:
+        params["shard"] = shard
+        final_query = query % (params or {}) if substitute_params else query
         client = Client(
             host=node["host_address"],
             database=settings.CLICKHOUSE_DATABASE,
@@ -47,10 +49,7 @@ def run_query_on_shards(
             send_receive_timeout=30,
             password=settings.CLICKHOUSE_PASSWORD,
         )
-        params["shard"] = shard
-        result = client.execute(
-            query, params=params, settings=query_settings, with_column_types=True, query_id=query_id
-        )
+        result = client.execute(final_query, settings=query_settings, with_column_types=True, query_id=query_id)
         response = []
         for res in result[0]:
             item = {}
