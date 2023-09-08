@@ -32,10 +32,10 @@ def create_table_backup(database, table, bucket, path, cluster=None, aws_key=Non
     if aws_key is None or aws_secret is None:
         aws_key = settings.AWS_ACCESS_KEY_ID
         aws_secret = settings.AWS_SECRET_ACCESS_KEY
-    QUERY = """BACKUP TABLE %(database)s.%(table)s
-    TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
-    ASYNC"""
     if cluster:
+        QUERY = """BACKUP TABLE %(database)s.%(table)s
+        TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')
+        ASYNC"""
         return run_query_on_shards(
             QUERY,
             {
@@ -48,6 +48,9 @@ def create_table_backup(database, table, bucket, path, cluster=None, aws_key=Non
             },
             cluster=cluster,
         )
+    QUERY = """BACKUP TABLE %(database)s.%(table)s
+    TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
+    ASYNC"""
     return run_query(
         QUERY,
         {
@@ -66,15 +69,14 @@ def create_database_backup(database, bucket, path, cluster=None, aws_key=None, a
     if aws_key is None or aws_secret is None:
         aws_key = settings.AWS_ACCESS_KEY_ID
         aws_secret = settings.AWS_SECRET_ACCESS_KEY
-    QUERY = """BACKUP DATABASE %(database)s 
-                TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
-                ASYNC"""
     if cluster:
+        QUERY = """BACKUP DATABASE %(database)s 
+                    TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')
+                    ASYNC"""
         return run_query_on_shards(
             QUERY,
             {
                 "database": database,
-                "table": table,
                 "bucket": bucket,
                 "path": path,
                 "aws_key": aws_key,
@@ -82,6 +84,9 @@ def create_database_backup(database, bucket, path, cluster=None, aws_key=None, a
             },
             cluster=cluster,
         )
+    QUERY = """BACKUP DATABASE %(database)s 
+                TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
+                ASYNC"""
     return run_query(
         QUERY,
         {
