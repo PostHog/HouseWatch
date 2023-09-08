@@ -33,8 +33,6 @@ def run_query_on_shards(
 ):
     from housewatch.clickhouse.clusters import get_node_per_shard
 
-    final_query = query % (params or {}) if substitute_params else query
-
     nodes = get_node_per_shard(cluster)
     responses = []
     for shard, node in nodes:
@@ -49,7 +47,10 @@ def run_query_on_shards(
             send_receive_timeout=30,
             password=settings.CLICKHOUSE_PASSWORD,
         )
-        result = client.execute(final_query, settings=query_settings, with_column_types=True, query_id=query_id)
+        params["shard"] = shard
+        result = client.execute(
+            query, params=params, settings=query_settings, with_column_types=True, query_id=query_id
+        )
         response = []
         for res in result[0]:
             item = {}
