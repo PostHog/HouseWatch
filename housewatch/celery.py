@@ -53,19 +53,21 @@ def schedule_backups():
         if nr.tzinfo is None:
             nr = timezone.make_aware(nr)
 
-        lirt = backup.last_incremental_run_time
-        if lirt is None:
-            lirt = backup.created_at
-        nir = croniter(backup.incremental_schedule, lirt).get_next(datetime)
-        if nir.tzinfo is None:
-            nir = timezone.make_aware(nir)
+        nir = None
+        if backup.incremental_schedule is not None:
+            lirt = backup.last_incremental_run_time
+            if lirt is None:
+                lirt = backup.created_at
+            nir = croniter(backup.incremental_schedule, lirt).get_next(datetime)
+            if nir.tzinfo is None:
+                nir = timezone.make_aware(nir)
 
         logger.info("Checking backup", backup_id=backup.id, next_run=nr, next_incremental_run=nir, now=now)
         if nr < now:
             run_backup.delay(backup.id)
             backup.last_run_time = now
             backup.save()
-        if nir < now:
+        elif backup.incremental_schedule is not None and nir < now:
             run_backup.delay(backup.id, incremental=True)
             backup.last_incremental_run_time = now
             backup.save()
