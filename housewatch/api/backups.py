@@ -46,6 +46,8 @@ class ScheduledBackupSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data.get("schedule") and not croniter.is_valid(data["schedule"]):
             raise serializers.ValidationError(f"Invalid cron expression: {e}")
+        if data.get("incremental_schedule") and not croniter.is_valid(data["incremental_schedule"]):
+            raise serializers.ValidationError(f"Invalid cron expression: {e}")
         return data
 
 

@@ -10,10 +10,13 @@ class ScheduledBackup(models.Model):
     created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
     enabled: models.BooleanField = models.BooleanField(default=False)
     last_run_time: models.DateTimeField = models.DateTimeField(null=True)
+    last_incremental_run_time: models.DateTimeField = models.DateTimeField(null=True)
+    last_base_backup: models.CharField = models.CharField(max_length=255, null=True)
     last_run: models.ForeignKey = models.ForeignKey("ScheduledBackupRun", on_delete=models.SET_NULL, null=True)
 
     # This will be a CRON expression for the job
     schedule: models.CharField = models.CharField(max_length=255)
+    incremental_schedule: models.CharField = models.CharField(max_length=255, null=True)
     table: models.CharField = models.CharField(max_length=255, null=True)
     database: models.CharField = models.CharField(max_length=255)
     cluster: models.CharField = models.CharField(max_length=255, null=True)
@@ -51,12 +54,16 @@ class ScheduledBackup(models.Model):
     def save(self, *args, **kwargs):
         if not croniter.is_valid(self.schedule):
             raise ValueError("Invalid CRON expression")
+        if self.incremental_schedule and not croniter.is_valid(self.incremental_schedule):
+            raise ValueError("Invalid CRON expression")
         super().save(*args, **kwargs)
 
 
 class ScheduledBackupRun(models.Model):
     id: models.UUIDField = models.UUIDField(primary_key=True)
     created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
+    base_backup: models.CharField = models.CharField(max_length=255, null=True)
+    is_incremental: models.BooleanField = models.BooleanField(default=False)
     scheduled_backup: models.ForeignKey = models.ForeignKey(ScheduledBackup, on_delete=models.CASCADE)
     started_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
     finished_at: models.DateTimeField = models.DateTimeField(null=True)
