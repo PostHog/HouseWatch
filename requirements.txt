@@ -176,7 +176,7 @@ requests==2.31.0
     # via
     #   -r requirements.in
     #   openai
-sentry-sdk==1.9.8
+sentry-sdk==1.31.0
     # via -r requirements.in
 six==1.16.0
     # via
