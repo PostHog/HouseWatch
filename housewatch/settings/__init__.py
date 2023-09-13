@@ -19,8 +19,27 @@ import dj_database_url
 
 from django.core.exceptions import ImproperlyConfigured
 from kombu import Exchange, Queue
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 from housewatch.utils import str_to_bool
+
+
+sentry_sdk.init(
+    dsn="https://6a05afd8bf4e2d54c81833ca1ff98cca@o607503.ingest.sentry.io/4505874503237633",
+    integrations=[DjangoIntegration()],
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True,
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate=1.0,
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production.
+    profiles_sample_rate=1.0,
+)
 
 # TODO: Figure out why things dont work on cloud without debug
 DEBUG = os.getenv("DEBUG", "false").lower() in ["true", "1"]
