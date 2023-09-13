@@ -12,6 +12,7 @@ interface ScheduleRow {
     last_run_time: string
     cluster: string
     schedule: string
+    incremental_schedule: string
     table: string
     database: string
     bucket: string
@@ -26,6 +27,7 @@ interface Backups {
 type FieldType = {
     cluster?: string
     schedule?: string
+    incremental_schedule?: string
     database?: string
     table?: string
     bucket?: string
@@ -130,6 +132,7 @@ export default function ScheduledBackups() {
         },
         { title: 'Cluster', dataIndex: 'cluster' },
         { title: 'Schedule', dataIndex: 'schedule' },
+        { title: 'Incremental Schedule', dataIndex: 'incremental_schedule' },
         { title: 'Last Run Time', dataIndex: 'last_run_time' },
         { title: 'Database', dataIndex: 'database' },
         { title: 'Table', dataIndex: 'table' },
@@ -208,6 +211,17 @@ export default function ScheduledBackups() {
                     </Form.Item>
 
                     <Form.Item<FieldType>
+                        label="Incremental Schedule"
+                        name="incremental_schedule"
+                        initialValue="0 0 * * *"
+                        rules={[
+                            { required: true, message: 'Please provide a cron schedule for the incremental backup' },
+                        ]}
+                    >
+                        <Input />
+                    </Form.Item>
+
+                    <Form.Item<FieldType>
                         label="Database"
                         name="database"
                         initialValue="default"
@@ -247,7 +261,7 @@ export default function ScheduledBackups() {
                         label="AWS Access Key ID"
                         name="aws_access_key_id"
                         initialValue="AKIAIOSFODNN7EXAMPLE"
-                        rules={[{ required: false, message: 'AWS Access Key ID to use for access to the S3 bucket' }]}
+                        rules={[{ required: true, message: 'AWS Access Key ID to use for access to the S3 bucket' }]}
                     >
                         <Input />
                     </Form.Item>
@@ -256,7 +270,7 @@ export default function ScheduledBackups() {
                         label="AWS Secret Access Key"
                         name="aws_secret_access_key"
                         initialValue="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-                        rules={[{ required: false, message: 'AWS Secret Access Key used to access S3 bucket' }]}
+                        rules={[{ required: true, message: 'AWS Secret Access Key used to access S3 bucket' }]}
                     >
                         <Input />
                     </Form.Item>
