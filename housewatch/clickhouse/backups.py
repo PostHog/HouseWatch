@@ -174,9 +174,11 @@ def run_backup(backup_id, incremental=False):
     base_backup = None
     S3_LOCATION = f"https://{backup.bucket}.s3.amazonaws.com/{path}"
     if incremental:
-        if not backup.last_run:
-            logger.info("Cannot run incremental backup without a base backup")
-        base_backup = backup.last_base_backup
+        if not backup.last_run or not backup.last_base_backup:
+            logger.info("Cannot run incremental backup without a base backup, running base backup")
+            incremental = False
+        else:
+            base_backup = backup.last_base_backup
     if backup.is_database_backup():
         create_database_backup(
             backup.database,
