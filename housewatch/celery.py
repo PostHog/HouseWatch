@@ -35,6 +35,8 @@ def setup_periodic_tasks(sender: Celery, **kwargs):
 def run_backup(backup_id: str, incremental: bool = False):
     from housewatch.clickhouse import backups
 
+    logger.info("Running backup", backup_id=backup_id, incremental=incremental)
+
     backups.run_backup(backup_id, incremental=incremental)
 
 
