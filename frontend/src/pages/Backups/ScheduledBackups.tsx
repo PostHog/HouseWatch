@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import { ColumnType } from 'antd/es/table'
 import { Switch, Select, Table, Button, Form, Input, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
+import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
 import { Clusters } from '../Clusters/Clusters'
 
 interface ScheduleRow {
@@ -49,13 +49,16 @@ export default function ScheduledBackups() {
 
     const [form] = Form.useForm() // Hook to get form API
 
+    const [editingRow, setEditingRow] = useState<ScheduleRow | null>(null) // <-- New state to hold the editing row data
+
     const handleSubmit = async () => {
         try {
-            // Validate and get form values
+            const method = editingRow ? 'PATCH' : 'POST'
+            const url = editingRow ? `/api/scheduled_backups/${editingRow.id}` : '/api/scheduled_backups'
             const values = await form.validateFields()
             setConfirmLoading(true)
-            const res = await fetch(`/api/scheduled_backups`, {
-                method: 'POST',
+            const res = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -63,6 +66,7 @@ export default function ScheduledBackups() {
             })
             setOpen(false)
             setConfirmLoading(false)
+            setEditingRow(null)
             loadData()
             return await res.json()
         } catch (error) {
@@ -72,12 +76,25 @@ export default function ScheduledBackups() {
         }
     }
 
-    const showModal = () => {
-        setOpen(true)
-    }
     const handleCancel = () => {
         console.log('Clicked cancel button')
         setOpen(false)
+        form.resetFields()
+        setEditingRow(null)
+    }
+
+    const showModal = (rowData: ScheduleRow | null = null) => {
+        setEditingRow(rowData)
+        if (rowData) {
+            form.setFieldsValue(rowData)
+        } else {
+            form.resetFields()
+        }
+        setOpen(true)
+    }
+
+    const handleEdit = (rowData: ScheduleRow) => {
+        showModal(rowData)
     }
 
     const loadData = async () => {
@@ -85,7 +102,6 @@ export default function ScheduledBackups() {
             const res = await fetch('/api/scheduled_backups')
             const resJson = await res.json()
             const backups = { backups: resJson.results }
-            console.log(backups)
             setBackups(backups)
         } catch (err) {
             notification.error({ message: 'Failed to load data' })
@@ -150,7 +166,6 @@ export default function ScheduledBackups() {
                         loadData()
                         return await res.text()
                     } catch (error) {
-                        console.log(error)
                         notification.error({
                             message: 'Failed to delete backup',
                         })
@@ -164,6 +179,18 @@ export default function ScheduledBackups() {
                 )
             },
         },
+        {
+            title: 'Actions',
+            dataIndex: 'id',
+            render: (id: string, rowData: ScheduleRow) => {
+                return (
+                    <>
+                        <EditOutlined onClick={() => handleEdit(rowData)} />
+                        {/* <DeleteOutlined onClick={() => handleDelete(id)} /> */}
+                    </>
+                )
+            },
+        },
     ]
 
     usePollingEffect(
@@ -174,12 +201,24 @@ export default function ScheduledBackups() {
         { interval: 5000 }
     )
 
+    console.log(editingRow)
+
+    const default_form_values = {
+        schedule: '0 0 * * *',
+        incremental_schedule: '0 0 * * *',
+        database: 'default',
+        table: 'test_backup',
+        bucket: 'posthog-clickhouse',
+        path: 'testing/test_backup/7',
+        aws_access_key_id: 'AKIAIOSFODNN7EXAMPLE',
+        aws_secret_access_key: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+    }
     return (
         <div>
             <h1 style={{ textAlign: 'left' }}>Scheduled Backups</h1>
-            <Button onClick={showModal}>Create Backup</Button>
+            <Button onClick={() => showModal()}>Create Backup</Button>
             <Modal
-                title="Create Backup"
+                title={editingRow ? 'Edit Backup' : 'Create Backup'}
                 open={open}
                 onOk={handleSubmit}
                 confirmLoading={confirmLoading}
@@ -191,9 +230,13 @@ export default function ScheduledBackups() {
                     labelCol={{ span: 8 }}
                     wrapperCol={{ span: 16 }}
                     style={{ maxWidth: 600 }}
-                    initialValues={{ remember: true }}
+                    initialValues={editingRow ? editingRow : default_form_values}
                     autoComplete="on"
                 >
+                    <Form.Item name="id" hidden={true}>
+                        <Input />
+                    </Form.Item>
+
                     <Form.Item name="cluster" label="Cluster">
                         <Select>
                             {clusters.clusters.map(cluster => (
@@ -204,7 +247,6 @@ export default function ScheduledBackups() {
                     <Form.Item<FieldType>
                         label="Schedule"
                         name="schedule"
-                        initialValue="0 0 * * *"
                         rules={[{ required: true, message: 'Please provide a cron schedule for the backup' }]}
                     >
                         <Input />
@@ -213,7 +255,6 @@ export default function ScheduledBackups() {
                     <Form.Item<FieldType>
                         label="Incremental Schedule"
                         name="incremental_schedule"
-                        initialValue="0 0 * * *"
                         rules={[
                             { required: true, message: 'Please provide a cron schedule for the incremental backup' },
                         ]}
@@ -224,7 +265,6 @@ export default function ScheduledBackups() {
                     <Form.Item<FieldType>
                         label="Database"
                         name="database"
-                        initialValue="default"
                         rules={[{ required: true, message: 'Please select a database to back up from' }]}
                     >
                         <Input />
@@ -233,7 +273,6 @@ export default function ScheduledBackups() {
                     <Form.Item<FieldType>
                         label="Table"
                         name="table"
-                        initialValue="test_backup"
                         rules={[{ required: true, message: 'Please select a table to back up' }]}
                     >
                         <Input />
@@ -242,7 +281,6 @@ export default function ScheduledBackups() {
                     <Form.Item<FieldType>
                         label="S3 Bucket"
                         name="bucket"
-                        initialValue="posthog-clickhouse"
                         rules={[{ required: true, message: 'What S3 bucket to backup into' }]}
                     >
                         <Input />
@@ -251,7 +289,6 @@ export default function ScheduledBackups() {
                     <Form.Item<FieldType>
                         label="S3 Path"
                         name="path"
-                        initialValue="testing/test_backup/7"
                         rules={[{ required: true, message: 'What is the path in the bucket to backup to' }]}
                     >
                         <Input />
@@ -260,7 +297,6 @@ export default function ScheduledBackups() {
                     <Form.Item<FieldType>
                         label="AWS Access Key ID"
                         name="aws_access_key_id"
-                        initialValue="AKIAIOSFODNN7EXAMPLE"
                         rules={[{ required: true, message: 'AWS Access Key ID to use for access to the S3 bucket' }]}
                     >
                         <Input />
@@ -269,7 +305,6 @@ export default function ScheduledBackups() {
                     <Form.Item<FieldType>
                         label="AWS Secret Access Key"
                         name="aws_secret_access_key"
-                        initialValue="wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
                         rules={[{ required: true, message: 'AWS Secret Access Key used to access S3 bucket' }]}
                     >
                         <Input />
