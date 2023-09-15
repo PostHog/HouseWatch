@@ -17,7 +17,7 @@ class ScheduledBackup(models.Model):
     # This will be a CRON expression for the job
     schedule: models.CharField = models.CharField(max_length=255)
     incremental_schedule: models.CharField = models.CharField(max_length=255, null=True)
-    table: models.CharField = models.CharField(max_length=255, null=True)
+    table: models.CharField = models.CharField(max_length=255, null=True, blank=True)
     database: models.CharField = models.CharField(max_length=255)
     cluster: models.CharField = models.CharField(max_length=255, null=True)
     bucket: models.CharField = models.CharField(max_length=255)
