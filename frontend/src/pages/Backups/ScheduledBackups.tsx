@@ -216,6 +216,10 @@ export default function ScheduledBackups() {
     return (
         <div>
             <h1 style={{ textAlign: 'left' }}>Scheduled Backups</h1>
+            <p style={{ textAlign: 'left' }}>
+                It's a bit of a hack, but if you want to backup a database just omit the table when you create the
+                scheduled backup.
+            </p>
             <Button onClick={() => showModal()}>Create Backup</Button>
             <Modal
                 title={editingRow ? 'Edit Backup' : 'Create Backup'}
@@ -273,7 +277,7 @@ export default function ScheduledBackups() {
                     <Form.Item<FieldType>
                         label="Table"
                         name="table"
-                        rules={[{ required: true, message: 'Please select a table to back up' }]}
+                        rules={[{ required: false, message: 'Please select a table to back up' }]}
                     >
                         <Input />
                     </Form.Item>
