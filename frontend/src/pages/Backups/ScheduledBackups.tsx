@@ -273,7 +273,7 @@ export default function ScheduledBackups() {
                     <Form.Item<FieldType>
                         label="Table"
                         name="table"
-                        rules={[{ required: true, message: 'Please select a table to back up' }]}
+                        rules={[{ required: false, message: 'Please select a table to back up' }]}
                     >
                         <Input />
                     </Form.Item>

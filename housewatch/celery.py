@@ -42,9 +42,12 @@ def run_backup(backup_id: str, incremental: bool = False):
 
 @app.task(track_started=True, ignore_result=False, max_retries=0)
 def schedule_backups():
+    # Every interval (default 60 seconds), check if any backups need to be run
+    # We do this so that if we disable or change the schedule of a backup, it will be picked up within 60 seconds
+    # instead of waiting for the next deployment or restart of HouseWatch service
     from housewatch.models.backup import ScheduledBackup
 
-    logger.info("Running scheduled backups")
+    logger.info("Checking if scheduled backups need to be run")
     backups = ScheduledBackup.objects.filter(enabled=True)
     now = timezone.now()
     for backup in backups:
@@ -65,11 +68,16 @@ def schedule_backups():
                 nir = timezone.make_aware(nir)
 
         logger.info("Checking backup", backup_id=backup.id, next_run=nr, next_incremental_run=nir, now=now)
+        # The idea here is to first check if the base backup needs to be run, and if not, check if the incremental
+        # backup needs to be run. This is because incremental backups are only useful if the base backup has been run
+        # at least once.
         if nr < now:
+            # check if base backup needs to be run and run it
             run_backup.delay(backup.id)
             backup.last_run_time = now
             backup.save()
         elif backup.incremental_schedule is not None and nir < now:
+            # check if incremental backup needs to be run and run it
             run_backup.delay(backup.id, incremental=True)
             backup.last_incremental_run_time = now
             backup.save()
