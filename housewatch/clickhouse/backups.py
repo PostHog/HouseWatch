@@ -34,10 +34,12 @@ def execute_backup_on_shards(
     nodes = get_node_per_shard(cluster)
     responses = []
     for shard, node in nodes:
+        loop_query = query
         params["shard"] = shard
         if base_backup:
-            query_settings["base_backup"] = f"S3('{base_backup}/{shard}', '{aws_key}', '{aws_secret}')"
-        final_query = query % (params or {}) if substitute_params else query
+            loop_query = query + "\nS3('%(base_backup)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')"
+            params["base_backup"] = base_backup
+        final_query = loop_query % (params or {}) if substitute_params else loop_query
         client = Client(
             host=node["host_address"],
             database=settings.CLICKHOUSE_DATABASE,
@@ -132,7 +134,6 @@ def create_database_backup(database, bucket, path, cluster=None, aws_key=None, a
         QUERY = """BACKUP DATABASE %(database)s 
                     TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')
                     ASYNC"""
-
         return execute_backup_on_shards(
             QUERY,
             {
@@ -152,7 +153,7 @@ def create_database_backup(database, bucket, path, cluster=None, aws_key=None, a
                 TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
                 ASYNC"""
     if base_backup:
-        query_settings["base_backup"] = f"S3('{base_backup}', '{aws_key}', '{aws_secret}')"
+        QUERY = QUERY + "\nS3('%(base_backup)s', '%(aws_key)s', '%(aws_secret)s')"
     return run_query(
         QUERY,
         {
@@ -161,6 +162,7 @@ def create_database_backup(database, bucket, path, cluster=None, aws_key=None, a
             "path": path,
             "aws_key": aws_key,
             "aws_secret": aws_secret,
+            "base_backup": base_backup,
         },
         query_settings=query_settings,
         use_cache=False,
