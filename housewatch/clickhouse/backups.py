@@ -25,6 +25,7 @@ def execute_backup_on_shards(
     aws_key: Optional[str] = None,
     aws_secret: Optional[str] = None,
     base_backup: Optional[str] = None,
+    async_execute: Optional[bool] = True,
 ):
     """
     This function will execute a backup on each shard in a cluster
@@ -41,6 +42,8 @@ def execute_backup_on_shards(
                 query + "\nSETTINGS base_backup = S3('%(base_backup)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')"
             )
             params["base_backup"] = base_backup
+        if async_execute:
+            loop_query = loop_query + "\nASYNC"
         final_query = loop_query % (params or {}) if substitute_params else loop_query
         client = Client(
             host=node["host_address"],
@@ -82,7 +85,9 @@ def get_backup(backup, cluster=None):
         return run_query(QUERY, {"uuid": backup}, use_cache=False)
 
 
-def create_table_backup(database, table, bucket, path, cluster=None, aws_key=None, aws_secret=None, base_backup=None):
+def create_table_backup(
+    database, table, bucket, path, cluster=None, aws_key=None, aws_secret=None, base_backup=None, async_execute=True
+):
     if aws_key is None or aws_secret is None:
         aws_key = settings.AWS_ACCESS_KEY_ID
         aws_secret = settings.AWS_SECRET_ACCESS_KEY
@@ -90,7 +95,7 @@ def create_table_backup(database, table, bucket, path, cluster=None, aws_key=Non
     if cluster:
         QUERY = """BACKUP TABLE %(database)s.%(table)s
         TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')
-        ASYNC"""
+        """
         return execute_backup_on_shards(
             QUERY,
             {
@@ -109,9 +114,11 @@ def create_table_backup(database, table, bucket, path, cluster=None, aws_key=Non
         )
     QUERY = """BACKUP TABLE %(database)s.%(table)s
     TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
-    ASYNC"""
+    """
     if base_backup:
-        query_settings["base_backup"] = f"SETTINGS base_backup = S3('{base_backup}', '{aws_key}', '{aws_secret}')"
+        QUERY = QUERY + f"SETTINGS base_backup = S3('{base_backup}', '{aws_key}', '{aws_secret}')"
+    if async_execute:
+        QUERY = QUERY + "\nASYNC"
     return run_query(
         QUERY,
         {
@@ -127,7 +134,9 @@ def create_table_backup(database, table, bucket, path, cluster=None, aws_key=Non
     )
 
 
-def create_database_backup(database, bucket, path, cluster=None, aws_key=None, aws_secret=None, base_backup=None):
+def create_database_backup(
+    database, bucket, path, cluster=None, aws_key=None, aws_secret=None, base_backup=None, async_execute=True
+):
     if aws_key is None or aws_secret is None:
         aws_key = settings.AWS_ACCESS_KEY_ID
         aws_secret = settings.AWS_SECRET_ACCESS_KEY
@@ -135,7 +144,7 @@ def create_database_backup(database, bucket, path, cluster=None, aws_key=None, a
     if cluster:
         QUERY = """BACKUP DATABASE %(database)s 
                     TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')
-                    ASYNC"""
+                    """
         return execute_backup_on_shards(
             QUERY,
             {
@@ -153,9 +162,11 @@ def create_database_backup(database, bucket, path, cluster=None, aws_key=None, a
         )
     QUERY = """BACKUP DATABASE %(database)s
                 TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
-                ASYNC"""
+                """
     if base_backup:
         QUERY = QUERY + "\nSETTINGS base_backup = S3('%(base_backup)s', '%(aws_key)s', '%(aws_secret)s')"
+    if async_execute:
+        QUERY = QUERY + "\nASYNC"
     return run_query(
         QUERY,
         {
