@@ -37,7 +37,9 @@ def execute_backup_on_shards(
         loop_query = query
         params["shard"] = shard
         if base_backup:
-            loop_query = query + "\nS3('%(base_backup)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')"
+            loop_query = (
+                query + "\nSETTINGS base_backup = S3('%(base_backup)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')"
+            )
             params["base_backup"] = base_backup
         final_query = loop_query % (params or {}) if substitute_params else loop_query
         client = Client(
@@ -109,7 +111,7 @@ def create_table_backup(database, table, bucket, path, cluster=None, aws_key=Non
     TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
     ASYNC"""
     if base_backup:
-        query_settings["base_backup"] = f"S3('{base_backup}', '{aws_key}', '{aws_secret}')"
+        query_settings["base_backup"] = f"SETTINGS base_backup = S3('{base_backup}', '{aws_key}', '{aws_secret}')"
     return run_query(
         QUERY,
         {
@@ -153,7 +155,7 @@ def create_database_backup(database, bucket, path, cluster=None, aws_key=None, a
                 TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
                 ASYNC"""
     if base_backup:
-        QUERY = QUERY + "\nS3('%(base_backup)s', '%(aws_key)s', '%(aws_secret)s')"
+        QUERY = QUERY + "\nSETTINGS base_backup = S3('%(base_backup)s', '%(aws_key)s', '%(aws_secret)s')"
     return run_query(
         QUERY,
         {
