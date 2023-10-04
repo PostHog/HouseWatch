@@ -18,8 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
-      packages: write
+      contents: write
 
     steps:
       - name: Checkout
@@ -35,16 +34,10 @@ jobs:
         run: |
           sed -i 's/^version: \(.*\)$/version: \1-${{ github.sha }}/g' charts/housewatch/Chart.yaml
 
-      - name: Helm login
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io -u $ --password-stdin
-
-      - name: Helm package
-        run: |
-          helm dependency update charts/housewatch/
-          helm package charts/housewatch
-
-      - name: Helm push
-        run: |
-          helm push housewatch-*.tgz oci://ghcr.io/posthog/housewatch/charts
-
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@ed43eb3
+        if: github.repository == 'PostHog/charts-clickhouse'
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        with:
+          skip_existing: true
