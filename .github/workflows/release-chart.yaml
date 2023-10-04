@@ -36,6 +36,7 @@ jobs:
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@ed43eb303604cbc0eeec8390544f7748dc6c790d
+        if: github.repository == 'PostHog/HouseWatch'
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           GIT_COMMITTER_NAME: Max Hedgehog
