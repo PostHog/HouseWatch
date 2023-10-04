@@ -1,7 +1,7 @@
 name: Release Chart
 
 on:
-  pull_request:
+  pull_request_target:
     paths:
       - charts/**
       - .github/workflows/release-chart.yaml
@@ -36,7 +36,6 @@ jobs:
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@ed43eb303604cbc0eeec8390544f7748dc6c790d
-        if: github.repository == 'PostHog/charts-clickhouse'
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
