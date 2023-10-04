@@ -50,7 +50,7 @@ jobs:
           set -x
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@ed43eb303604cbc0eeec8390544f7748dc6c790d
+        uses: helm/chart-releaser-action@4b85f2c82c80ff4284ff8520f47bbe69dd89b0aa
         if: github.repository == 'PostHog/HouseWatch'
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
