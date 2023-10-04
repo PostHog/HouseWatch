@@ -38,6 +38,16 @@ jobs:
         run: |
           git config user.name "Max Hedgehog"
           git config user.email "127861667+max-hedgehog[bot]@users.noreply.github.com"
+          git fetch origin gh-pages --depth=1
+
+      - name: Package
+        run: |
+          helm dependency update charts/housewatch/
+          mkdir -p .cr-release-packages
+          cd .cr-release-packages
+          helm package ../charts/housewatch
+          cd -
+          set -x
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@ed43eb303604cbc0eeec8390544f7748dc6c790d
@@ -46,3 +56,4 @@ jobs:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           skip_existing: true
+          skip_packaging: true
