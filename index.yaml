@@ -20,6 +20,23 @@ entries:
     version: 0.1.7-ef6551a0a697afbb26209ef93a939c2fc814a038
   - apiVersion: v2
     appVersion: 0.1.1
+    created: "2023-10-04T19:22:17.270900989Z"
+    dependencies:
+    - name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 12.10.0
+    - name: rabbitmq
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 12.1.3
+    description: Open source tool for monitoring and managing ClickHouse clusters
+    digest: bd70d24085b063eab0af990f4a74e50ca75e20b1f1987c054a272808b050e005
+    name: housewatch
+    type: application
+    urls:
+    - https://github.com/PostHog/HouseWatch/releases/download/housewatch-0.1.7-617be54cbaf444d7fc53c103e2e029ec6776136c/housewatch-0.1.7-617be54cbaf444d7fc53c103e2e029ec6776136c.tgz
+    version: 0.1.7-617be54cbaf444d7fc53c103e2e029ec6776136c
+  - apiVersion: v2
+    appVersion: 0.1.1
     created: "2023-10-04T18:40:22.737602757Z"
     dependencies:
     - name: postgresql
@@ -52,4 +69,4 @@ entries:
     urls:
     - housewatch-0.1.6-4eb4a3c0f3ea3aae3b6901c747e99578043eba87.tgz
     version: 0.1.6-4eb4a3c0f3ea3aae3b6901c747e99578043eba87
-generated: "2023-10-04T19:17:22.653497163Z"
+generated: "2023-10-04T19:22:17.271200556Z"
