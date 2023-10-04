@@ -39,6 +39,11 @@ jobs:
           git config user.name "Max Hedgehog"
           git config user.email "127861667+max-hedgehog[bot]@users.noreply.github.com"
 
+      - name: Package
+        run: |
+          helm dependency update charts/housewatch/
+          helm package charts/housewatch
+
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@ed43eb303604cbc0eeec8390544f7748dc6c790d
         if: github.repository == 'PostHog/HouseWatch'
@@ -46,3 +51,4 @@ jobs:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         with:
           skip_existing: true
+          skip_packaging: true
