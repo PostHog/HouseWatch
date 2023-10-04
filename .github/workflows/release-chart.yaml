@@ -38,5 +38,7 @@ jobs:
         uses: helm/chart-releaser-action@ed43eb303604cbc0eeec8390544f7748dc6c790d
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          GIT_COMMITTER_NAME: Max Hedgehog
+          GIT_COMMITTER_EMAIL: 127861667+max-hedgehog[bot]@users.noreply.github.com
         with:
           skip_existing: true
