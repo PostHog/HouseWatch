@@ -39,7 +39,7 @@ jobs:
         if: github.repository == 'PostHog/HouseWatch'
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          GIT_COMMITTER_NAME: Max Hedgehog
-          GIT_COMMITTER_EMAIL: 127861667+max-hedgehog[bot]@users.noreply.github.com
+          GIT_AUTHOR_NAME: Max Hedgehog
+          GIT_AUTHOR_EMAIL: 127861667+max-hedgehog[bot]@users.noreply.github.com
         with:
           skip_existing: true
