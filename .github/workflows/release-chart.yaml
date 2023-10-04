@@ -35,7 +35,7 @@ jobs:
           sed -i 's/^version: \(.*\)$/version: \1-${{ github.sha }}/g' charts/housewatch/Chart.yaml
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@ed43eb3
+        uses: helm/chart-releaser-action@ed43eb303604cbc0eeec8390544f7748dc6c790d
         if: github.repository == 'PostHog/charts-clickhouse'
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
