@@ -46,6 +46,7 @@ jobs:
           cd .cr-release-packages
           helm package ../charts/housewatch
           cd -
+          set -x
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@ed43eb303604cbc0eeec8390544f7748dc6c790d
