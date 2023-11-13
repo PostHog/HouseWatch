@@ -1,4 +1,4 @@
-import { Table, Button, notification, Typography } from 'antd'
+import { Table, Button, notification, Typography, Spin } from 'antd'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import React, { useState } from 'react'
 import { ColumnType } from 'antd/es/table'
@@ -95,7 +95,6 @@ export default function RunningQueries() {
 
     usePollingEffect(
         async () => {
-            setRunningQueries([])
             setLoadingRunningQueries(true)
             const res = await fetch('/api/analyze/running_queries')
             const resJson = await res.json()
@@ -108,9 +107,13 @@ export default function RunningQueries() {
 
     return (
         <>
-            <h1 style={{ textAlign: 'left' }}>Running queries</h1>
+            <h1 style={{ textAlign: 'left' }}>Running queries {loadingRunningQueries ? <Spin /> : null}</h1>
             <br />
-            <Table columns={columns} dataSource={runningQueries} loading={loadingRunningQueries} />
+            <Table
+                columns={columns}
+                dataSource={runningQueries}
+                loading={runningQueries.length == 0 && loadingRunningQueries}
+            />
         </>
     )
 }
