@@ -8,8 +8,10 @@ const { Paragraph } = Typography
 interface RunningQueryData {
     query: string
     read_rows: number
+    read_rows_readable: string
     query_id: string
     total_rows_approx: number
+    total_rows_approx_readable: string
     elapsed: number
     memory_usage: string
 }
