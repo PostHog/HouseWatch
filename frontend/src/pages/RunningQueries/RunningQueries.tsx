@@ -1,4 +1,4 @@
-import { Table, Button, notification, Typography, Spin } from 'antd'
+import { Table, Button, notification, Typography, Tooltip, Spin } from 'antd'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import React, { useState } from 'react'
 import { ColumnType } from 'antd/es/table'
@@ -80,11 +80,16 @@ export default function RunningQueries() {
                 )
             },
         },
+        { title: 'User', dataIndex: 'user' },
         { title: 'Elapsed time', dataIndex: 'elapsed' },
         {
             title: 'Rows read',
             dataIndex: 'read_rows',
-            render: (_: any, item) => `~${item.read_rows}/${item.total_rows_approx}`,
+            render: (_: any, item) => (
+                <Tooltip title={`~${item.read_rows}/${item.total_rows_approx}`}>
+                    ~{item.read_rows_readable}/{item.total_rows_approx_readable}
+                </Tooltip>
+            ),
         },
         { title: 'Memory Usage', dataIndex: 'memory_usage' },
         {
