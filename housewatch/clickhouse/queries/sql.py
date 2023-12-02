@@ -176,7 +176,16 @@ ORDER BY day_start ASC
 """
 
 RUNNING_QUERIES_SQL = """
-SELECT query, elapsed, read_rows, total_rows_approx, formatReadableSize(memory_usage) AS memory_usage, query_id
+SELECT
+    query,
+    user,
+    elapsed,
+    read_rows,
+    formatReadableQuantity(read_rows) AS read_rows_readable,
+    total_rows_approx,
+    formatReadableQuantity(total_rows_approx) AS total_rows_approx_readable,
+    formatReadableSize(memory_usage) AS memory_usage,
+    query_id
 FROM system.processes
 WHERE Settings['log_comment'] != 'running_queries_lookup'
 ORDER BY elapsed DESC

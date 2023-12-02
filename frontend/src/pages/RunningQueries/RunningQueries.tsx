@@ -1,4 +1,4 @@
-import { Table, Button, notification, Typography } from 'antd'
+import { Table, Button, notification, Typography, Tooltip, Spin } from 'antd'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import React, { useState } from 'react'
 import { ColumnType } from 'antd/es/table'
@@ -8,8 +8,10 @@ const { Paragraph } = Typography
 interface RunningQueryData {
     query: string
     read_rows: number
+    read_rows_readable: string
     query_id: string
     total_rows_approx: number
+    total_rows_approx_readable: string
     elapsed: number
     memory_usage: string
 }
@@ -80,11 +82,16 @@ export default function RunningQueries() {
                 )
             },
         },
+        { title: 'User', dataIndex: 'user' },
         { title: 'Elapsed time', dataIndex: 'elapsed' },
         {
             title: 'Rows read',
             dataIndex: 'read_rows',
-            render: (_: any, item) => `~${item.read_rows}/${item.total_rows_approx}`,
+            render: (_: any, item) => (
+                <Tooltip title={`~${item.read_rows}/${item.total_rows_approx}`}>
+                    ~{item.read_rows_readable}/{item.total_rows_approx_readable}
+                </Tooltip>
+            ),
         },
         { title: 'Memory Usage', dataIndex: 'memory_usage' },
         {
@@ -95,7 +102,6 @@ export default function RunningQueries() {
 
     usePollingEffect(
         async () => {
-            setRunningQueries([])
             setLoadingRunningQueries(true)
             const res = await fetch('/api/analyze/running_queries')
             const resJson = await res.json()
@@ -108,9 +114,13 @@ export default function RunningQueries() {
 
     return (
         <>
-            <h1 style={{ textAlign: 'left' }}>Running queries</h1>
+            <h1 style={{ textAlign: 'left' }}>Running queries {loadingRunningQueries ? <Spin /> : null}</h1>
             <br />
-            <Table columns={columns} dataSource={runningQueries} loading={loadingRunningQueries} />
+            <Table
+                columns={columns}
+                dataSource={runningQueries}
+                loading={runningQueries.length == 0 && loadingRunningQueries}
+            />
         </>
     )
 }
