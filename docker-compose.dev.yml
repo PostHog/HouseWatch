@@ -25,6 +25,8 @@ services:
       - |
         python manage.py migrate
         python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
     volumes:
       - .:/code
     depends_on:
@@ -32,14 +34,6 @@ services:
       - db
       - redis
       - rabbitmq
-
-  web:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
-    volumes:
-      - ./frontend/public:/frontend/public
-      - ./frontend/src:/frontend/src
 
   db:
     image: postgres:14-alpine
@@ -84,18 +78,6 @@ services:
   zookeeper:
     image: zookeeper:3.7.0
     restart: on-failure
-
-  caddy:
-    image: caddy:2.6.1
-    ports:
-      - "8888:8888"
-    environment:
-      SITE_ADDRESS: ":8888"
-    volumes:
-      - ./docker/Caddyfile:/etc/caddy/Caddyfile
-    depends_on:
-      - web
-      - app
 
   rabbitmq:
     image: rabbitmq:3.12.2-management-alpine

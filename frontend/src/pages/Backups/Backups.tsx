@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import { ColumnType } from 'antd/es/table'
 import { Table, Button, Form, Input, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
+import useSWR, { mutate } from 'swr'
 
 interface BackupRow {
     id: string
@@ -33,10 +34,6 @@ type FieldType = {
 }
 
 export default function Backups() {
-    const [backups, setBackups] = useState<Backups>({
-        backups: [],
-    })
-    const [loadingBackups, setLoadingBackups] = useState(false)
     const [open, setOpen] = useState(false)
     const [confirmLoading, setConfirmLoading] = useState(false)
 
@@ -56,7 +53,7 @@ export default function Backups() {
             })
             setOpen(false)
             setConfirmLoading(false)
-            loadData()
+            mutate('/api/backups')
             return await res.json()
         } catch (error) {
             notification.error({
@@ -73,21 +70,18 @@ export default function Backups() {
         setOpen(false)
     }
 
-    const loadData = async () => {
+    const loadData = async (url: string) => {
         try {
-            const res = await fetch('/api/backups')
+            const res = await fetch(url)
             const resJson = await res.json()
             const backups = { backups: resJson }
-            console.log(backups)
-            setBackups(backups)
+            return backups
         } catch (err) {
             notification.error({ message: 'Failed to load data' })
         }
     }
 
-    useEffect(() => {
-        loadData()
-    }, [])
+    const { data, error, isLoading } = useSWR('/api/backups', loadData)
 
     const columns: ColumnType<BackupRow>[] = [
         { title: 'UUID', dataIndex: 'id' },
@@ -123,13 +117,17 @@ export default function Backups() {
 
     usePollingEffect(
         async () => {
-            loadData()
+            mutate('/api/backups')
         },
         [],
         { interval: 5000 }
     )
 
-    return (
+    return isLoading ? (
+        <div>loading...</div>
+    ) : error ? (
+        <div>error</div>
+    ) : (
         <div>
             <h1 style={{ textAlign: 'left' }}>Backups</h1>
             <Button onClick={showModal}>Create Backup</Button>
@@ -203,7 +201,7 @@ export default function Backups() {
                     </Form.Item>
                 </Form>
             </Modal>
-            <Table columns={columns} dataSource={backups.backups} loading={loadingBackups} />
+            <Table columns={columns} dataSource={data.backups} loading={isLoading} />
         </div>
     )
 }

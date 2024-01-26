@@ -3,6 +3,7 @@ import { Line } from '@ant-design/charts'
 import { Card, Col, Row, Tooltip, notification } from 'antd'
 import { InfoCircleOutlined } from '@ant-design/icons'
 import { clickhouseTips } from './tips'
+import useSWR from 'swr'
 
 interface MetricData {
     day_start: string
@@ -17,37 +18,34 @@ interface QueryGraphsData {
 }
 
 export default function Overview() {
-    const [queryGraphs, setQueryGraphs] = useState<QueryGraphsData>({
-        execution_count: [],
-        memory_usage: [],
-        read_bytes: [],
-        cpu: [],
-    })
-
-    const loadData = async () => {
+    const loadData = async (url: string) => {
         try {
-            const res = await fetch('/api/analyze/query_graphs')
+            const res = await fetch(url)
             const resJson = await res.json()
             const execution_count = resJson.execution_count
             const memory_usage = resJson.memory_usage
             const read_bytes = resJson.read_bytes
             const cpu = resJson.cpu
-            setQueryGraphs({ execution_count, memory_usage, read_bytes, cpu })
+            return { execution_count, memory_usage, read_bytes, cpu }
         } catch (err) {
             notification.error({ message: 'Failed to load data' })
         }
     }
 
-    useEffect(() => {
-        loadData()
-    }, [])
+    const { data, error, isLoading } = useSWR('/api/analyze/query_graphs', loadData)
 
     const now = new Date()
     const dayOfTheYear = Math.floor(
         (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24)
     )
 
-    return (
+    console.log(data, error, isLoading)
+
+    return isLoading ? (
+        <div>loading</div>
+    ) : error ? (
+        <div>error</div>
+    ) : (
         <div>
             <h1 style={{ textAlign: 'left' }}>Overview</h1>
             <Card title="💡 ClickHouse tip of the day">{clickhouseTips[dayOfTheYear % clickhouseTips.length]}</Card>
@@ -56,7 +54,7 @@ export default function Overview() {
                 <Col span={12}>
                     <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title="Number of queries">
                         <Line
-                            data={queryGraphs.execution_count.map((dataPoint) => ({
+                            data={data.execution_count.map(dataPoint => ({
                                 ...dataPoint,
                                 day_start: dataPoint.day_start.split('T')[0],
                             }))}
@@ -65,14 +63,14 @@ export default function Overview() {
                             xAxis={{ tickCount: 5 }}
                             style={{ padding: 20, height: 300 }}
                             color="#ffb200"
-                            loading={queryGraphs.execution_count.length < 1}
+                            loading={isLoading}
                         />
                     </Card>
                 </Col>
                 <Col span={12}>
                     <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title="Data read (GB)">
                         <Line
-                            data={queryGraphs.read_bytes.map((dataPoint) => ({
+                            data={data.read_bytes.map(dataPoint => ({
                                 day_start: dataPoint.day_start.split('T')[0],
                                 total: dataPoint.total / 1000000000,
                             }))}
@@ -81,7 +79,7 @@ export default function Overview() {
                             xAxis={{ tickCount: 5 }}
                             style={{ padding: 20, height: 300 }}
                             color="#ffb200"
-                            loading={queryGraphs.read_bytes.length < 1}
+                            loading={isLoading}
                         />
                     </Card>
                 </Col>
@@ -90,7 +88,7 @@ export default function Overview() {
                 <Col span={12}>
                     <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title="Memory usage (GB)">
                         <Line
-                            data={queryGraphs.memory_usage.map((dataPoint) => ({
+                            data={data.memory_usage.map(dataPoint => ({
                                 day_start: dataPoint.day_start.split('T')[0],
                                 total: dataPoint.total / 1000000000,
                             }))}
@@ -98,7 +96,7 @@ export default function Overview() {
                             yField={'total'}
                             style={{ padding: 20, height: 300 }}
                             color="#ffb200"
-                            loading={queryGraphs.memory_usage.length < 1}
+                            loading={isLoading}
                         />
                     </Card>
                 </Col>
@@ -117,7 +115,7 @@ export default function Overview() {
                         }
                     >
                         <Line
-                            data={queryGraphs.cpu.map((dataPoint) => ({
+                            data={data.cpu.map(dataPoint => ({
                                 day_start: dataPoint.day_start.split('T')[0],
                                 total: dataPoint.total,
                             }))}
@@ -125,7 +123,7 @@ export default function Overview() {
                             yField={'total'}
                             style={{ padding: 20, height: 300 }}
                             color="#ffb200"
-                            loading={queryGraphs.cpu.length < 1}
+                            loading={isLoading}
                         />
                     </Card>
                 </Col>
