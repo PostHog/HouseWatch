@@ -3,6 +3,8 @@ import { Table, notification } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { isoTimestampToHumanReadable } from '../../utils/dateUtils'
 
+import useSWR from 'swr'
+
 interface ErrorData {
     name: string
     count: number
@@ -10,8 +12,6 @@ interface ErrorData {
 }
 
 export default function CollapsibleTable() {
-    const [slowQueries, setSlowQueries] = useState([])
-
     const slowQueriesColumns: ColumnsType<ErrorData> = [
         {
             title: 'Error',
@@ -26,37 +26,34 @@ export default function CollapsibleTable() {
         {
             title: 'Most recent occurence',
             dataIndex: 'max_last_error_time',
-            render: (_, item) => isoTimestampToHumanReadable(item.max_last_error_time)
+            render: (_, item) => isoTimestampToHumanReadable(item.max_last_error_time),
         },
     ]
 
-    const loadData = async () => {
+    const loadData = async (url: string) => {
         try {
-            const res = await fetch('/api/analyze/errors')
+            const res = await fetch(url)
             const resJson = await res.json()
 
             const slowQueriesData = resJson.map((error: ErrorData, idx: number) => ({ key: idx, ...error }))
-            setSlowQueries(slowQueriesData)
+            return slowQueriesData
         } catch {
             notification.error({ message: 'Failed to load data' })
         }
     }
 
-    useEffect(() => {
-        loadData()
-    }, [])
+    const { data, error, isLoading, mutate } = useSWR('/api/analyze/errors', loadData)
 
-    return (
+    return isLoading ? (
+        <div>loading...</div>
+    ) : error ? (
+        <div>error</div>
+    ) : (
         <div>
             <h1 style={{ textAlign: 'left' }}>Errors</h1>
             <br />
             <div>
-                <Table
-                    columns={slowQueriesColumns}
-                    dataSource={slowQueries}
-                    size="small"
-                    loading={slowQueries.length < 1}
-                />
+                <Table columns={slowQueriesColumns} dataSource={data} size="small" loading={isLoading} />
             </div>
         </div>
     )

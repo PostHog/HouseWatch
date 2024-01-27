@@ -11,6 +11,8 @@ import TextArea from 'antd/es/input/TextArea'
 import { ColumnType } from 'antd/es/table'
 import { isoTimestampToHumanReadable } from '../../utils/dateUtils'
 
+import useSWR from 'swr'
+
 const OPERATION_STATUS_TO_HUMAN = {
     0: 'Not started',
     1: 'Running',
@@ -74,25 +76,29 @@ export function OperationControls({
 }
 
 export function OperationsList(): JSX.Element {
-    const [operations, setOperations] = useState([])
-
-    const fetchAndUpdateOperationsIfNeeded = async () => {
-        const response = await fetch('/api/async_migrations')
+    const fetchAndUpdateOperationsIfNeeded = async (url: string) => {
+        const response = await fetch(url)
         const responseJson = await response.json()
         const results = responseJson.results
         if (JSON.stringify(results) !== JSON.stringify(operations)) {
-            setOperations(results)
+            return results
         }
     }
 
-    const triggerOperation = async (id) => {
+    const triggerOperation = async id => {
         await fetch(`/api/async_migrations/${id}/trigger`, { method: 'POST' })
         await fetchAndUpdateOperationsIfNeeded()
     }
 
+    const { data: operations, error, isLoading, mutate } = useSWR(
+        '/api/async_migrations',
+        fetchAndUpdateOperationsIfNeeded
+    )
+
     useEffect(() => {
-        fetchAndUpdateOperationsIfNeeded()
-        const intervalId = setInterval(fetchAndUpdateOperationsIfNeeded, 5000)
+        const intervalId = setInterval(() => {
+            mutate('/api/async_migrations')
+        }, 5000)
         return () => {
             try {
                 clearInterval(intervalId)
@@ -121,11 +127,11 @@ export function OperationsList(): JSX.Element {
         },
         {
             title: 'Started at',
-            render: (_, migration) => migration.started_at ? isoTimestampToHumanReadable(migration.started_at) : '',
+            render: (_, migration) => (migration.started_at ? isoTimestampToHumanReadable(migration.started_at) : ''),
         },
         {
             title: 'Finished at',
-            render: (_, migration) => migration.finished_at ? isoTimestampToHumanReadable(migration.finished_at) : '',
+            render: (_, migration) => (migration.finished_at ? isoTimestampToHumanReadable(migration.finished_at) : ''),
         },
         {
             title: '',
@@ -140,7 +146,13 @@ export function OperationsList(): JSX.Element {
         },
     ]
 
-    return <Table columns={columns} dataSource={operations} />
+    return isLoading ? (
+        <div>loading...</div>
+    ) : error ? (
+        <div>error</div>
+    ) : (
+        <Table columns={columns} dataSource={operations} />
+    )
 }
 
 export function CreateNewOperation(): JSX.Element {
@@ -221,8 +233,8 @@ export function CreateNewOperation(): JSX.Element {
                                 code[`operation-${i + 1}`] ||
                                 `CREATE TABLE test_table ( foo String ) Engine=MergeTree() ORDER BY foo`
                             }
-                            onValueChange={(value) => setCode({ ...code, [`operation-${i + 1}`]: value })}
-                            highlight={(code) => highlight(code, languages.sql)}
+                            onValueChange={value => setCode({ ...code, [`operation-${i + 1}`]: value })}
+                            highlight={code => highlight(code, languages.sql)}
                             padding={10}
                             style={{
                                 fontFamily: '"Fira code", "Fira Mono", monospace',
@@ -242,8 +254,8 @@ export function CreateNewOperation(): JSX.Element {
                             id={`create-migration-form-rollback-${i + 1}`}
                             name={`rollback-${i + 1}`}
                             value={code[`rollback-${i + 1}`] || `DROP TABLE IF EXISTS test_table`}
-                            onValueChange={(value) => setCode({ ...code, [`rollback-${i + 1}`]: value })}
-                            highlight={(code) => highlight(code, languages.sql)}
+                            onValueChange={value => setCode({ ...code, [`rollback-${i + 1}`]: value })}
+                            highlight={code => highlight(code, languages.sql)}
                             padding={10}
                             style={{
                                 fontFamily: '"Fira code", "Fira Mono", monospace',

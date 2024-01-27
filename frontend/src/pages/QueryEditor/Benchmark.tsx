@@ -6,6 +6,7 @@ import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 import { Column } from '@ant-design/charts'
+import useSWR from 'swr'
 
 export interface BenchmarkingData {
     benchmarking_result: {
@@ -82,8 +83,8 @@ export default function QueryBenchmarking() {
                     </p>
                     <Editor
                         value={query1}
-                        onValueChange={(code) => setQuery1(code)}
-                        highlight={(code) => highlight(code, languages.sql)}
+                        onValueChange={code => setQuery1(code)}
+                        highlight={code => highlight(code, languages.sql)}
                         padding={10}
                         style={{
                             fontFamily: '"Fira code", "Fira Mono", monospace',
@@ -102,8 +103,8 @@ export default function QueryBenchmarking() {
                     </p>
                     <Editor
                         value={query2}
-                        onValueChange={(code) => setQuery2(code)}
-                        highlight={(code) => highlight(code, languages.sql)}
+                        onValueChange={code => setQuery2(code)}
+                        highlight={code => highlight(code, languages.sql)}
                         padding={10}
                         style={{
                             fontFamily: '"Fira code", "Fira Mono", monospace',

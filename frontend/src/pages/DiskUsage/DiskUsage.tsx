@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Pie } from '@ant-design/plots'
 import { Card, Spin, Row, Col, notification } from 'antd'
 
+import useSWR from 'swr'
+
 interface NodeData {
     node: string
     space_used: number
@@ -9,33 +11,35 @@ interface NodeData {
 }
 
 export function DiskUsage(): JSX.Element {
-    const [clusterOverviewData, setClusterOverviewData] = useState<NodeData[]>([])
-
-    const loadData = async () => {
+    const loadData = async (url: string) => {
         try {
-            const res = await fetch('/api/analyze/cluster_overview')
+            const res = await fetch(url)
             const resJson = await res.json()
-            setClusterOverviewData(resJson)
+            return resJson
         } catch {
             notification.error({ message: 'Failed to load data' })
         }
     }
 
-    useEffect(() => {
-        loadData()
-    }, [])
+    const { data, error, isLoading } = useSWR('/api/analyze/cluster_overview', loadData)
 
     const rows = []
-    for (let i = 0; i < clusterOverviewData.length; i += 2) {
-        rows.push(clusterOverviewData.slice(i, i + 2))
+    if (!isLoading) {
+        for (let i = 0; i < data.length; i += 2) {
+            rows.push(data.slice(i, i + 2))
+        }
     }
 
-    return (
+    return isLoading ? (
+        <div>loading...</div>
+    ) : error ? (
+        <div>error</div>
+    ) : (
         <div style={{ textAlign: 'left' }}>
             <h1>Disk usage</h1>
             <br />
             <div style={{ display: 'block' }}>
-                {clusterOverviewData.length === 0 ? (
+                {data.length === 0 ? (
                     <Spin />
                 ) : (
                     <>
@@ -78,7 +82,7 @@ export function DiskUsage(): JSX.Element {
                                             }}
                                             color={['#FFB816', '#175FFF']}
                                             tooltip={{
-                                                formatter: (v) => {
+                                                formatter: v => {
                                                     return {
                                                         name: v.type,
                                                         value: `${(v.value / 1000000000).toFixed(2)}GB`,
@@ -126,7 +130,7 @@ export function DiskUsage(): JSX.Element {
                                                 }}
                                                 color={['#FFB816', '#175FFF']}
                                                 tooltip={{
-                                                    formatter: (v) => {
+                                                    formatter: v => {
                                                         return {
                                                             name: v.type,
                                                             value: `${(v.value / 1000000000).toFixed(2)}GB`,
