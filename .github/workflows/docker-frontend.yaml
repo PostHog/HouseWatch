@@ -50,9 +50,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm i --frozen-lockfile
+        working-directory: "frontend"
 
       - name: Build
         run: pnpm build
+        working-directory: "frontend"
 
       - name: Build and push
         uses: docker/build-push-action@v4
