@@ -40,7 +40,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: pnpm/action-setup@v2
         with:
-          version: 6.32.9
+          version: 8.6.12
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
@@ -50,11 +50,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm i --frozen-lockfile
-        working-directory: "frontend"
 
       - name: Build
         run: pnpm build
-        working-directory: "frontend"
 
       - name: Build and push
         uses: docker/build-push-action@v4
