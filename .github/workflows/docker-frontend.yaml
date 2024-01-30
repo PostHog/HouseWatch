@@ -46,7 +46,7 @@ jobs:
         with:
           node-version-file: frontend/.node-version
           cache: "pnpm"
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm i
