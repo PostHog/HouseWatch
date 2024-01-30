@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import { ColumnType } from 'antd/es/table'
 import { Switch, Select, Table, Button, Form, Input, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import DeleteOutlined from '@ant-design/icons'
+import EditOutlined from '@ant-design/icons'
 import { Clusters } from '../Clusters/Clusters'
 import useSWR, { mutate } from 'swr'
 
@@ -174,7 +175,7 @@ export default function ScheduledBackups() {
 
                 return (
                     <a id={id} onClick={deleteBackup}>
-                        <DeleteOutlined rev={undefined} />
+                        <DeleteOutlined />
                     </a>
                 )
             },
@@ -245,7 +246,7 @@ export default function ScheduledBackups() {
 
                     <Form.Item name="cluster" label="Cluster">
                         <Select>
-                            {clusters.clusters.map(cluster => (
+                            {clusters!.clusters.map((cluster: any) => (
                                 <Select.Option value={cluster.cluster}>{cluster.cluster}</Select.Option>
                             ))}
                         </Select>
@@ -317,7 +318,7 @@ export default function ScheduledBackups() {
                     </Form.Item>
                 </Form>
             </Modal>
-            <Table columns={columns} dataSource={backups.backups} loading={backupsIsLoading} />
+            <Table columns={columns} dataSource={backups!.backups} loading={backupsIsLoading} />
         </div>
     )
 }

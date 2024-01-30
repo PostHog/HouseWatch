@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Line } from '@ant-design/charts'
 import { Card, Col, Row, Tooltip, notification } from 'antd'
-import { InfoCircleOutlined } from '@ant-design/icons'
+import InfoCircleOutlined from '@ant-design/icons'
 import { clickhouseTips } from './tips'
 import useSWR from 'swr'
 
@@ -54,7 +54,7 @@ export default function Overview() {
                 <Col span={12}>
                     <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title="Number of queries">
                         <Line
-                            data={data.execution_count.map(dataPoint => ({
+                            data={data!.execution_count.map((dataPoint: any) => ({
                                 ...dataPoint,
                                 day_start: dataPoint.day_start.split('T')[0],
                             }))}
@@ -70,7 +70,7 @@ export default function Overview() {
                 <Col span={12}>
                     <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title="Data read (GB)">
                         <Line
-                            data={data.read_bytes.map(dataPoint => ({
+                            data={data!.read_bytes.map((dataPoint: any) => ({
                                 day_start: dataPoint.day_start.split('T')[0],
                                 total: dataPoint.total / 1000000000,
                             }))}
@@ -88,7 +88,7 @@ export default function Overview() {
                 <Col span={12}>
                     <Card style={{ boxShadow: '2px 2px 2px 2px rgb(217 208 208 / 20%)' }} title="Memory usage (GB)">
                         <Line
-                            data={data.memory_usage.map(dataPoint => ({
+                            data={data!.memory_usage.map((dataPoint: any) => ({
                                 day_start: dataPoint.day_start.split('T')[0],
                                 total: dataPoint.total / 1000000000,
                             }))}
@@ -109,13 +109,13 @@ export default function Overview() {
                                 <Tooltip
                                     title={`Calculated from OSCPUVirtualTimeMicroseconds metric from ClickHouse query log's ProfileEvents.`}
                                 >
-                                    <InfoCircleOutlined rev={undefined} />
+                                    <InfoCircleOutlined />
                                 </Tooltip>
                             </>
                         }
                     >
                         <Line
-                            data={data.cpu.map(dataPoint => ({
+                            data={data!.cpu.map((dataPoint: any) => ({
                                 day_start: dataPoint.day_start.split('T')[0],
                                 total: dataPoint.total,
                             }))}

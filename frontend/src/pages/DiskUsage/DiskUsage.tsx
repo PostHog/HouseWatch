@@ -66,7 +66,8 @@ export function DiskUsage(): JSX.Element {
                                             label={{
                                                 type: 'inner',
                                                 offset: '-30%',
-                                                content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
+                                                content: ({ percent }: { percent: number }) =>
+                                                    `${(percent * 100).toFixed(0)}%`,
                                                 style: {
                                                     fontSize: 14,
                                                     textAlign: 'center',
@@ -82,7 +83,7 @@ export function DiskUsage(): JSX.Element {
                                             }}
                                             color={['#FFB816', '#175FFF']}
                                             tooltip={{
-                                                formatter: v => {
+                                                formatter: (v: any) => {
                                                     return {
                                                         name: v.type,
                                                         value: `${(v.value / 1000000000).toFixed(2)}GB`,
@@ -114,7 +115,8 @@ export function DiskUsage(): JSX.Element {
                                                 label={{
                                                     type: 'inner',
                                                     offset: '-30%',
-                                                    content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
+                                                    content: ({ percent }: { percent: number }) =>
+                                                        `${(percent * 100).toFixed(0)}%`,
                                                     style: {
                                                         fontSize: 14,
                                                         textAlign: 'center',
@@ -130,7 +132,7 @@ export function DiskUsage(): JSX.Element {
                                                 }}
                                                 color={['#FFB816', '#175FFF']}
                                                 tooltip={{
-                                                    formatter: v => {
+                                                    formatter: (v: any) => {
                                                         return {
                                                             name: v.type,
                                                             value: `${(v.value / 1000000000).toFixed(2)}GB`,

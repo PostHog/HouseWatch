@@ -68,7 +68,7 @@ export default function Clusters() {
             <p>These are the clusters that are configured in the connected ClickHouse instance</p>
             <div>
                 <ul>
-                    {data.clusters.map(cluster => (
+                    {data!.clusters.map((cluster: any) => (
                         <>
                             <h1 key={cluster.cluster}>{cluster.cluster}</h1>
                             <Table columns={columns} dataSource={cluster.nodes} loading={isLoading} />

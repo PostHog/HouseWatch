@@ -201,7 +201,7 @@ export default function Backups() {
                     </Form.Item>
                 </Form>
             </Modal>
-            <Table columns={columns} dataSource={data.backups} loading={isLoading} />
+            <Table columns={columns} dataSource={data!.backups} loading={isLoading} />
         </div>
     )
 }

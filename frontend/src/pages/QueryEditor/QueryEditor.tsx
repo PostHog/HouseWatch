@@ -6,7 +6,7 @@ import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 import { v4 as uuidv4 } from 'uuid'
-import { SaveOutlined } from '@ant-design/icons'
+import SaveOutlined from '@ant-design/icons'
 
 function CreateSavedQueryModal({
     modalOpen = false,
@@ -27,7 +27,7 @@ function CreateSavedQueryModal({
                 onOk={() => saveQuery(queryName)}
                 onCancel={() => setModalOpen(false)}
             >
-                <Input value={queryName} onChange={(e) => setQueryName(e.target.value)} />
+                <Input value={queryName} onChange={e => setQueryName(e.target.value)} />
             </Modal>
         </>
     )
@@ -42,7 +42,7 @@ export default function QueryEditor() {
     const [runningQueryId, setRunningQueryId] = useState<null | string>(null)
     const [modalOpen, setModalOpen] = useState(false)
 
-    const columns = data.length > 0 ? Object.keys(data[0]).map((column) => ({ title: column, dataIndex: column })) : []
+    const columns = data.length > 0 ? Object.keys(data[0]).map(column => ({ title: column, dataIndex: column })) : []
 
     const saveQuery = async (queryName: string) => {
         try {
@@ -116,7 +116,7 @@ export default function QueryEditor() {
                     {data && Object.keys(data[0] || {}).length > 0 ? (
                         <Tooltip title="Save query">
                             <Button style={{ background: 'transparent' }} onClick={() => setModalOpen(true)}>
-                                <SaveOutlined rev={undefined} />
+                                <SaveOutlined />
                             </Button>
                         </Tooltip>
                     ) : null}
@@ -125,8 +125,8 @@ export default function QueryEditor() {
 
             <Editor
                 value={sql}
-                onValueChange={(code) => setSql(code)}
-                highlight={(code) => highlight(code, languages.sql)}
+                onValueChange={code => setSql(code)}
+                highlight={code => highlight(code, languages.sql)}
                 padding={10}
                 style={{
                     fontFamily: '"Fira code", "Fira Mono", monospace',
