@@ -2,7 +2,7 @@ import { Table, Button, Row, Col, Tooltip } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { ColumnType } from 'antd/es/table'
 import SavedQuery from './SavedQuery'
-import { ReloadOutlined } from '@ant-design/icons'
+import ReloadOutlined from '@ant-design/icons'
 import { useHistory } from 'react-router-dom'
 import { isoTimestampToHumanReadable } from '../../utils/dateUtils'
 
@@ -30,7 +30,7 @@ export default function SavedQueries({ match }: { match: { params: { id: string 
         loadData()
     }, [])
 
-    const columns: ColumnType<{ name: string; id: number; query: string, created_at: string }>[] = [
+    const columns: ColumnType<{ name: string; id: number; query: string; created_at: string }>[] = [
         {
             title: 'Name',
             dataIndex: 'name',
@@ -48,7 +48,7 @@ export default function SavedQueries({ match }: { match: { params: { id: string 
         },
         {
             title: 'Created at',
-            render: (_, item) => item.created_at ? isoTimestampToHumanReadable(item.created_at) : '',
+            render: (_, item) => (item.created_at ? isoTimestampToHumanReadable(item.created_at) : ''),
         },
     ]
 
@@ -74,7 +74,7 @@ export default function SavedQueries({ match }: { match: { params: { id: string 
                         <Col span={1}>
                             <Tooltip title="Refresh list">
                                 <Button style={{ background: 'transparent' }} onClick={loadData}>
-                                    <ReloadOutlined rev={undefined} />
+                                    <ReloadOutlined />
                                 </Button>
                             </Tooltip>
                         </Col>

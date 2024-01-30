@@ -8,25 +8,21 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: 'frontend'
+        working-directory: "frontend"
 
     permissions:
       contents: read
       packages: write
 
     steps:
-      -
-        uses: actions/checkout@v3
-      -
-        name: Set up QEMU
+      - uses: actions/checkout@v3
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
         with:
           platforms: arm64
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      -
-        name: Docker image metadata
+      - name: Docker image metadata
         id: meta
         uses: docker/metadata-action@v4
         with:
@@ -36,33 +32,29 @@ jobs:
             type=raw,value=main,enable=${{ github.ref == 'refs/heads/main' }}
             type=ref,event=pr
             type=sha
-      -
-        name: Login to GitHub Container Registry
+      - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
-            registry: ghcr.io
-            username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Install Node.js
-        uses: actions/setup-node@v3
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.6.12
+      - name: Install Node.js
+        uses: actions/setup-node@v4
         with:
           node-version-file: frontend/.node-version
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
+          cache: "pnpm"
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
-      -
-        name: Install dependencies
-        run: npm install
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
 
-      -
-        name: Build
-        run: npm run build
-        env:
-          NODE_OPTIONS: --openssl-legacy-provider
+      - name: Build
+        run: pnpm build
 
-      -
-        name: Build and push
+      - name: Build and push
         uses: docker/build-push-action@v4
         with:
           context: frontend/

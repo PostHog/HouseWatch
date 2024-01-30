@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import { ColumnType } from 'antd/es/table'
 import { Switch, Select, Table, Button, Form, Input, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import DeleteOutlined from '@ant-design/icons'
+import EditOutlined from '@ant-design/icons'
 import { Clusters } from '../Clusters/Clusters'
+import useSWR, { mutate } from 'swr'
 
 interface ScheduleRow {
     id: string
@@ -37,15 +39,8 @@ type FieldType = {
 }
 
 export default function ScheduledBackups() {
-    const [backups, setBackups] = useState<Backups>({
-        backups: [],
-    })
-    const [loadingBackups, setLoadingBackups] = useState(false)
     const [open, setOpen] = useState(false)
     const [confirmLoading, setConfirmLoading] = useState(false)
-    const [clusters, setClusters] = useState<Clusters>({
-        clusters: [],
-    })
 
     const [form] = Form.useForm() // Hook to get form API
 
@@ -67,7 +62,7 @@ export default function ScheduledBackups() {
             setOpen(false)
             setConfirmLoading(false)
             setEditingRow(null)
-            loadData()
+            mutate('/api/scheduled_backups')
             return await res.json()
         } catch (error) {
             notification.error({
@@ -97,29 +92,35 @@ export default function ScheduledBackups() {
         showModal(rowData)
     }
 
-    const loadData = async () => {
+    const fetchBackups = async (url: string) => {
         try {
-            const res = await fetch('/api/scheduled_backups')
+            const res = await fetch(url)
             const resJson = await res.json()
             const backups = { backups: resJson.results }
-            setBackups(backups)
+            return backups
         } catch (err) {
             notification.error({ message: 'Failed to load data' })
         }
-
+    }
+    const fetchClusters = async (url: string) => {
         try {
-            const res = await fetch('/api/clusters')
+            const res = await fetch(url)
             const resJson = await res.json()
             const clusters = { clusters: resJson }
-            setClusters(clusters)
+            return clusters
         } catch (err) {
             notification.error({ message: 'Failed to load data' })
         }
     }
 
-    useEffect(() => {
-        loadData()
-    }, [])
+    const { data: backups, error: backupsError, isLoading: backupsIsLoading } = useSWR(
+        '/api/scheduled_backups',
+        fetchBackups
+    )
+    const { data: clusters, error: clustersError, isLoading: clustersIsLoading } = useSWR(
+        '/api/clusters',
+        fetchClusters
+    )
 
     const columns: ColumnType<ScheduleRow>[] = [
         {
@@ -135,7 +136,7 @@ export default function ScheduledBackups() {
                             },
                             body: JSON.stringify({ enabled: !sched.enabled }),
                         })
-                        loadData()
+                        mutate('/api/scheduled_backups')
                         return await res.json()
                     } catch (error) {
                         notification.error({
@@ -163,7 +164,7 @@ export default function ScheduledBackups() {
                         const res = await fetch(`/api/scheduled_backups/${id}`, {
                             method: 'DELETE',
                         })
-                        loadData()
+                        mutate('/api/scheduled_backups')
                         return await res.text()
                     } catch (error) {
                         notification.error({
@@ -174,7 +175,7 @@ export default function ScheduledBackups() {
 
                 return (
                     <a id={id} onClick={deleteBackup}>
-                        <DeleteOutlined rev={undefined} />
+                        <DeleteOutlined />
                     </a>
                 )
             },
@@ -195,13 +196,11 @@ export default function ScheduledBackups() {
 
     usePollingEffect(
         async () => {
-            loadData()
+            mutate('/api/scheduled_backups')
         },
         [],
         { interval: 5000 }
     )
-
-    console.log(editingRow)
 
     const default_form_values = {
         schedule: '0 0 * * *',
@@ -213,7 +212,11 @@ export default function ScheduledBackups() {
         aws_access_key_id: 'AKIAIOSFODNN7EXAMPLE',
         aws_secret_access_key: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
     }
-    return (
+    return backupsIsLoading || clustersIsLoading ? (
+        <div>loading...</div>
+    ) : backupsError || clustersError ? (
+        <div>error</div>
+    ) : (
         <div>
             <h1 style={{ textAlign: 'left' }}>Scheduled Backups</h1>
             <p style={{ textAlign: 'left' }}>
@@ -243,7 +246,7 @@ export default function ScheduledBackups() {
 
                     <Form.Item name="cluster" label="Cluster">
                         <Select>
-                            {clusters.clusters.map(cluster => (
+                            {clusters!.clusters.map((cluster: any) => (
                                 <Select.Option value={cluster.cluster}>{cluster.cluster}</Select.Option>
                             ))}
                         </Select>
@@ -315,7 +318,7 @@ export default function ScheduledBackups() {
                     </Form.Item>
                 </Form>
             </Modal>
-            <Table columns={columns} dataSource={backups.backups} loading={loadingBackups} />
+            <Table columns={columns} dataSource={backups!.backups} loading={backupsIsLoading} />
         </div>
     )
 }

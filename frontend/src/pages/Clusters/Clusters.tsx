@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ColumnType } from 'antd/es/table'
 import { Table, Col, Row, Tooltip, notification } from 'antd'
+import useSWR from 'swr'
 
 interface ClusterNode {
     cluster: string
@@ -28,25 +29,18 @@ export interface Clusters {
 }
 
 export default function Clusters() {
-    const [clusters, setClusters] = useState<Clusters>({
-        clusters: [],
-    })
-    const [loadingClusters, setLoadingClusters] = useState(false)
-
-    const loadData = async () => {
+    const loadData = async (url: string) => {
         try {
-            const res = await fetch('/api/clusters')
+            const res = await fetch(url)
             const resJson = await res.json()
             const clusters = { clusters: resJson }
-            setClusters(clusters)
+            return clusters
         } catch (err) {
             notification.error({ message: 'Failed to load data' })
         }
     }
 
-    useEffect(() => {
-        loadData()
-    }, [])
+    const { data, error, isLoading } = useSWR('/api/clusters', loadData)
 
     const columns: ColumnType<ClusterNode>[] = [
         { title: 'Cluster', dataIndex: 'cluster' },
@@ -64,16 +58,20 @@ export default function Clusters() {
         { title: 'Recovery Time', dataIndex: 'estimated_recovery_time' },
     ]
 
-    return (
+    return isLoading ? (
+        <div>loading...</div>
+    ) : error ? (
+        <div>error</div>
+    ) : (
         <div>
             <h1 style={{ textAlign: 'left' }}>Clusters</h1>
             <p>These are the clusters that are configured in the connected ClickHouse instance</p>
             <div>
                 <ul>
-                    {clusters.clusters.map(cluster => (
+                    {data!.clusters.map((cluster: any) => (
                         <>
                             <h1 key={cluster.cluster}>{cluster.cluster}</h1>
-                            <Table columns={columns} dataSource={cluster.nodes} loading={loadingClusters} />
+                            <Table columns={columns} dataSource={cluster.nodes} loading={isLoading} />
                         </>
                     ))}
                 </ul>

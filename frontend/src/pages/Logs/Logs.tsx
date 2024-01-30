@@ -86,7 +86,7 @@ export default function Logs() {
             <h1 style={{ textAlign: 'left' }}>Logs</h1>
             <Input
                 style={{ boxShadow: 'none' }}
-                onChange={(e) => setLogMessageFilter(e.target.value)}
+                onChange={e => setLogMessageFilter(e.target.value)}
                 value={logMessageFilter}
             />
             <br />
