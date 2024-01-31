@@ -22,7 +22,7 @@ def execute_backup(
     query_settings: Dict[str, str | int] = {},
     query_id: Optional[str] = None,
     substitute_params: bool = True,
-    cluster: Optional[str] = None,
+    cluster: Optional[str] = "default",
     aws_key: Optional[str] = None,
     aws_secret: Optional[str] = None,
     base_backup: Optional[str] = None,
@@ -84,7 +84,7 @@ def get_backup(backup, cluster=None):
 
 
 def create_table_backup(
-    database, table, bucket, path, cluster, aws_key=None, aws_secret=None, base_backup=None, is_sharded=False
+    database, table, bucket, path, aws_key=None, aws_secret=None, base_backup=None, is_sharded=False, cluster="default"
 ):
     if aws_key is None or aws_secret is None:
         aws_key = settings.AWS_ACCESS_KEY_ID
@@ -115,7 +115,7 @@ def create_table_backup(
     )
 
 
-def create_database_backup(database, bucket, path, cluster, aws_key=None, aws_secret=None, base_backup=None):
+def create_database_backup(database, bucket, path, aws_key=None, aws_secret=None, base_backup=None, cluster="default"):
     if aws_key is None or aws_secret is None:
         aws_key = settings.AWS_ACCESS_KEY_ID
         aws_secret = settings.AWS_SECRET_ACCESS_KEY
@@ -159,10 +159,10 @@ def run_backup(backup_id, incremental=False):
             backup.database,
             backup.bucket,
             path,
-            backup.aws_access_key_id,
-            backup.aws_secret_access_key,
-            base_backup=base_backup,
+            aws_key=backup.aws_access_key_id,
+            aws_secret=backup.aws_secret_access_key,
             cluster=backup.cluster,
+            base_backup=base_backup,
         )
     elif backup.is_table_backup():
         create_table_backup(
@@ -170,11 +170,11 @@ def run_backup(backup_id, incremental=False):
             backup.table,
             backup.bucket,
             path,
-            backup.aws_access_key_id,
-            backup.aws_secret_access_key,
+            aws_key=backup.aws_access_key_id,
+            aws_secret=backup.aws_secret_access_key,
+            cluster=backup.cluster,
             base_backup=base_backup,
             is_sharded=backup.is_sharded,
-            cluster=backup.cluster,
         )
     uuid = str(uuid4())
     br = ScheduledBackupRun.objects.create(
