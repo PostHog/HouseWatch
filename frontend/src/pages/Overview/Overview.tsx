@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Line } from '@ant-design/charts'
 import { Card, Col, Row, Tooltip, notification } from 'antd'
-import InfoCircleOutlined from '@ant-design/icons'
+import InfoCircleOutlined from '@ant-design/icons/InfoCircleOutlined'
 import { clickhouseTips } from './tips'
 import useSWR from 'swr'
 

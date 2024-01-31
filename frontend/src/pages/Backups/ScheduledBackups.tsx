@@ -17,7 +17,8 @@ import {
     Tooltip,
     notification,
 } from 'antd'
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons'
+import DeleteOutlined from '@ant-design/icons/DeleteOutlined'
+import EditOutlined from '@ant-design/icons/EditOutlined'
 import { Clusters } from '../Clusters/Clusters'
 import useSWR, { mutate } from 'swr'
 
@@ -30,6 +31,7 @@ interface ScheduleRow {
     schedule: string
     incremental_schedule: string
     table: string
+    is_sharded: boolean
     database: string
     bucket: string
     path: string
