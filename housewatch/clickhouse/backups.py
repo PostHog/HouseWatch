@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Dict, Optional
 from uuid import uuid4
 from housewatch.clickhouse.client import run_query
+from housewatch.clickhouse.table import is_replicated_table
 from housewatch.models.backup import ScheduledBackup, ScheduledBackupRun
 from housewatch.clickhouse.clusters import get_node_per_shard
 
@@ -15,7 +16,7 @@ from clickhouse_driver import Client
 logger = structlog.get_logger(__name__)
 
 
-def execute_backup_on_shards(
+def execute_backup(
     query: str,
     params: Dict[str, str | int] = {},
     query_settings: Dict[str, str | int] = {},
@@ -25,6 +26,7 @@ def execute_backup_on_shards(
     aws_key: Optional[str] = None,
     aws_secret: Optional[str] = None,
     base_backup: Optional[str] = None,
+    is_replicated: bool = False,
 ):
     """
     This function will execute a backup on each shard in a cluster
@@ -57,6 +59,8 @@ def execute_backup_on_shards(
                 item[key[0]] = res[index]
             response.append(item)
         responses.append((shard, response))
+        if is_replicated:
+            break
     return response
 
 
@@ -87,7 +91,7 @@ def create_table_backup(database, table, bucket, path, cluster=None, aws_key=Non
         QUERY = """BACKUP TABLE %(database)s.%(table)s
         TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')
         ASYNC"""
-        return execute_backup_on_shards(
+        return execute_backup(
             QUERY,
             {
                 "database": database,
@@ -102,6 +106,7 @@ def create_table_backup(database, table, bucket, path, cluster=None, aws_key=Non
             aws_key=aws_key,
             aws_secret=aws_secret,
             base_backup=base_backup,
+            is_replicated=is_replicated_table(database, table),
         )
     QUERY = """BACKUP TABLE %(database)s.%(table)s
     TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
@@ -133,7 +138,7 @@ def create_database_backup(database, bucket, path, cluster=None, aws_key=None, a
                     TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')
                     ASYNC"""
 
-        return execute_backup_on_shards(
+        return execute_backup(
             QUERY,
             {
                 "database": database,
