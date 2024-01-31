@@ -5,6 +5,7 @@ from typing import Dict, Optional
 from uuid import uuid4
 from housewatch.clickhouse.client import run_query
 from housewatch.models.backup import ScheduledBackup, ScheduledBackupRun
+from housewatch.clickhouse.table import table_engine_full
 from housewatch.clickhouse.clusters import get_node_per_shard
 
 from django.conf import settings
@@ -15,7 +16,7 @@ from clickhouse_driver import Client
 logger = structlog.get_logger(__name__)
 
 
-def execute_backup_on_shards(
+def execute_backup(
     query: str,
     params: Dict[str, str | int] = {},
     query_settings: Dict[str, str | int] = {},
@@ -25,6 +26,7 @@ def execute_backup_on_shards(
     aws_key: Optional[str] = None,
     aws_secret: Optional[str] = None,
     base_backup: Optional[str] = None,
+    is_sharded: bool = False,
 ):
     """
     This function will execute a backup on each shard in a cluster
@@ -57,6 +59,8 @@ def execute_backup_on_shards(
                 item[key[0]] = res[index]
             response.append(item)
         responses.append((shard, response))
+        if not is_sharded:
+            return response
     return response
 
 
@@ -78,7 +82,9 @@ def get_backup(backup, cluster=None):
         return run_query(QUERY, {"uuid": backup}, use_cache=False)
 
 
-def create_table_backup(database, table, bucket, path, cluster=None, aws_key=None, aws_secret=None, base_backup=None):
+def create_table_backup(
+    database, table, bucket, path, cluster=None, aws_key=None, aws_secret=None, base_backup=None, is_sharded=False
+):
     if aws_key is None or aws_secret is None:
         aws_key = settings.AWS_ACCESS_KEY_ID
         aws_secret = settings.AWS_SECRET_ACCESS_KEY
@@ -87,7 +93,7 @@ def create_table_backup(database, table, bucket, path, cluster=None, aws_key=Non
         QUERY = """BACKUP TABLE %(database)s.%(table)s
         TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')
         ASYNC"""
-        return execute_backup_on_shards(
+        return execute_backup(
             QUERY,
             {
                 "database": database,
@@ -102,6 +108,7 @@ def create_table_backup(database, table, bucket, path, cluster=None, aws_key=Non
             aws_key=aws_key,
             aws_secret=aws_secret,
             base_backup=base_backup,
+            is_sharded=is_sharded,
         )
     QUERY = """BACKUP TABLE %(database)s.%(table)s
     TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
@@ -133,7 +140,7 @@ def create_database_backup(database, bucket, path, cluster=None, aws_key=None, a
                     TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s/%(shard)s', '%(aws_key)s', '%(aws_secret)s')
                     ASYNC"""
 
-        return execute_backup_on_shards(
+        return execute_backup(
             QUERY,
             {
                 "database": database,
@@ -199,6 +206,7 @@ def run_backup(backup_id, incremental=False):
             backup.aws_access_key_id,
             backup.aws_secret_access_key,
             base_backup=base_backup,
+            is_sharded=backup.is_sharded,
         )
     uuid = str(uuid4())
     br = ScheduledBackupRun.objects.create(

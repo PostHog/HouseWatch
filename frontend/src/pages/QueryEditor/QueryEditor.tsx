@@ -6,7 +6,7 @@ import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 import { v4 as uuidv4 } from 'uuid'
-import SaveOutlined from '@ant-design/icons'
+import SaveOutlined from '@ant-design/icons/SaveOutlined'
 
 function CreateSavedQueryModal({
     modalOpen = false,

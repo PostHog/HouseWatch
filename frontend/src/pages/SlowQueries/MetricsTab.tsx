@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Line } from '@ant-design/plots'
 // @ts-ignore
 import { Card, Col, Row, Tooltip, notification } from 'antd'
-import InfoCircleOutlined from '@ant-design/icons'
+import InfoCircleOutlined from '@ant-design/icons/InfoCircleOutlined'
 import { NoDataSpinner, QueryDetailData } from './QueryDetail'
 
 export default function MetricsTab({ query_hash }: { query_hash: string }) {

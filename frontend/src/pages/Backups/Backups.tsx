@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import { ColumnType } from 'antd/es/table'
-import { Table, Button, Form, Input, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
+import { Table, Button, Form, Input, Checkbox, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
 import useSWR, { mutate } from 'swr'
 
 interface BackupRow {
@@ -29,6 +29,7 @@ type FieldType = {
     table?: string
     bucket?: string
     path?: string
+    is_sharded?: boolean
     aws_access_key_id?: string
     aws_secret_access_key?: string
 }
@@ -163,6 +164,16 @@ export default function Backups() {
                         rules={[{ required: true, message: 'Please select a table to back up' }]}
                     >
                         <Input />
+                    </Form.Item>
+
+                    <Form.Item<FieldType>
+                        label="Is Sharded"
+                        name="is_sharded"
+                        initialValue="false"
+                        valuePropName="checked"
+                        rules={[{ required: true, message: 'Is this table sharded?' }]}
+                    >
+                        <Checkbox defaultChecked={false}>is sharded</Checkbox>
                     </Form.Item>
 
                     <Form.Item<FieldType>

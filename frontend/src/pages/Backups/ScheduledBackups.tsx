@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import { ColumnType } from 'antd/es/table'
-import { Switch, Select, Table, Button, Form, Input, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
-import DeleteOutlined from '@ant-design/icons'
-import EditOutlined from '@ant-design/icons'
+import {
+    Switch,
+    Select,
+    Table,
+    Button,
+    Form,
+    Input,
+    Checkbox,
+    Modal,
+    Tag,
+    Col,
+    Progress,
+    Row,
+    Tooltip,
+    notification,
+} from 'antd'
+import DeleteOutlined from '@ant-design/icons/DeleteOutlined'
+import EditOutlined from '@ant-design/icons/EditOutlined'
 import { Clusters } from '../Clusters/Clusters'
 import useSWR, { mutate } from 'swr'
 
@@ -16,6 +31,7 @@ interface ScheduleRow {
     schedule: string
     incremental_schedule: string
     table: string
+    is_sharded: boolean
     database: string
     bucket: string
     path: string
@@ -32,6 +48,7 @@ type FieldType = {
     incremental_schedule?: string
     database?: string
     table?: string
+    is_sharded?: boolean
     bucket?: string
     path?: string
     aws_access_key_id?: string
@@ -153,12 +170,12 @@ export default function ScheduledBackups() {
         { title: 'Last Run Time', dataIndex: 'last_run_time' },
         { title: 'Database', dataIndex: 'database' },
         { title: 'Table', dataIndex: 'table' },
+        { title: 'Is Sharded', dataIndex: 'is_sharded', render: (_, sched) => (sched.is_sharded ? 'Yes' : 'No') },
         { title: 'S3 Location', dataIndex: 'bucket', render: (_, sched) => 's3://' + sched.bucket + '/' + sched.path },
-        { title: 'Created At', dataIndex: 'created_at' },
         {
-            title: '',
+            title: 'Actions',
             dataIndex: 'id',
-            render: id => {
+            render: (id: string, rowData: ScheduleRow) => {
                 const deleteBackup = async () => {
                     try {
                         const res = await fetch(`/api/scheduled_backups/${id}`, {
@@ -174,20 +191,9 @@ export default function ScheduledBackups() {
                 }
 
                 return (
-                    <a id={id} onClick={deleteBackup}>
-                        <DeleteOutlined />
-                    </a>
-                )
-            },
-        },
-        {
-            title: 'Actions',
-            dataIndex: 'id',
-            render: (id: string, rowData: ScheduleRow) => {
-                return (
                     <>
                         <EditOutlined onClick={() => handleEdit(rowData)} />
-                        {/* <DeleteOutlined onClick={() => handleDelete(id)} /> */}
+                        <DeleteOutlined onClick={() => deleteBackup()} style={{ marginLeft: '15px' }} />
                     </>
                 )
             },
@@ -283,6 +289,16 @@ export default function ScheduledBackups() {
                         rules={[{ required: false, message: 'Please select a table to back up' }]}
                     >
                         <Input />
+                    </Form.Item>
+
+                    <Form.Item<FieldType>
+                        label="Is Sharded"
+                        name="is_sharded"
+                        initialValue="false"
+                        valuePropName="checked"
+                        rules={[{ required: true, message: 'Is this table sharded?' }]}
+                    >
+                        <Checkbox defaultChecked={false}>is sharded</Checkbox>
                     </Form.Item>
 
                     <Form.Item<FieldType>

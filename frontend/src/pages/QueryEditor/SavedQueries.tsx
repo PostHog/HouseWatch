@@ -2,7 +2,7 @@ import { Table, Button, Row, Col, Tooltip } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { ColumnType } from 'antd/es/table'
 import SavedQuery from './SavedQuery'
-import ReloadOutlined from '@ant-design/icons'
+import ReloadOutlined from '@ant-design/icons/ReloadOutlined'
 import { useHistory } from 'react-router-dom'
 import { isoTimestampToHumanReadable } from '../../utils/dateUtils'
 
