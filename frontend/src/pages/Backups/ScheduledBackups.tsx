@@ -298,7 +298,7 @@ export default function ScheduledBackups() {
                         valuePropName="checked"
                         rules={[{ required: true, message: 'Is this table sharded?' }]}
                     >
-                        <Checkbox defaultChecked={false}>is sharded</Checkbox>
+                        <Checkbox defaultChecked={false} />
                     </Form.Item>
 
                     <Form.Item<FieldType>
