@@ -19,6 +19,7 @@ class ScheduledBackup(models.Model):
     incremental_schedule: models.CharField = models.CharField(max_length=255, null=True)
     table: models.CharField = models.CharField(max_length=255, null=True, blank=True)
     database: models.CharField = models.CharField(max_length=255)
+    is_sharded: models.BooleanField = models.BooleanField(default=False)
     cluster: models.CharField = models.CharField(max_length=255, null=True)
     bucket: models.CharField = models.CharField(max_length=255)
     path: models.CharField = models.CharField(max_length=255)

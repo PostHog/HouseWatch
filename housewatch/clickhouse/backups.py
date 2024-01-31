@@ -4,8 +4,8 @@ from datetime import datetime
 from typing import Dict, Optional
 from uuid import uuid4
 from housewatch.clickhouse.client import run_query
-from housewatch.clickhouse.table import is_replicated_table
 from housewatch.models.backup import ScheduledBackup, ScheduledBackupRun
+from housewatch.clickhouse.table import table_engine_full
 from housewatch.clickhouse.clusters import get_node_per_shard
 
 from django.conf import settings
@@ -26,7 +26,7 @@ def execute_backup(
     aws_key: Optional[str] = None,
     aws_secret: Optional[str] = None,
     base_backup: Optional[str] = None,
-    is_replicated: bool = False,
+    is_sharded: bool = False,
 ):
     """
     This function will execute a backup on each shard in a cluster
@@ -59,8 +59,8 @@ def execute_backup(
                 item[key[0]] = res[index]
             response.append(item)
         responses.append((shard, response))
-        if is_replicated:
-            break
+        if not is_sharded:
+            return response
     return response
 
 
@@ -82,7 +82,9 @@ def get_backup(backup, cluster=None):
         return run_query(QUERY, {"uuid": backup}, use_cache=False)
 
 
-def create_table_backup(database, table, bucket, path, cluster=None, aws_key=None, aws_secret=None, base_backup=None):
+def create_table_backup(
+    database, table, bucket, path, cluster=None, aws_key=None, aws_secret=None, base_backup=None, is_sharded=False
+):
     if aws_key is None or aws_secret is None:
         aws_key = settings.AWS_ACCESS_KEY_ID
         aws_secret = settings.AWS_SECRET_ACCESS_KEY
@@ -106,7 +108,7 @@ def create_table_backup(database, table, bucket, path, cluster=None, aws_key=Non
             aws_key=aws_key,
             aws_secret=aws_secret,
             base_backup=base_backup,
-            is_replicated=is_replicated_table(database, table),
+            is_sharded=is_sharded,
         )
     QUERY = """BACKUP TABLE %(database)s.%(table)s
     TO S3('https://%(bucket)s.s3.amazonaws.com/%(path)s', '%(aws_key)s', '%(aws_secret)s')
@@ -204,6 +206,7 @@ def run_backup(backup_id, incremental=False):
             backup.aws_access_key_id,
             backup.aws_secret_access_key,
             base_backup=base_backup,
+            is_sharded=backup.is_sharded,
         )
     uuid = str(uuid4())
     br = ScheduledBackupRun.objects.create(
