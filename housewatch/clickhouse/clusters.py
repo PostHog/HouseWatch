@@ -37,12 +37,12 @@ def get_node_per_shard(cluster):
 
     preferred = PreferredReplica.objects.filter(cluster=cluster).values_list("replica", flat=True)
     for shard, n in shards.items():
-        preferred_shard_found = False
+        preferred_replica_found = False
         for node in n:
             if node["host_name"] in preferred:
                 nodes.append((shard, node))
-                preferred_shard_found = True
+                preferred_replica_found = True
                 break
-        if not preferred_shard_found:
+        if not preferred_replica_found:
             nodes.append((shard, n[0]))
     return nodes
