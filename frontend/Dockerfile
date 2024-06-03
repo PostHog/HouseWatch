@@ -1,6 +1,8 @@
-FROM alpine:latest
+FROM node:lts-alpine3.20
 
 WORKDIR /frontend
+
+RUN pnpm i && vite build
 
 COPY build/ build/
 

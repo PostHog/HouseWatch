@@ -23,7 +23,7 @@ export default defineConfig({
             },
         },
     },
-    base: process.env.NODE_ENV === "production" ? "/webapp/" : "/",
+    base: "/",
     build: {
         outDir: "./build"
     }

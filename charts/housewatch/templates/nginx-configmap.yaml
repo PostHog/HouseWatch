@@ -31,7 +31,7 @@ data:
         }
 
         location /admin {
-            proxy_pass http://housewatch-api:8000;
+            proxy_pass http://{{ include "housewatch.fullname" . }}-api:8000;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection 'upgrade';
@@ -39,7 +39,7 @@ data:
         }
 
         location /healthz {
-            proxy_pass http://housewatch-api:8000;
+            proxy_pass http://{{ include "housewatch.fullname" . }}-api:8000;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection 'upgrade';
