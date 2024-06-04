@@ -168,3 +168,4 @@ housewatch.sqlite3
 yarn.lock
 
 charts/housewatch/charts/
+.pnpm/
