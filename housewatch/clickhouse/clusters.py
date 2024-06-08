@@ -48,4 +48,5 @@ def get_node_per_shard(cluster):
                 break
         if not preferred_replica_found:
             nodes.append((shard, random.choice(n)))
+    random.shuffle(nodes)
     return nodes

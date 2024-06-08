@@ -36,7 +36,7 @@ def execute_backup(
     nodes = get_node_per_shard(cluster)
     responses = []
     for shard, node in nodes:
-        params["shard"] = shard
+        params["shard"] = shard if is_sharded else "noshard"
         if base_backup:
             query_settings["base_backup"] = f"S3('{base_backup}/{shard}', '{aws_key}', '{aws_secret}')"
         final_query = query % (params or {}) if substitute_params else query
