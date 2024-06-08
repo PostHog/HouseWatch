@@ -1,3 +1,4 @@
+import random
 from collections import defaultdict
 from housewatch.clickhouse.client import run_query
 
@@ -38,11 +39,13 @@ def get_node_per_shard(cluster):
     preferred = PreferredReplica.objects.filter(cluster=cluster).values_list("replica", flat=True)
     for shard, n in shards.items():
         preferred_replica_found = False
+        # shuffle the nodes so we don't always pick the first preferred one
+        random.shuffle(n)
         for node in n:
             if node["host_name"] in preferred:
                 nodes.append((shard, node))
                 preferred_replica_found = True
                 break
         if not preferred_replica_found:
-            nodes.append((shard, n[0]))
+            nodes.append((shard, random.choice(n)))
     return nodes

@@ -30,8 +30,8 @@ def execute_backup(
 ):
     """
     This function will execute a backup on each shard in a cluster
-    This is very similar to run_query_on_shards but it has very specific things for backups
-    specifically around base_backup settings
+    This is very similar to run_query_on_shards but it has very specific params
+    for backups - specifically around base_backup settings
     """
     nodes = get_node_per_shard(cluster)
     responses = []
