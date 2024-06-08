@@ -26,7 +26,7 @@ from housewatch.utils import str_to_bool
 
 
 sentry_sdk.init(
-    dsn="https://6a05afd8bf4e2d54c81833ca1ff98cca@o607503.ingest.sentry.io/4505874503237633",
+    dsn="https://8874d21e05d62df688505df70c9f053d@o1015702.ingest.us.sentry.io/4507393944846336",
     integrations=[DjangoIntegration()],
     # If you wish to associate users to errors (assuming you are using
     # django.contrib.auth) you may enable sending PII data.
