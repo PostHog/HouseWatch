@@ -66,6 +66,8 @@ services:
       test: ["CMD-SHELL", "pg_isready -U housewatch"]
       interval: 5s
       timeout: 5s
+    ports:
+      - "5432:5432"
 
   redis:
     image: redis:6.2.7-alpine
