@@ -12,7 +12,7 @@ services:
       CLICKHOUSE_DATABASE: default
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: ""
-      CLICKHOUSE_CLUSTER: parallel_replicas
+      CLICKHOUSE_CLUSTER: housewatch
       CLICKHOUSE_SECURE: false
       CLICKHOUSE_VERIFY: false
       CLICKHOUSE_CA: ""
@@ -34,6 +34,25 @@ services:
       - db
       - redis
       - rabbitmq
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+
+  caddy:
+    image: caddy:2.6.1
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "443:443"
+    environment:
+      SITE_ADDRESS: ":8080"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile
+    depends_on:
+      - web
+      - app
 
   db:
     image: postgres:14-alpine
@@ -68,12 +87,14 @@ services:
       - rabbitmq
 
   clickhouse:
-    image: ${CLICKHOUSE_SERVER_IMAGE:-clickhouse/clickhouse-server:23.4.2.11}
+    image: ${CLICKHOUSE_SERVER_IMAGE:-clickhouse/clickhouse-server:23.12.5}
     restart: on-failure
     depends_on:
       - zookeeper
     volumes:
       - ./docker/clickhouse-server/config.d:/etc/clickhouse-server/config.d
+    ports:
+      - "8123:8123"
 
   zookeeper:
     image: zookeeper:3.7.0
