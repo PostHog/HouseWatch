@@ -61,7 +61,7 @@ The following are the supported environment variables for configuring your House
 To run HouseWatch locally along with a local ClickHouse instance, execute: 
 
 ```bash
-docker compose -f docker-compose.dev.yml up
+docker compose -f docker-compose.dev.yml up -d
 ```
 
 then go to http://localhost:8080

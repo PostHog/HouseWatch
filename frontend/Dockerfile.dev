@@ -11,4 +11,4 @@ COPY . .
 
 RUN pnpm i
 
-CMD ["pnpm", "vite", "--port", "3000"]
+CMD ["pnpm", "vite", "--port", "3000", "--host"]
