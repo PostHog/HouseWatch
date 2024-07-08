@@ -28,6 +28,7 @@ def execute_backup(
     base_backup: Optional[str] = None,
     is_sharded: bool = False,
 ):
+    query_settings = {}
     """
     This function will execute a backup on each shard in a cluster
     This is very similar to run_query_on_shards but it has very specific params
