@@ -119,7 +119,7 @@ def create_table_backup(
     )
 
 
-def create_database_backup(database, bucket, path, aws_key=None, aws_secret=None, base_backup=None, cluster="default"):
+def create_database_backup(database, bucket, path, aws_key=None, aws_secret=None, base_backup=None, cluster="default", is_sharded=False):
     if aws_key is None or aws_secret is None:
         aws_key = settings.AWS_ACCESS_KEY_ID
         aws_secret = settings.AWS_SECRET_ACCESS_KEY
@@ -139,6 +139,7 @@ def create_database_backup(database, bucket, path, aws_key=None, aws_secret=None
         aws_key=aws_key,
         aws_secret=aws_secret,
         base_backup=base_backup,
+        is_sharded=is_sharded,
     )
 
 
@@ -163,6 +164,7 @@ def run_backup(backup_id, incremental=False):
             aws_secret=backup.aws_secret_access_key,
             cluster=backup.cluster,
             base_backup=base_backup,
+            is_sharded=backup.is_sharded,
         )
     elif backup.is_table_backup():
         create_table_backup(
