@@ -47,7 +47,7 @@ class ScheduledBackup(models.Model):
         return self.schedule.split(" ")[3]
 
     def is_database_backup(self):
-        return self.table is None
+        return not self.table
 
     def is_table_backup(self):
         return self.table is not None
