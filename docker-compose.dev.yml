@@ -23,17 +23,32 @@ services:
       - bash
       - -c
       - |
-        python manage.py migrate
         python manage.py runserver 0.0.0.0:8000
     ports:
       - "8000:8000"
     volumes:
       - .:/code
     depends_on:
-      - clickhouse
-      - db
-      - redis
-      - rabbitmq
+      migrations:
+        condition: service_completed_successfully
+      clickhouse:
+        condition: service_started
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+
+  migrations:
+    build: .
+    environment: *django_env
+    command: python manage.py migrate
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/code
 
   web:
     build:
@@ -55,7 +70,7 @@ services:
       - app
 
   db:
-    image: postgres:14-alpine
+    image: postgres:16-alpine
     restart: on-failure
     environment:
       POSTGRES_USER: housewatch
