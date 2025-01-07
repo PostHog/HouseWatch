@@ -11,4 +11,6 @@ COPY . .
 
 RUN pnpm i
 
+VOLUME /frontend/src
+
 CMD ["pnpm", "vite", "--port", "3000", "--host"]

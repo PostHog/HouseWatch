@@ -9,6 +9,7 @@ import Overview from './pages/Overview/Overview'
 import Clusters from './pages/Clusters/Clusters'
 import Backups from './pages/Backups/Backups'
 import ScheduledBackups from './pages/Backups/ScheduledBackups'
+import Replication from './pages/Replication/Replication'
 import Errors from './pages/Errors/Errors'
 import { Switch, Route, useHistory } from 'react-router-dom'
 
@@ -53,6 +54,7 @@ const items: MenuItem[] = [
     },
     { key: 'query_performance', label: 'Query performance', icon: <ClockCircleOutlined /> },
     { key: 'running_queries', label: 'Running queries', icon: <DashboardOutlined /> },
+    { key: 'replication', label: 'Replication', icon: <DashboardOutlined /> },
     { key: 'schema', label: 'Schema stats', icon: <HddOutlined /> },
     { key: 'disk_usage', label: 'Disk usage', icon: <ApartmentOutlined /> },
     { key: 'logs', label: 'Logs', icon: <BarsOutlined /> },
@@ -122,9 +124,9 @@ export default function AppLayout(): JSX.Element {
                             <Route exact path="/query_performance" component={SlowQueries}></Route>
                             <Route exact path="/schema" component={Schema}></Route>
                             <Route exact path="/schema/:table" component={SchemaTable}></Route>
-
                             <Route exact path="/query_performance/:query_hash" component={QueryDetail}></Route>
                             <Route exact path="/operations" component={Operations}></Route>
+                            <Route exact path="/replication" component={Replication}></Route>
                             <Route exact path="/running_queries" component={RunningQueries}></Route>
                             <Route exact path="/logs" component={Logs}></Route>
                             <Route exact path="/errors" component={Errors}></Route>
