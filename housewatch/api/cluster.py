@@ -1,5 +1,4 @@
 import structlog
-from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -15,3 +14,11 @@ class ClusterViewset(GenericViewSet):
 
     def retrieve(self, request: Request, pk: str) -> Response:
         return Response(clusters.get_cluster(pk))
+
+
+class ReplicationViewset(GenericViewSet):
+    def list(self, request: Request) -> Response:
+        cluster = request.query_params.get("cluster")
+        if not cluster:
+            return Response({"error": "cluster parameter is required"}, status=400)
+        return Response(list(clusters.get_replication_queues(cluster)))
