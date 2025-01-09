@@ -144,9 +144,9 @@ export default function Replication() {
       setLoadingReplication(true)
       try {
         const res = await fetch(`/api/replication/?cluster=${selectedCluster}`)
-        const resJson = await res.json()
+        const resJson: ReplicationQueueItem[] = await res.json()
         // Filter for failed items only
-        const failedItems = resJson.filter((item: ReplicationQueueItem) => item.error)
+        const failedItems = resJson.filter((item) => item.error)
         setReplicationQueue(failedItems)
       } catch (err) {
         notification.error({
