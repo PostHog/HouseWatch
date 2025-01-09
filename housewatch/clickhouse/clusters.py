@@ -86,7 +86,6 @@ def get_replication_queue(node):
     last_attempt_time,
     last_postpone_time,
     postpone_reason,
-    last_postpone_time,
     merge_type
     FROM system.replication_queue
     WHERE last_exception != '' or postpone_reason != ''

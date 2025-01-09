@@ -35,6 +35,8 @@ interface ReplicationQueueItem {
   last_attempt_time: string
   num_attempts: number
   type: string
+  postpone_reason: string
+  postpone: string
 }
 
 export default function Replication() {
@@ -82,19 +84,29 @@ export default function Replication() {
       key: 'table',
     },
     {
-      title: 'Error',
-      dataIndex: 'error',
-      key: 'error',
-      render: (error: string) => (
-        <Paragraph
-          style={{ maxWidth: '400px', color: 'red' }}
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
+    },
+    {
+      title: 'Last Postpone',
+      dataIndex: 'last_postpone_time',
+      key: 'postpone_time',
+    },
+    {
+      title: 'Postpone Reason',
+      dataIndex: 'postpone_reason',
+      key: 'postpone_reason',
+      render: (reason: string) => (
+        reason ? <Paragraph
+          style={{ maxWidth: '400px', color: 'orange' }}
           ellipsis={{
             rows: 2,
             expandable: true,
           }}
         >
-          {error}
-        </Paragraph>
+          {reason}
+        </Paragraph> : null
       ),
     },
     {
@@ -103,14 +115,25 @@ export default function Replication() {
       key: 'last_attempt_time',
     },
     {
+      title: 'Exception',
+      dataIndex: 'last_exception',
+      key: 'last_exception',
+      render: (last_exception: string) => (
+        last_exception ? <Paragraph
+          style={{ maxWidth: '400px', color: 'red' }}
+          ellipsis={{
+            rows: 2,
+            expandable: true,
+          }}
+        >
+          {last_exception}
+        </Paragraph> : null
+      ),
+    },
+    {
       title: 'Attempts',
       dataIndex: 'num_attempts',
       key: 'num_attempts',
-    },
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
     },
   ]
 
