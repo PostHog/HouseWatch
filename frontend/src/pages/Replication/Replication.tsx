@@ -1,126 +1,173 @@
-import { Table, Button, notification, Typography, Tooltip, Spin } from 'antd'
+import { Table, Button, notification, Typography, Tooltip, Spin, Select, Space } from 'antd'
 import { usePollingEffect } from '../../utils/usePollingEffect'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ColumnType } from 'antd/es/table'
 
 const { Paragraph } = Typography
 
-interface RunningQueryData {
-  query: string
-  read_rows: number
-  read_rows_readable: string
-  query_id: string
-  total_rows_approx: number
-  total_rows_approx_readable: string
-  elapsed: number
-  memory_usage: string
+interface ClusterNode {
+  cluster: string
+  shard_num: number
+  shard_weight: number
+  replica_num: number
+  host_name: string
+  host_address: string
+  port: number
+  is_local: number
+  user: string
+  default_database: string
+  errors_count: number
+  slowdowns_count: number
+  estimated_recovery_time: number
 }
 
-function KillQueryButton({ queryId }: any) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [isKilled, setIsKilled] = useState(false)
+interface Cluster {
+  cluster: string
+  nodes: ClusterNode[]
+}
 
-  const killQuery = async () => {
-    setIsLoading(true)
-    try {
-      const res = await fetch(`/api/analyze/${queryId}/kill_query`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          query_id: queryId,
-        }),
-      })
-      setIsKilled(true)
-      setIsLoading(false)
-      return await res.json()
-    } catch (err) {
-      setIsLoading(false)
-      notification.error({
-        message: 'Killing query failed',
-      })
-    }
-  }
-  return (
-    <>
-      {isKilled ? (
-        <Button disabled>Query killed</Button>
-      ) : (
-        <Button danger onClick={killQuery} loading={isLoading}>
-          Kill query
-        </Button>
-      )}
-    </>
-  )
+interface ReplicationQueueItem {
+  host_name: string
+  database: string
+  table: string
+  position: number
+  error: string
+  last_attempt_time: string
+  num_attempts: number
+  type: string
 }
 
 export default function Replication() {
-  const [runningQueries, setRunningQueries] = useState([])
-  const [loadingRunningQueries, setLoadingRunningQueries] = useState(false)
+  const [replicationQueue, setReplicationQueue] = useState<ReplicationQueueItem[]>([])
+  const [loadingReplication, setLoadingReplication] = useState(false)
+  const [selectedCluster, setSelectedCluster] = useState<string>('')
+  const [clusters, setClusters] = useState<Cluster[]>([])
+  const [loadingClusters, setLoadingClusters] = useState(false)
 
-  const columns: ColumnType<RunningQueryData>[] = [
+  useEffect(() => {
+    const fetchClusters = async () => {
+      setLoadingClusters(true)
+      try {
+        const res = await fetch('/api/clusters')
+        const resJson: Cluster[] = await res.json()
+        setClusters(resJson)
+        if (resJson.length > 0) {
+          setSelectedCluster(resJson[0].cluster)
+        }
+      } catch (err) {
+        notification.error({
+          message: 'Failed to fetch clusters',
+          description: 'Please try again later',
+        })
+      }
+      setLoadingClusters(false)
+    }
+    fetchClusters()
+  }, [])
+
+  const columns: ColumnType<ReplicationQueueItem>[] = [
     {
-      title: 'Query',
-      dataIndex: 'normalized_query',
-      key: 'query',
-      render: (_: any, item) => {
-        let index = 0
-        return (
-          <Paragraph
-            style={{ maxWidth: '100%', fontFamily: 'monospace' }}
-            ellipsis={{
-              rows: 2,
-              expandable: true,
-            }}
-          >
-            {item.query.replace(/(\?)/g, () => {
-              index = index + 1
-              return '$' + index
-            })}
-          </Paragraph>
-        )
-      },
+      title: 'Host',
+      dataIndex: 'host_name',
+      key: 'host_name',
     },
-    { title: 'User', dataIndex: 'user' },
-    { title: 'Elapsed time', dataIndex: 'elapsed' },
     {
-      title: 'Rows read',
-      dataIndex: 'read_rows',
-      render: (_: any, item) => (
-        <Tooltip title={`~${item.read_rows}/${item.total_rows_approx}`}>
-          ~{item.read_rows_readable}/{item.total_rows_approx_readable}
-        </Tooltip>
+      title: 'Database',
+      dataIndex: 'database',
+      key: 'database',
+    },
+    {
+      title: 'Table',
+      dataIndex: 'table',
+      key: 'table',
+    },
+    {
+      title: 'Error',
+      dataIndex: 'error',
+      key: 'error',
+      render: (error: string) => (
+        <Paragraph
+          style={{ maxWidth: '400px', color: 'red' }}
+          ellipsis={{
+            rows: 2,
+            expandable: true,
+          }}
+        >
+          {error}
+        </Paragraph>
       ),
     },
-    { title: 'Memory Usage', dataIndex: 'memory_usage' },
     {
-      title: 'Actions',
-      render: (_: any, item) => <KillQueryButton queryId={item.query_id} />,
+      title: 'Last Attempt',
+      dataIndex: 'last_attempt_time',
+      key: 'last_attempt_time',
+    },
+    {
+      title: 'Attempts',
+      dataIndex: 'num_attempts',
+      key: 'num_attempts',
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type',
+      key: 'type',
     },
   ]
 
   usePollingEffect(
     async () => {
-      setLoadingRunningQueries(true)
-      const res = await fetch('/api/analyze/running_queries')
-      const resJson = await res.json()
-      setRunningQueries(resJson)
-      setLoadingRunningQueries(false)
+      if (!selectedCluster) return
+
+      setLoadingReplication(true)
+      try {
+        const res = await fetch(`/api/replication/?cluster=${selectedCluster}`)
+        const resJson = await res.json()
+        // Filter for failed items only
+        const failedItems = resJson.filter((item: ReplicationQueueItem) => item.error)
+        setReplicationQueue(failedItems)
+      } catch (err) {
+        notification.error({
+          message: 'Failed to fetch replication queue',
+          description: 'Please try again later',
+        })
+      }
+      setLoadingReplication(false)
     },
-    [],
+    [selectedCluster],
     { interval: 5000 }
   )
 
   return (
     <>
-      <h1 style={{ textAlign: 'left' }}>Running queries {loadingRunningQueries ? <Spin /> : null}</h1>
-      <br />
-      <Table
-        columns={columns}
-        dataSource={runningQueries}
-        loading={runningQueries.length == 0 && loadingRunningQueries}
-      />
+      <Space direction="vertical" size="large" style={{ width: '100%' }}>
+        <Space>
+          <h1 style={{ margin: 0 }}>
+            {`${replicationQueue.length}`} Failed Replication Queue Items
+          </h1>
+          {loadingReplication && <Spin />}
+        </Space>
+
+        <Select
+          style={{ width: 200 }}
+          value={selectedCluster}
+          onChange={setSelectedCluster}
+          loading={loadingClusters}
+          placeholder="Select a cluster"
+        >
+          {clusters.map((cluster) => (
+            <Select.Option key={cluster.cluster} value={cluster.cluster}>
+              {cluster.cluster}
+            </Select.Option>
+          ))}
+        </Select>
+
+        <Table
+          columns={columns}
+          dataSource={replicationQueue}
+          loading={replicationQueue.length === 0 && loadingReplication}
+          rowKey={(record) => `${record.host_name}-${record.table}-${record.position}`}
+        />
+      </Space>
     </>
   )
 }

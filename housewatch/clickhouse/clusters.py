@@ -50,3 +50,47 @@ def get_node_per_shard(cluster):
             nodes.append((shard, random.choice(n)))
     random.shuffle(nodes)
     return nodes
+
+def get_all_replica_hosts(cluster):
+    QUERY = """
+    SELECT host_name
+    FROM system.clusters
+    WHERE cluster = '%(cluster_name)s' """
+    return run_query(QUERY, params={"cluster_name": cluster})
+
+
+def get_replication_queues(cluster):
+    nodes = get_all_replica_hosts(cluster)
+    for node in nodes:
+        yield get_replication_queue(node)
+
+
+def get_replication_queue(node):
+    QUERY = """
+    SELECT
+    database,
+    table,
+    replica_name,
+    position,
+    node_name,
+    type,
+    create_time,
+    required_quorum,
+    source_replica,
+    new_part_name,
+    parts_to_merge,
+    is_detach,
+    is_currently_executing,
+    num_tries,
+    last_exception,
+    last_attempt_time,
+    last_postpone_time,
+    postpone_reason,
+    last_postpone_time,
+    merge_type
+    FROM system.replication_queue
+    WHERE last_exception != '' or postpone_reason != ''
+    ORDER BY create_time desc
+    LIMIT 100
+    """
+    return run_query(QUERY, node=node)

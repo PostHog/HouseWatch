@@ -3,7 +3,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 from rest_framework_extensions.routers import ExtendedDefaultRouter
 from housewatch.api.instance import InstanceViewset
-from housewatch.api.cluster import ClusterViewset
+from housewatch.api.cluster import ClusterViewset, ReplicationViewset
 from housewatch.api.backups import BackupViewset, ScheduledBackupViewset
 from housewatch.api.analyze import AnalyzeViewset
 from housewatch.api.async_migration import AsyncMigrationsViewset
@@ -22,6 +22,7 @@ class DefaultRouterPlusPlus(ExtendedDefaultRouter):
 router = DefaultRouterPlusPlus()
 router.register(r"api/instance", InstanceViewset, basename="instance")
 router.register(r"api/clusters", ClusterViewset, basename="cluster")
+router.register(r"api/replication", ReplicationViewset, basename="replication")
 router.register(r"api/backups", BackupViewset, basename="backup")
 router.register(r"api/scheduled_backups", ScheduledBackupViewset, basename="scheduled_backup")
 router.register(r"api/analyze", AnalyzeViewset, basename="analyze")
