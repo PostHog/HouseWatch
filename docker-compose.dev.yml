@@ -54,6 +54,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend/src:/frontend/src
 
   caddy:
     image: caddy:2.6.1
