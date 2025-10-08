@@ -16,9 +16,6 @@ clickhouse:
   verify: "false"
   ca: ""
 
-imagePullSecrets:
-  - name: dockerconfigjson-ghcr-io
-
 service:
   annotations: {}
 
