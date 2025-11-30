@@ -279,3 +279,102 @@ SELECT database, table, create_table_query
 FROM system.tables
 WHERE %(conditions)s
 """
+
+# Topology visualization queries
+CLUSTER_TOPOLOGY_SQL = """
+SELECT
+    cluster,
+    shard_num,
+    shard_weight,
+    replica_num,
+    host_name,
+    host_address,
+    port,
+    is_local,
+    errors_count,
+    slowdowns_count,
+    estimated_recovery_time
+FROM system.clusters
+ORDER BY cluster, shard_num, replica_num
+"""
+
+REPLICATION_STATUS_SQL = """
+SELECT
+    database,
+    table,
+    engine,
+    replica_name,
+    replica_path,
+    total_replicas,
+    active_replicas,
+    is_leader,
+    is_readonly,
+    is_session_expired,
+    future_parts,
+    parts_to_check,
+    queue_size,
+    inserts_in_queue,
+    merges_in_queue,
+    log_max_index,
+    log_pointer,
+    last_queue_update,
+    absolute_delay,
+    total_replicas,
+    active_replicas
+FROM system.replicas
+WHERE database NOT IN ('system', 'information_schema', 'INFORMATION_SCHEMA')
+ORDER BY database, table, replica_name
+"""
+
+TABLES_WITH_ENGINE_SQL = """
+SELECT
+    database,
+    name as table,
+    engine,
+    engine_full,
+    total_rows,
+    total_bytes,
+    formatReadableSize(total_bytes) as total_bytes_readable,
+    partition_key,
+    sorting_key,
+    primary_key,
+    sampling_key,
+    storage_policy,
+    dependencies_database,
+    dependencies_table
+FROM system.tables
+WHERE database NOT IN ('system', 'information_schema', 'INFORMATION_SCHEMA')
+ORDER BY database, table
+"""
+
+TABLE_DEPENDENCIES_SQL = """
+SELECT
+    database,
+    table,
+    dependencies_database,
+    dependencies_table
+FROM system.tables
+WHERE
+    database NOT IN ('system', 'information_schema', 'INFORMATION_SCHEMA')
+    AND (dependencies_database != '' OR dependencies_table != '')
+ORDER BY database, table
+"""
+
+PARTS_DISTRIBUTION_SQL = """
+SELECT
+    database,
+    table,
+    partition,
+    name as part_name,
+    hostName() as host,
+    rows,
+    bytes_on_disk,
+    formatReadableSize(bytes_on_disk) as bytes_on_disk_readable,
+    active,
+    replica_name
+FROM system.parts
+WHERE
+    active = 1
+    AND database NOT IN ('system', 'information_schema', 'INFORMATION_SCHEMA')
+ORDER BY database, table, partition
+"""

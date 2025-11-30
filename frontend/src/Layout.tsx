@@ -34,6 +34,7 @@ import { ConfigProvider, MenuProps } from 'antd'
 import { Layout, Menu } from 'antd'
 import QueryEditorPage from './pages/QueryEditor/QueryEditorPage'
 import AIToolsPage from './pages/AITools/AIToolsPage'
+import Topology from './pages/Topology/Topology'
 
 const { Header, Content, Footer, Sider } = Layout
 
@@ -42,6 +43,7 @@ type MenuItem = Required<MenuProps>['items'][number]
 const items: MenuItem[] = [
     { key: '', icon: <HomeOutlined />, label: 'Overview' },
     { key: 'clusters', label: 'Clusters', icon: <CloudServerOutlined /> },
+    { key: 'topology', label: 'Cluster Topology', icon: <ApartmentOutlined /> },
     {
         key: 'backup',
         label: 'Backup',
@@ -54,7 +56,7 @@ const items: MenuItem[] = [
     { key: 'query_performance', label: 'Query performance', icon: <ClockCircleOutlined /> },
     { key: 'running_queries', label: 'Running queries', icon: <DashboardOutlined /> },
     { key: 'schema', label: 'Schema stats', icon: <HddOutlined /> },
-    { key: 'disk_usage', label: 'Disk usage', icon: <ApartmentOutlined /> },
+    { key: 'disk_usage', label: 'Disk usage', icon: <HddOutlined /> },
     { key: 'logs', label: 'Logs', icon: <BarsOutlined /> },
     { key: 'errors', label: 'Errors', icon: <WarningOutlined /> },
     { key: 'query_editor', label: 'Query editor', icon: <FormOutlined /> },
@@ -114,6 +116,7 @@ export default function AppLayout(): JSX.Element {
                         <Switch>
                             <Route exact path="/" component={Overview}></Route>
                             <Route exact path="/clusters" component={Clusters}></Route>
+                            <Route exact path="/topology" component={Topology}></Route>
                             <Route exact path="/backups" component={Backups}></Route>
                             <Route exact path="/scheduled_backups" component={ScheduledBackups}></Route>
                             <Route exact path="/disk_usage">

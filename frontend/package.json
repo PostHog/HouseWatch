@@ -5,6 +5,8 @@
         "@ant-design/charts": "^1.4.2",
         "@ant-design/icons": "^5.2.0",
         "@ant-design/plots": "^2.1.12",
+        "@antv/g6": "^5.0.50",
+        "@antv/graphin": "^3.0.5",
         "antd": "^5.13.2",
         "prismjs": "^1.29.0",
         "react": "^18.2.0",
