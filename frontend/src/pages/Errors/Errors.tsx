@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Table, notification } from 'antd'
 import { ColumnsType } from 'antd/es/table'
 import { isoTimestampToHumanReadable } from '../../utils/dateUtils'
+import { fetchJson } from '../../utils/api'
 
 import useSWR from 'swr'
 
@@ -32,8 +33,7 @@ export default function CollapsibleTable() {
 
     const loadData = async (url: string) => {
         try {
-            const res = await fetch(url)
-            const resJson = await res.json()
+            const resJson = await fetchJson(url)
 
             const slowQueriesData = resJson.map((error: ErrorData, idx: number) => ({ key: idx, ...error }))
             return slowQueriesData

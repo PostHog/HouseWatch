@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Select, Checkbox, Button, Table, ConfigProvider } from 'antd'
+import { Select, Checkbox, Button, Table, ConfigProvider, notification } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 // @ts-ignore
 import { highlight, languages } from 'prismjs/components/prism-core' // @ts-ignore
@@ -8,6 +8,7 @@ import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 // @ts-ignore
 import { format } from 'sql-formatter-plus'
+import { fetchJson } from '../../utils/api'
 
 export interface TableData {
     table: string
@@ -29,31 +30,38 @@ export default function NaturalLanguageQueryEditor() {
     const runQuery = async () => {
         setLoading(true)
         setSql(null)
-        const res = await fetch('/api/analyze/natural_language_query', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                query: query,
-                tables_to_query: tablesToQuery,
-                readonly: readonly || false,
-            }),
-        })
-        const resJson = await res.json()
-        if (resJson.error) {
-            setError(resJson.error)
+        try {
+            const resJson = await fetchJson('/api/analyze/natural_language_query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: query,
+                    tables_to_query: tablesToQuery,
+                    readonly: readonly || false,
+                }),
+            })
+            if (resJson.error) {
+                setError(resJson.error)
+                setData([])
+            } else {
+                setData(resJson.result)
+            }
+            setSql(resJson.sql)
+        } catch (err) {
+            setError(String(err))
             setData([])
-        } else {
-            setData(resJson.result)
         }
-        setSql(resJson.sql)
         setLoading(false)
     }
     const loadTableData = async () => {
-        const res = await fetch('/api/analyze/tables')
-        const resJson = await res.json()
-        setTables(resJson)
+        try {
+            const resJson = await fetchJson('/api/analyze/tables')
+            setTables(resJson)
+        } catch (err) {
+            notification.error({ message: 'Failed to load tables' })
+        }
     }
 
     useEffect(() => {

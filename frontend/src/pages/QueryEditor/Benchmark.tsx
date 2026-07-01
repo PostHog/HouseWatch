@@ -6,6 +6,7 @@ import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 import { Column } from '@ant-design/charts'
+import { fetchJson } from '../../utils/api'
 import useSWR from 'swr'
 
 export interface BenchmarkingData {
@@ -48,14 +49,13 @@ export default function QueryBenchmarking() {
         try {
             setData(null)
             setError(null)
-            const res = await fetch('/api/analyze/benchmark', {
+            const resJson = await fetchJson('/api/analyze/benchmark', {
                 method: 'POST',
                 body: JSON.stringify({ query1, query2 }),
                 headers: {
                     'Content-Type': 'application/json',
                 },
             })
-            const resJson = await res.json()
             if (resJson.error) {
                 setError(resJson)
             } else {

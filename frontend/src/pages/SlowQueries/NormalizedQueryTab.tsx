@@ -9,14 +9,14 @@ import Editor from 'react-simple-code-editor'
 import { format } from 'sql-formatter-plus'
 import { NoDataSpinner, copyToClipboard } from './QueryDetail'
 import { notification } from 'antd'
+import { fetchJson } from '../../utils/api'
 
 export default function NormalizedQueryTab({ query_hash }: { query_hash: string }) {
     const [data, setData] = useState<{ query: string } | null>(null)
 
     const loadData = async () => {
         try {
-            const res = await fetch(`/api/analyze/${query_hash}/query_normalized`)
-            const resJson = await res.json()
+            const resJson = await fetchJson(`/api/analyze/${query_hash}/query_normalized`)
             setData(resJson)
         } catch {
             notification.error({ message: 'Failed to load data' })

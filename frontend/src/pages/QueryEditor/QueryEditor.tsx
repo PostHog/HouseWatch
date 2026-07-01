@@ -7,6 +7,7 @@ import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 import { v4 as uuidv4 } from 'uuid'
 import SaveOutlined from '@ant-design/icons/SaveOutlined'
+import { fetchJson } from '../../utils/api'
 
 function CreateSavedQueryModal({
     modalOpen = false,
@@ -68,14 +69,13 @@ export default function QueryEditor() {
         setRunningQueryId(queryId)
         try {
             setData([])
-            const res = await fetch('/api/analyze/query', {
+            const resJson = await fetchJson('/api/analyze/query', {
                 method: 'POST',
                 body: JSON.stringify({ sql, query_id: queryId }),
                 headers: {
                     'Content-Type': 'application/json',
                 },
             })
-            const resJson = await res.json()
             if (resJson.error) {
                 setError(resJson.error)
             } else {

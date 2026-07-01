@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import { Treemap } from '@ant-design/charts'
 import { Table, Tabs, TabsProps, notification } from 'antd'
+import { fetchJson } from '../../utils/api'
 
 import { useHistory } from 'react-router-dom'
 
@@ -57,13 +58,9 @@ export function ColumnsData({ table }: { table: string }): JSX.Element {
     usePollingEffect(
         async () =>
             setSchema(
-                await fetch(url)
-                    .then((response) => {
-                        return response.json()
-                    })
-                    .catch((err) => {
-                        return []
-                    })
+                await fetchJson(url).catch((err) => {
+                    return []
+                })
             ),
         [],
         { interval: 3000 } // optional
@@ -91,8 +88,7 @@ export function PartsData({ table }: { table: string }): JSX.Element {
 
     const loadData = async () => {
         try {
-            const res = await fetch(`/api/analyze/${table}/parts`)
-            const resJson = await res.json()
+            const resJson = await fetchJson(`/api/analyze/${table}/parts`)
             setPartData(resJson)
         } catch {
             notification.error({ message: 'Failed to load data' })

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Select, Table, Typography, notification } from 'antd'
 import { useHistory } from 'react-router-dom'
 import { ColumnType } from 'antd/es/table'
+import { fetchJson } from '../../utils/api'
 const { Paragraph } = Typography
 
 interface SlowQueryData {
@@ -76,8 +77,7 @@ export default function CollapsibleTable() {
         setSlowQueries([])
         setLoadingSlowQueries(true)
         try {
-            const res = await fetch(`/api/analyze/slow_queries?time_range=${timeRange}`)
-            const resJson = await res.json()
+            const resJson = await fetchJson(`/api/analyze/slow_queries?time_range=${timeRange}`)
             const slowQueriesData = resJson.map((error: SlowQueryData, idx: number) => ({ key: idx, ...error }))
             setSlowQueries(slowQueriesData)
             setLoadingSlowQueries(false)

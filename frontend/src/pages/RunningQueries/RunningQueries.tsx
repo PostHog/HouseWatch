@@ -2,6 +2,7 @@ import { Table, Button, notification, Typography, Tooltip, Spin } from 'antd'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import React, { useState } from 'react'
 import { ColumnType } from 'antd/es/table'
+import { fetchJson } from '../../utils/api'
 
 const { Paragraph } = Typography
 
@@ -23,7 +24,7 @@ function KillQueryButton({ queryId }: any) {
     const killQuery = async () => {
         setIsLoading(true)
         try {
-            const res = await fetch(`/api/analyze/${queryId}/kill_query`, {
+            const resJson = await fetchJson(`/api/analyze/${queryId}/kill_query`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -34,7 +35,7 @@ function KillQueryButton({ queryId }: any) {
             })
             setIsKilled(true)
             setIsLoading(false)
-            return await res.json()
+            return resJson
         } catch (err) {
             setIsLoading(false)
             notification.error({
@@ -103,9 +104,12 @@ export default function RunningQueries() {
     usePollingEffect(
         async () => {
             setLoadingRunningQueries(true)
-            const res = await fetch('/api/analyze/running_queries')
-            const resJson = await res.json()
-            setRunningQueries(resJson)
+            try {
+                const resJson = await fetchJson('/api/analyze/running_queries')
+                setRunningQueries(resJson)
+            } catch (err) {
+                notification.error({ message: 'Failed to load running queries' })
+            }
             setLoadingRunningQueries(false)
         },
         [],

@@ -30,8 +30,9 @@ import {
     ToolOutlined,
     SaveOutlined,
 } from '@ant-design/icons'
-import { ConfigProvider, MenuProps } from 'antd'
+import { ConfigProvider, MenuProps, notification } from 'antd'
 import { Layout, Menu } from 'antd'
+import { fetchJson } from './utils/api'
 import QueryEditorPage from './pages/QueryEditor/QueryEditorPage'
 import AIToolsPage from './pages/AITools/AIToolsPage'
 
@@ -66,9 +67,13 @@ export default function AppLayout(): JSX.Element {
     const [hostname, setHostname] = useState('')
 
     const fetchHostname = async () => {
-        const response = await fetch(`/api/analyze/hostname`)
-        const responseJson = await response.json()
-        setHostname(responseJson.hostname)
+        try {
+            const responseJson = await fetchJson(`/api/analyze/hostname`)
+            setHostname(responseJson.hostname)
+        } catch (err) {
+            // A transient HTML response (gateway/auth/error page) shouldn't blow up the whole app
+            notification.error({ message: 'Failed to load hostname' })
+        }
     }
 
     useEffect(() => {

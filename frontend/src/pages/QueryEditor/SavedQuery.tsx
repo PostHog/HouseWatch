@@ -6,6 +6,7 @@ import 'prismjs/components/prism-sql'
 import 'prismjs/themes/prism.css'
 import Editor from 'react-simple-code-editor'
 import { SavedQueryData } from './SavedQueries'
+import { fetchJson } from '../../utils/api'
 
 export default function SavedQuery({ id, query, name }: SavedQueryData) {
     const [error, setError] = useState('')
@@ -17,14 +18,13 @@ export default function SavedQuery({ id, query, name }: SavedQueryData) {
         try {
             setData([])
             setError('')
-            const res = await fetch('/api/analyze/query', {
+            const resJson = await fetchJson('/api/analyze/query', {
                 method: 'POST',
                 body: JSON.stringify({ sql: query }),
                 headers: {
                     'Content-Type': 'application/json',
                 },
             })
-            const resJson = await res.json()
             if (resJson.error) {
                 setError(resJson.error)
             } else {
