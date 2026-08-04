@@ -34,12 +34,6 @@ jobs:
         run: |
           sed -i 's/^version: \(.*\)$/version: \1-${{ github.sha }}/g' charts/housewatch/Chart.yaml
 
-      - name: Configure Git
-        run: |
-          git config user.name "Max Hedgehog"
-          git config user.email "127861667+max-hedgehog[bot]@users.noreply.github.com"
-          git fetch origin gh-pages --depth=1
-
       - name: Package
         run: |
           helm dependency update charts/housewatch/
@@ -49,11 +43,45 @@ jobs:
           cd -
           set -x
 
-      - name: Run chart-releaser
+      # chart-releaser-action always runs `cr index --push`, which pushes index.yaml
+      # to gh-pages with plain git. The org-wide signed-commits ruleset covers
+      # gh-pages too (its ref condition is ~ALL), so that push is rejected. Install
+      # the cr binary only, then drive the two halves separately: `cr upload` talks
+      # to the releases API and needs no git write, and index.yaml is committed
+      # through the GitHub API below.
+      - name: Install chart-releaser
+        if: github.ref == 'refs/heads/main' && github.repository == 'PostHog/HouseWatch'
         uses: helm/chart-releaser-action@4b85f2c82c80ff4284ff8520f47bbe69dd89b0aa
+        with:
+          install_only: true
+
+      - name: Upload chart packages to releases
         if: github.ref == 'refs/heads/main' && github.repository == 'PostHog/HouseWatch'
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        run: cr upload --owner "${GITHUB_REPOSITORY%%/*}" --git-repo "${GITHUB_REPOSITORY##*/}" --skip-existing
+
+      - name: Check out gh-pages
+        if: github.ref == 'refs/heads/main' && github.repository == 'PostHog/HouseWatch'
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
         with:
-          skip_existing: true
-          skip_packaging: true
+          ref: gh-pages
+          path: .cr-pages
+
+      - name: Regenerate index.yaml
+        if: github.ref == 'refs/heads/main' && github.repository == 'PostHog/HouseWatch'
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+        run: cr index --owner "${GITHUB_REPOSITORY%%/*}" --git-repo "${GITHUB_REPOSITORY##*/}" --index-path .cr-pages/index.yaml
+
+      - name: Commit index.yaml to gh-pages
+        if: github.ref == 'refs/heads/main' && github.repository == 'PostHog/HouseWatch'
+        uses: planetscale/ghcommit-action@a6b150b81dca5dd027baa898604418eec9e11465 # v0.2.22
+        with:
+          commit_message: Update index.yaml
+          repo: ${{ github.repository }}
+          branch: gh-pages
+          repository: .cr-pages
+          file_pattern: index.yaml
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
