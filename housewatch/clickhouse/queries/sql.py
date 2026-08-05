@@ -1,9 +1,10 @@
 import os
 
 ch_cluster = os.getenv("CLICKHOUSE_CLUSTER", None)
+ch_database = os.getenv("CLICKHOUSE_DATABASE", "default")
 
 QUERY_LOG_SYSTEM_TABLE = f"clusterAllReplicas('{ch_cluster}', system.query_log)" if ch_cluster else "system.query_log"
-TEXT_LOG_SYSTEM_TABLE = f"clusterAllReplicas('{ch_cluster}', system.text_log)" if ch_cluster else "system.text"
+TEXT_LOG_SYSTEM_TABLE = f"clusterAllReplicas('{ch_cluster}', system.text_log)" if ch_cluster else "system.text_log"
 ERRORS_SYSTEM_TABLE = f"clusterAllReplicas('{ch_cluster}', system.errors)" if ch_cluster else "system.errors"
 DISKS_SYSTEM_TABLE = f"clusterAllReplicas('{ch_cluster}', system.disks)" if ch_cluster else "system.disks"
 
@@ -46,18 +47,22 @@ GROUP BY name
 ORDER BY count DESC
 """
 
-TABLES_SQL = """
+TABLES_SQL = f"""
 SELECT
+    database,
     name,
+    name AS table,
     formatReadableSize(total_bytes) AS readable_bytes,
     total_bytes,
     total_rows,
     engine,
     partition_key
-FROM system.tables ORDER BY total_bytes DESC
+FROM system.tables
+WHERE database = '{ch_database}'
+ORDER BY total_bytes DESC
 """
 
-SCHEMA_SQL = """
+SCHEMA_SQL = f"""
 SELECT
     table,
     name AS column,
@@ -66,15 +71,15 @@ SELECT
     formatReadableSize(data_compressed_bytes) AS compressed_readable,
     formatReadableSize(data_uncompressed_bytes) AS uncompressed
 FROM system.columns
-WHERE table = '%(table)s'
+WHERE database = '{ch_database}' AND table = '%(table)s'
 ORDER BY data_compressed_bytes DESC
 LIMIT 100
 """
 
-PARTS_SQL = """
+PARTS_SQL = f"""
 SELECT name AS part, data_compressed_bytes AS compressed, formatReadableSize(data_compressed_bytes) AS compressed_readable, formatReadableSize(data_uncompressed_bytes) AS uncompressed
 FROM system.parts
-WHERE table = '%(table)s'
+WHERE database = '{ch_database}' AND table = '%(table)s'
 ORDER BY data_compressed_bytes DESC
 LIMIT 100
 """
@@ -206,7 +211,7 @@ SELECT
     formatReadableSize(space_used) readable_space_used,
     formatReadableSize(free_space) readable_free_space
 FROM {DISKS_SYSTEM_TABLE}
-WHERE type = 'local'
+WHERE lower(type) = 'local'
 GROUP BY node
 ORDER BY node
 """

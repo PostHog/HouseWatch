@@ -24,7 +24,7 @@ from housewatch.clickhouse.queries.sql import (
     LOGS_FREQUENCY_SQL,
     EXPLAIN_QUERY,
     BENCHMARKING_SQL,
-    AVAILABLE_TABLES_SQL,
+    TABLES_SQL,
     TABLE_SCHEMAS_SQL,
 )
 from uuid import uuid4
@@ -263,7 +263,7 @@ class AnalyzeViewset(GenericViewSet):
 
     @action(detail=False, methods=["GET"])
     def tables(self, request: Request):
-        query_result = run_query(AVAILABLE_TABLES_SQL, use_cache=False)
+        query_result = run_query(TABLES_SQL, use_cache=False)
         return Response(query_result)
 
     @action(detail=False, methods=["POST"])
