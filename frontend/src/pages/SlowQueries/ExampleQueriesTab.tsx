@@ -8,14 +8,14 @@ import Editor from 'react-simple-code-editor'
 // @ts-ignore
 import { Table, notification } from 'antd'
 import { NoDataSpinner, QueryDetailData } from './QueryDetail'
+import { fetchJson } from '../../utils/api'
 
 export default function ExampleQueriesTab({ query_hash }: { query_hash: string }) {
     const [data, setData] = useState<{ example_queries: QueryDetailData['example_queries'] } | null>(null)
 
     const loadData = async () => {
         try {
-            const res = await fetch(`/api/analyze/${query_hash}/query_examples`)
-            const resJson = await res.json()
+            const resJson = await fetchJson(`/api/analyze/${query_hash}/query_examples`)
             setData(resJson)
         } catch {
             notification.error({ message: 'Failed to load data' })

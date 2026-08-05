@@ -10,6 +10,7 @@ import { Button, Input, Progress, Table, Tabs, notification } from 'antd'
 import TextArea from 'antd/es/input/TextArea'
 import { ColumnType } from 'antd/es/table'
 import { isoTimestampToHumanReadable } from '../../utils/dateUtils'
+import { fetchJson } from '../../utils/api'
 
 import useSWR from 'swr'
 
@@ -77,8 +78,7 @@ export function OperationControls({
 
 export function OperationsList(): JSX.Element {
     const fetchAndUpdateOperationsIfNeeded = async (url: string) => {
-        const response = await fetch(url)
-        const responseJson = await response.json()
+        const responseJson = await fetchJson(url)
         const results = responseJson.results
         if (JSON.stringify(results) !== JSON.stringify(operations)) {
             return results

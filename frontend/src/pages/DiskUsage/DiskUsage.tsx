@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Pie } from '@ant-design/plots'
 import { Card, Spin, Row, Col, notification } from 'antd'
+import { fetchJson } from '../../utils/api'
 
 import useSWR from 'swr'
 
@@ -13,8 +14,7 @@ interface NodeData {
 export function DiskUsage(): JSX.Element {
     const loadData = async (url: string) => {
         try {
-            const res = await fetch(url)
-            const resJson = await res.json()
+            const resJson = await fetchJson(url)
             return resJson
         } catch {
             notification.error({ message: 'Failed to load data' })

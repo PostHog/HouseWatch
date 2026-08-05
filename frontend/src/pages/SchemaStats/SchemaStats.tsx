@@ -1,7 +1,8 @@
 // @ts-nocheck
 import React, { useEffect, useState } from 'react'
 import { Treemap } from '@ant-design/charts'
-import { Spin, Table } from 'antd'
+import { Spin, Table, notification } from 'antd'
+import { fetchJson } from '../../utils/api'
 
 import { useHistory } from 'react-router-dom'
 
@@ -45,17 +46,14 @@ export default function Schema() {
 
     const loadData = async () => {
         try {
-            const res = await fetch('/api/analyze/tables')
-            const resJson = await res.json()
+            const resJson = await fetchJson('/api/analyze/tables')
 
             const filteredRes = resJson.filter((r: { total_bytes: number }) => r.total_bytes > 0)
             const filteredResUrls = filteredRes
                 .map((fr: { name: string }) => `/api/analyze/${fr.name}/schema`)
                 .slice(0, 1)
 
-            const nestedRes = await Promise.all(
-                filteredResUrls.map((_url: string) => fetch(_url).then((res2) => res2.json()))
-            )
+            const nestedRes = await Promise.all(filteredResUrls.map((_url: string) => fetchJson(_url)))
 
             const configDataChildren = filteredRes.map((table: { name: string; total_bytes: number }) => ({
                 value: table.total_bytes,

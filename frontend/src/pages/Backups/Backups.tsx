@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { usePollingEffect } from '../../utils/usePollingEffect'
 import { ColumnType } from 'antd/es/table'
 import { Table, Button, Form, Input, Checkbox, Modal, Tag, Col, Progress, Row, Tooltip, notification } from 'antd'
+import { fetchJson } from '../../utils/api'
 import useSWR, { mutate } from 'swr'
 
 interface BackupRow {
@@ -45,7 +46,7 @@ export default function Backups() {
             // Validate and get form values
             const values = await form.validateFields()
             setConfirmLoading(true)
-            const res = await fetch(`/api/backups`, {
+            const resJson = await fetchJson(`/api/backups`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,7 +56,7 @@ export default function Backups() {
             setOpen(false)
             setConfirmLoading(false)
             mutate('/api/backups')
-            return await res.json()
+            return resJson
         } catch (error) {
             notification.error({
                 message: 'Creating backup failed',
@@ -73,8 +74,7 @@ export default function Backups() {
 
     const loadData = async (url: string) => {
         try {
-            const res = await fetch(url)
-            const resJson = await res.json()
+            const resJson = await fetchJson(url)
             const backups = { backups: resJson }
             return backups
         } catch (err) {

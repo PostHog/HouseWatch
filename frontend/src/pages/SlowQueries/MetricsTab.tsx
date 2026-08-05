@@ -4,6 +4,7 @@ import { Line } from '@ant-design/plots'
 import { Card, Col, Row, Tooltip, notification } from 'antd'
 import InfoCircleOutlined from '@ant-design/icons/InfoCircleOutlined'
 import { NoDataSpinner, QueryDetailData } from './QueryDetail'
+import { fetchJson } from '../../utils/api'
 
 export default function MetricsTab({ query_hash }: { query_hash: string }) {
     const [data, setData] = useState<Omit<QueryDetailData, 'explain' | 'normalized_query' | 'example_queries'> | null>(
@@ -12,8 +13,7 @@ export default function MetricsTab({ query_hash }: { query_hash: string }) {
 
     const loadData = async () => {
         try {
-            const res = await fetch(`/api/analyze/${query_hash}/query_metrics`)
-            const resJson = await res.json()
+            const resJson = await fetchJson(`/api/analyze/${query_hash}/query_metrics`)
             setData(resJson)
         } catch {
             notification.error({ message: 'Failed to load data' })

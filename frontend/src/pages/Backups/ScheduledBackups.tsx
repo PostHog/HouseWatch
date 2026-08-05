@@ -20,6 +20,7 @@ import {
 import DeleteOutlined from '@ant-design/icons/DeleteOutlined'
 import EditOutlined from '@ant-design/icons/EditOutlined'
 import { Clusters } from '../Clusters/Clusters'
+import { fetchJson } from '../../utils/api'
 import useSWR, { mutate } from 'swr'
 
 interface ScheduleRow {
@@ -69,7 +70,7 @@ export default function ScheduledBackups() {
             const url = editingRow ? `/api/scheduled_backups/${editingRow.id}` : '/api/scheduled_backups'
             const values = await form.validateFields()
             setConfirmLoading(true)
-            const res = await fetch(url, {
+            const resJson = await fetchJson(url, {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
@@ -80,7 +81,7 @@ export default function ScheduledBackups() {
             setConfirmLoading(false)
             setEditingRow(null)
             mutate('/api/scheduled_backups')
-            return await res.json()
+            return resJson
         } catch (error) {
             notification.error({
                 message: 'Creating backup failed',
@@ -111,8 +112,7 @@ export default function ScheduledBackups() {
 
     const fetchBackups = async (url: string) => {
         try {
-            const res = await fetch(url)
-            const resJson = await res.json()
+            const resJson = await fetchJson(url)
             const backups = { backups: resJson.results }
             return backups
         } catch (err) {
@@ -121,8 +121,7 @@ export default function ScheduledBackups() {
     }
     const fetchClusters = async (url: string) => {
         try {
-            const res = await fetch(url)
-            const resJson = await res.json()
+            const resJson = await fetchJson(url)
             const clusters = { clusters: resJson }
             return clusters
         } catch (err) {
@@ -146,7 +145,7 @@ export default function ScheduledBackups() {
             render: (_, sched) => {
                 const toggleEnabled = async () => {
                     try {
-                        const res = await fetch(`/api/scheduled_backups/${sched.id}`, {
+                        const resJson = await fetchJson(`/api/scheduled_backups/${sched.id}`, {
                             method: 'PATCH',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -154,7 +153,7 @@ export default function ScheduledBackups() {
                             body: JSON.stringify({ enabled: !sched.enabled }),
                         })
                         mutate('/api/scheduled_backups')
-                        return await res.json()
+                        return resJson
                     } catch (error) {
                         notification.error({
                             message: 'Failed to toggle backup',

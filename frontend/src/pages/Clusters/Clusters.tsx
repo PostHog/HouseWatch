@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ColumnType } from 'antd/es/table'
 import { Table, Col, Row, Tooltip, notification } from 'antd'
+import { fetchJson } from '../../utils/api'
 import useSWR from 'swr'
 
 interface ClusterNode {
@@ -31,8 +32,7 @@ export interface Clusters {
 export default function Clusters() {
     const loadData = async (url: string) => {
         try {
-            const res = await fetch(url)
-            const resJson = await res.json()
+            const resJson = await fetchJson(url)
             const clusters = { clusters: resJson }
             return clusters
         } catch (err) {

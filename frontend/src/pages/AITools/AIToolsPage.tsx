@@ -2,16 +2,20 @@ import React, { useEffect, useState } from 'react'
 import { Tabs } from 'antd'
 import { useHistory } from 'react-router-dom'
 import NaturalLanguageQueryEditor from './NaturalLanguageQueryEditor'
+import { fetchJson } from '../../utils/api'
 
 export default function AIToolsPage() {
     const history = useHistory()
     const [error, setError] = useState<string | null>(null)
 
     const loadData = async () => {
-        const res = await fetch('/api/analyze/ai_tools_available')
-        const resJson = await res.json()
-        if ('error' in resJson) {
-            setError(resJson['error'])
+        try {
+            const resJson = await fetchJson('/api/analyze/ai_tools_available')
+            if ('error' in resJson) {
+                setError(resJson['error'])
+            }
+        } catch (err) {
+            setError('Failed to load AI tools')
         }
     }
 

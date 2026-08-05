@@ -1,10 +1,11 @@
-import { Table, Button, Row, Col, Tooltip } from 'antd'
+import { Table, Button, Row, Col, Tooltip, notification } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { ColumnType } from 'antd/es/table'
 import SavedQuery from './SavedQuery'
 import ReloadOutlined from '@ant-design/icons/ReloadOutlined'
 import { useHistory } from 'react-router-dom'
 import { isoTimestampToHumanReadable } from '../../utils/dateUtils'
+import { fetchJson } from '../../utils/api'
 
 export interface SavedQueryData {
     id: number
@@ -18,11 +19,14 @@ export default function SavedQueries({ match }: { match: { params: { id: string 
     const history = useHistory()
 
     const loadData = async () => {
-        const res = await fetch('/api/saved_queries')
-        const resJson = await res.json()
-        setSavedQueries(resJson.results)
-        if (match && match.params && match.params.id) {
-            setActiveQuery(resJson.results.find((q: SavedQueryData) => q.id === Number(match.params.id)) || null)
+        try {
+            const resJson = await fetchJson('/api/saved_queries')
+            setSavedQueries(resJson.results)
+            if (match && match.params && match.params.id) {
+                setActiveQuery(resJson.results.find((q: SavedQueryData) => q.id === Number(match.params.id)) || null)
+            }
+        } catch (err) {
+            notification.error({ message: 'Failed to load saved queries' })
         }
     }
 

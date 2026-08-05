@@ -1,6 +1,7 @@
-import { Table, Typography, Input, Card, ConfigProvider, Empty } from 'antd'
+import { Table, Typography, Input, Card, ConfigProvider, Empty, notification } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { Column } from '@ant-design/charts'
+import { fetchJson } from '../../utils/api'
 
 const { Paragraph } = Typography
 
@@ -42,36 +43,42 @@ export default function Logs() {
 
     const fetchLogs = async (messageIlike = '') => {
         setLoadingLogs(true)
-        const res = await fetch(url, {
-            method: 'POST',
-            body: JSON.stringify({ message_ilike: messageIlike }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        const resJson = await res.json()
-        if (resJson.error) {
-            setError(resJson.error)
-        } else {
-            setLogs(resJson)
+        try {
+            const resJson = await fetchJson(url, {
+                method: 'POST',
+                body: JSON.stringify({ message_ilike: messageIlike }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            if (resJson.error) {
+                setError(resJson.error)
+            } else {
+                setLogs(resJson)
+            }
+        } catch (err) {
+            notification.error({ message: 'Failed to load logs' })
         }
         setLoadingLogs(false)
     }
 
     const fetchLogsFrequency = async (messageIlike = '') => {
         setLoadingLogsFrequency(true)
-        const res = await fetch('/api/analyze/logs_frequency', {
-            method: 'POST',
-            body: JSON.stringify({ message_ilike: messageIlike }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        const resJson = await res.json()
-        if (resJson.error) {
-            setError(resJson.error)
-        } else {
-            setLogsFrequency(resJson)
+        try {
+            const resJson = await fetchJson('/api/analyze/logs_frequency', {
+                method: 'POST',
+                body: JSON.stringify({ message_ilike: messageIlike }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            if (resJson.error) {
+                setError(resJson.error)
+            } else {
+                setLogsFrequency(resJson)
+            }
+        } catch (err) {
+            notification.error({ message: 'Failed to load logs' })
         }
         setLoadingLogsFrequency(false)
     }

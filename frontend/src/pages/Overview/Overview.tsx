@@ -3,6 +3,7 @@ import { Line } from '@ant-design/charts'
 import { Card, Col, Row, Tooltip, notification } from 'antd'
 import InfoCircleOutlined from '@ant-design/icons/InfoCircleOutlined'
 import { clickhouseTips } from './tips'
+import { fetchJson } from '../../utils/api'
 import useSWR from 'swr'
 
 interface MetricData {
@@ -20,8 +21,7 @@ interface QueryGraphsData {
 export default function Overview() {
     const loadData = async (url: string) => {
         try {
-            const res = await fetch(url)
-            const resJson = await res.json()
+            const resJson = await fetchJson(url)
             const execution_count = resJson.execution_count
             const memory_usage = resJson.memory_usage
             const read_bytes = resJson.read_bytes
