@@ -4,6 +4,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from django.conf import settings
+import re
+
+_IDENTIFIER_RE = re.compile(r"^[a-zA-Z0-9_]+$")
 
 from housewatch.clickhouse.client import run_query, existing_system_tables
 from housewatch.clickhouse.queries.sql import (
@@ -76,7 +79,9 @@ class AnalyzeViewset(GenericViewSet):
     @action(detail=True, methods=["GET"])
     def query_metrics(self, request: Request, pk: str):
         days = request.GET.get("days", DEFAULT_DAYS)
-        conditions = "AND event_time > now() - INTERVAL 1 WEEK AND toString(normalized_query_hash) = '{}'".format(pk)
+        if not pk.isdigit():
+            return Response(status=400, data={"error": "Invalid query hash"})
+        conditions = f"AND event_time > now() - INTERVAL 1 WEEK AND normalized_query_hash = {int(pk)}"
         execution_count = run_query(QUERY_EXECUTION_COUNT_SQL, {"days": days, "conditions": conditions})
         memory_usage = run_query(QUERY_MEMORY_USAGE_SQL, {"days": days, "conditions": conditions})
         read_bytes = run_query(QUERY_READ_BYTES_SQL, {"days": days, "conditions": conditions})
@@ -270,7 +275,12 @@ class AnalyzeViewset(GenericViewSet):
     def natural_language_query(self, request: Request):
         table_schema_sql_conditions = []
         for full_table_name in request.data["tables_to_query"]:
-            database, table = full_table_name.split(">>>>>")
+            if ">>>>>" not in full_table_name:
+                return Response(status=400, data={"error": f"Invalid table format: {full_table_name!r}"})
+            database, table = full_table_name.split(">>>>>", 1)
+            database, table = database.strip(), table.strip()
+            if not _IDENTIFIER_RE.match(database) or not _IDENTIFIER_RE.match(table):
+                return Response(status=400, data={"error": "Table names must contain only letters, digits, and underscores"})
             condition = f"(database = '{database}' AND table = '{table}')"
             table_schema_sql_conditions.append(condition)
 
