@@ -48,7 +48,10 @@ def start_async_migration(migration: AsyncMigration, ignore_posthog_version=Fals
 
     if not mark_async_migration_as_running(migration):
         # we don't want to touch the migration, i.e. don't process_error
-        logger.error(f"Migration state has unexpectedly changed for async migration {migration.name}")
+        logger.error(
+            "Could not start migration: another migration is already running or migration state changed unexpectedly",
+            migration=migration.name,
+        )
         return False
 
     return run_async_migration_operations(migration)
@@ -157,7 +160,7 @@ def attempt_migration_rollback(migration: AsyncMigration):
                 op = ops[op_index]
                 if not op:
                     continue
-                execute_op(op, query_id=str(uuid4))
+                execute_op(op, query_id=str(uuid4()))
             except Exception as e:
                 last_error = f"At operation {op_index} rollback failed with error:{str(e)}"
                 process_error(

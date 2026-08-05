@@ -29,17 +29,38 @@ def execute_op(sql: str, args=None, *, query_id: str, timeout_seconds: int = 600
 
 
 def mark_async_migration_as_running(migration: AsyncMigration) -> bool:
-    # update to running iff the state was Starting (ui triggered) or NotStarted (api triggered)
     with transaction.atomic():
-        if migration.status not in [MigrationStatus.Starting, MigrationStatus.NotStarted]:
+        # Cross-row check: lock all rows in Running or Starting state before proceeding.
+        # This blocks any concurrent transaction attempting the same check, ensuring only
+        # one migration transitions to Running at a time across the entire table.
+        already_running = (
+            AsyncMigration.objects
+            .select_for_update()
+            .filter(status__in=[MigrationStatus.Running, MigrationStatus.Starting])
+            .exclude(pk=migration.pk)
+            .exists()
+        )
+        if already_running:
+            logger.warning(
+                "Refusing to start migration: another migration is already running or starting",
+                migration=migration.name,
+            )
             return False
-        migration.status = MigrationStatus.Running
-        migration.current_query_id = ""
-        migration.progress = 0
-        migration.current_operation_index = 0
-        migration.started_at = now()
-        migration.finished_at = None
-        migration.save()
+
+        # Re-read this migration's own row under a lock to guard against double-start
+        # of the same migration by two concurrent workers.
+        instance = AsyncMigration.objects.select_for_update().get(pk=migration.pk)
+        if instance.status not in [MigrationStatus.Starting, MigrationStatus.NotStarted]:
+            return False
+
+        instance.status = MigrationStatus.Running
+        instance.current_query_id = ""
+        instance.progress = 0
+        instance.current_operation_index = 0
+        instance.started_at = now()
+        instance.finished_at = None
+        instance.save()
+
     return True
 
 
