@@ -269,7 +269,15 @@ ORDER BY query_version
 """
 
 AVAILABLE_TABLES_SQL = """
-SELECT database, table
+SELECT 
+    database, 
+    table, 
+    table as name, 
+    total_bytes, 
+    formatReadableSize(total_bytes) as readable_bytes, 
+    total_rows, 
+    engine, 
+    partition_key
 FROM system.tables
 WHERE database NOT ILIKE 'information_schema'
 """
