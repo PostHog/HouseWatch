@@ -1,7 +1,24 @@
-FROM alpine:latest
+FROM node:20.4.0-alpine AS builder
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN corepack enable
 
 WORKDIR /frontend
 
-COPY build/ build/
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
-CMD ["echo", "Serve the files from /frontend/build, don't run this container directly"]
+COPY . .
+RUN pnpm build
+
+FROM node:20.4.0-alpine
+
+WORKDIR /frontend
+
+RUN npm install -g serve@14.2.4
+
+COPY --from=builder /frontend/build build/
+
+CMD ["serve", "-s", "build", "-l", "3000"]
